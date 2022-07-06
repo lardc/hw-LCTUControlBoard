@@ -270,7 +270,6 @@ void CONTROL_StartProcess()
 
 void CONTROL_StopProcess()
 {
-	LL_SetStateLineSync(true);
 	LOGIC_StopProcess();
 	CONTROL_AfterPulsePause = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE];
 }

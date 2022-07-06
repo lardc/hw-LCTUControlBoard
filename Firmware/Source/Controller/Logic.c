@@ -63,30 +63,12 @@ bool LOGIC_RegulatorCycle(float Voltage, Int16U* Fault)
 {
 	float RegulatorError, Qp, RegulatorOut;
 	bool Finished = false;
-	static uint16_t ToggleCounter = 0, SyncCounter = 0;
 
 	// Формирование линейно нарастающего фронта импульса напряжения
 	if(VoltageTarget < VoltageSetpoint)
-	{
-		SyncCounter = 0;
-		ToggleCounter = 0;
 		VoltageTarget += dV;
-	}
 	else
 		VoltageTarget = VoltageSetpoint;
-
-	if(RegulatorPulseCounter >= 200 && SyncCounter <= 4)
-	{
-		ToggleCounter++;
-
-		if(ToggleCounter >= 70)
-		{
-			ToggleCounter = 0;
-			GPIO_Toggle(GPIO_SYNC);
-
-			SyncCounter++;
-		}
-	}
 
 	RegulatorError = (RegulatorPulseCounter == 0) ? 0 : (VoltageTarget - Voltage);
 
