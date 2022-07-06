@@ -87,6 +87,7 @@ void INITCFG_ConfigWatchDog()
 void INITCFG_ConfigADC()
 {
 	RCC_ADC_Clk_EN(ADC_12_ClkEN);
+	RCC_ADC_Clk_EN(ADC_34_ClkEN);
 
 	// ADC1
 	ADC_Calibration(ADC1);
@@ -94,23 +95,43 @@ void INITCFG_ConfigADC()
 	ADC_ChannelSeqReset(ADC1);
 
 	for (uint8_t i = 1; i <= ADC_DMA_BUFF_SIZE; ++i)
-		ADC_ChannelSet_Sequence(ADC1, ADC1_VOLTAGE_CHANNEL, i);
+		ADC_ChannelSet_Sequence(ADC1, ADC1_CURRENT_CHANNEL, i);
 
 	ADC_ChannelSeqLen(ADC1, ADC_DMA_BUFF_SIZE);
 	ADC_DMAConfig(ADC1);
 	ADC_Enable(ADC1);
+
+	// ADC3
+	ADC_Calibration(ADC3);
+	ADC_SoftTrigConfig(ADC3);
+	ADC_ChannelSeqReset(ADC3);
+
+	for (uint8_t i = 1; i <= ADC_DMA_BUFF_SIZE; ++i)
+		ADC_ChannelSet_Sequence(ADC3, ADC3_VOLTAGE_CHANNEL, i);
+
+	ADC_ChannelSeqLen(ADC3, ADC_DMA_BUFF_SIZE);
+	ADC_DMAConfig(ADC3);
+	ADC_Enable(ADC3);
 }
 //------------------------------------------------
 
 void INITCFG_ConfigDMA()
 {
 	DMA_Clk_Enable(DMA1_ClkEN);
+	DMA_Clk_Enable(DMA2_ClkEN);
 
-	// DMA для АЦП напряжения на DUT
+	// DMA для АЦП тока DUT
+	DMA_Reset(DMA_ADC_DUT_I_CHANNEL);
+	DMAChannelX_Config(DMA_ADC_DUT_I_CHANNEL, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
+							DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_EN, DMA_READ_FROM_PERIPH);
+	DMAChannelX_DataConfig(DMA_ADC_DUT_I_CHANNEL, (uint32_t)(&MEASURE_ADC_CurrentRaw[0]), (uint32_t)(&ADC1->DR), ADC_DMA_BUFF_SIZE);
+	DMA_ChannelEnable(DMA_ADC_DUT_I_CHANNEL, true);
+
+	// DMA для АЦП напряжения DUT
 	DMA_Reset(DMA_ADC_DUT_U_CHANNEL);
 	DMAChannelX_Config(DMA_ADC_DUT_U_CHANNEL, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
 							DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_EN, DMA_READ_FROM_PERIPH);
-	DMAChannelX_DataConfig(DMA_ADC_DUT_U_CHANNEL, (uint32_t)(&MEASURE_ADC_VoltageRaw[0]), (uint32_t)(&ADC1->DR), ADC_DMA_BUFF_SIZE);
+	DMAChannelX_DataConfig(DMA_ADC_DUT_U_CHANNEL, (uint32_t)(&MEASURE_ADC_VoltageRaw[0]), (uint32_t)(&ADC3->DR), ADC_DMA_BUFF_SIZE);
 	DMA_ChannelEnable(DMA_ADC_DUT_U_CHANNEL, true);
 }
 //------------------------------------------------

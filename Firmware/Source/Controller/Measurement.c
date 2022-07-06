@@ -7,6 +7,7 @@
 #include "LowLevel.h"
 
 // Variables
+Int16U MEASURE_ADC_CurrentRaw[ADC_DMA_BUFF_SIZE];
 Int16U MEASURE_ADC_VoltageRaw[ADC_DMA_BUFF_SIZE];
 
 // Functions prototypes
