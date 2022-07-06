@@ -7,9 +7,18 @@
 #define ACT_CLR_FAULT					3	// Очистка всех fault
 #define ACT_CLR_WARNING					4	// Очистка всех warning
 
-#define ACT_DBG_PULSE_SYNC				50	// Одиночный импульс в линию SYNC
-#define ACT_DBG_SET_VOLTAGE				51	// Установка напряжения
-#define ACT_DBG_POWER_SUPPLY			52	// Управление источниками напряжения
+#define ACT_DBG_OSC_PULSE_SYNC			50	// Одиночный импульс в линию OSC_SYNC
+#define ACT_DBG_PAU_PULSE_SYNC			51	// Одиночный импульс в линию PAU_SYNC
+// Отладочные команды с использованием регистра REG_DBG
+#define ACT_DBG_OPAMP_SET_VOLTAGE		52	// Установка напряжения
+#define ACT_DBG_POWER_SUPPLY			53	// Управление источниками напряжения
+#define ACT_DBG_VOLTAGE_RANGE_SET		54	// Установка диапазона напряжения
+#define ACT_DBG_PAU_SHUNT				55	// Управление шунтированием PAU
+#define ACT_DBG_STST_COMM				56	// Управление коммутацией для режима самотестирования
+#define ACT_DBG_OUTPUT_COMM				57	// Управлением коммутацией выхода
+#define ACT_DBG_FAN_CTRL				58	// Управление вентилятором
+#define ACT_DBG_IND_CTRL				59	// Управление внешней индикацией
+
 
 #define ACT_START_PROCESS				100	// Старт измерения
 #define ACT_STOP_PROCESS				101	// Стоп измерения
