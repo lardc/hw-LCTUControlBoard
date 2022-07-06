@@ -12,6 +12,7 @@
 void ConfigSysClk();
 void ConfigGPIO();
 void ConfigUART();
+void ConfigCAN();
 void ConfigTimer2();
 void ConfigWatchDog();
 
@@ -27,6 +28,7 @@ int main()
 	ConfigSysClk();
 	ConfigGPIO();
 	ConfigUART();
+	ConfigCAN();
 	ConfigTimer2();
 	ConfigWatchDog();
 	
@@ -56,11 +58,17 @@ void ConfigGPIO()
 	GPIO_Config(LED_BLINK_PORT, LED_BLINK_PIN, Output, PushPull, HighSpeed, NoPull);
 	
 	//Альтернативные функции портов
-	GPIO_Config(GPIOA, Pin_9, AltFn, PushPull, HighSpeed, NoPull); //PA9(USART1 TX)
+	GPIO_Config(GPIOA, Pin_9, AltFn, PushPull, HighSpeed, NoPull);
 	GPIO_AltFn(GPIOA, Pin_9, AltFn_7);
 	
-	GPIO_Config(GPIOA, Pin_10, AltFn, PushPull, HighSpeed, NoPull); //PA10(USART1 RX)
+	GPIO_Config(GPIOA, Pin_10, AltFn, PushPull, HighSpeed, NoPull);
 	GPIO_AltFn(GPIOA, Pin_10, AltFn_7);
+
+	GPIO_Config(GPIOA, Pin_11, AltFn, PushPull, HighSpeed, NoPull);
+	GPIO_AltFn(GPIOA, Pin_11, AltFn_9);
+
+	GPIO_Config(GPIOA, Pin_12, AltFn, PushPull, HighSpeed, NoPull);
+	GPIO_AltFn(GPIOA, Pin_12, AltFn_9);
 }
 //--------------------------------------------
 
@@ -68,6 +76,15 @@ void ConfigUART()
 {
 	USART_Init(USART1, SYSCLK, USART_BAUDRATE);
 	USART_Recieve_Interupt(USART1, 0, true);
+}
+//--------------------------------------------
+
+void ConfigCAN()
+{
+	RCC_CAN_Clk_EN(CAN_1_ClkEN);
+	NCAN_Init(SYSCLK, CAN_BAUDRATE, FALSE);
+	NCAN_FIFOInterrupt(TRUE);
+	NCAN_FilterInit(0, CAN_SLAVE_FILTER_ID, CAN_MASTER_FILTER_ID);
 }
 //--------------------------------------------
 
