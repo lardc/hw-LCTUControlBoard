@@ -40,7 +40,7 @@ GPIO_PortPinSettingMacro GPIO_ALT_UART1_TX		= {GPIOA, Pin_9};
 GPIO_PortPinSettingMacro GPIO_ALT_UART1_RX		= {GPIOA, Pin_10};
 GPIO_PortPinSettingMacro GPIO_ALT_CAN1_TX		= {GPIOA, Pin_12};
 GPIO_PortPinSettingMacro GPIO_ALT_CAN1_RX		= {GPIOA, Pin_11};
-GPIO_PortPinSettingMacro GPIO_ALT_SPI3_CLK		= {GPIOB, Pin_3};
-GPIO_PortPinSettingMacro GPIO_ALT_SPI3_DAT		= {GPIOB, Pin_5};
+GPIO_PortPinSettingMacro GPIO_ALT_SPI1_CLK		= {GPIOB, Pin_3};
+GPIO_PortPinSettingMacro GPIO_ALT_SPI1_DAT		= {GPIOB, Pin_5};
 
 #endif // __BOARD_H

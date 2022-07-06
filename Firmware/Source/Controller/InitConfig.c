@@ -47,8 +47,8 @@ void INITCFG_ConfigIO()
 	GPIO_InitAltFunction(GPIO_ALT_UART1_TX, AltFn_7);
 	GPIO_InitAltFunction(GPIO_ALT_CAN1_RX, AltFn_9);
 	GPIO_InitAltFunction(GPIO_ALT_CAN1_TX, AltFn_9);
-	GPIO_InitAltFunction(GPIO_ALT_SPI3_CLK, AltFn_5);
-	GPIO_InitAltFunction(GPIO_ALT_SPI3_DAT, AltFn_5);
+	GPIO_InitAltFunction(GPIO_ALT_SPI1_CLK, AltFn_5);
+	GPIO_InitAltFunction(GPIO_ALT_SPI1_DAT, AltFn_5);
 }
 
 //------------------------------------------------
@@ -138,7 +138,7 @@ void INITCFG_ConfigDMA()
 
 void INITCFG_ConfigSPI()
 {
-	SPI_Init(SPI2, SPI2_BAUDRATE_BITS, SPI2_LSB_FIRST);
-	SPI_InvertClockPolarity(SPI2, true);
+	SPI_Init(SPI1, SPI1_BAUDRATE_BITS, SPI1_LSB_FIRST);
+	SPI_InvertClockPolarity(SPI1, true);
 }
 //------------------------------------------------
