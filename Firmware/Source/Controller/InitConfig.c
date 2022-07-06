@@ -23,21 +23,32 @@ void INITCFG_ConfigIO()
 	GPIO_InitPushPullOutput(GPIO_LED);
 	GPIO_InitPushPullOutput(GPIO_OPAMP_SYNC);
 	GPIO_InitPushPullOutput(GPIO_OPAMP_LDAC);
-	GPIO_InitPushPullOutput(GPIO_SYNC);
-	GPIO_InitPushPullOutput(GPIO_PS_EN);
+	GPIO_InitPushPullOutput(GPIO_OSC_SYNC);
+	GPIO_InitPushPullOutput(GPIO_PS_CTRL);
+	GPIO_InitPushPullOutput(GPIO_U_RANGE);
+	GPIO_InitPushPullOutput(GPIO_PAU_SHUNT);
+	GPIO_InitPushPullOutput(GPIO_STST);
+	GPIO_InitPushPullOutput(GPIO_COMM);
+	GPIO_InitPushPullOutput(GPIO_FAN_CTRL);
+	GPIO_InitPushPullOutput(GPIO_IND_CTRL);
+	GPIO_InitPushPullOutput(GPIO_PAU_SYNC);
+
+	// Входы
+	GPIO_InitInput(GPIO_OSC_SYNC_CHK, NoPull);
+	GPIO_InitInput(GPIO_PAU_SYNC_CHK, NoPull);
 
 	// Начальная установка состояний выводов
 	GPIO_SetState(GPIO_OPAMP_SYNC, true);
 	GPIO_SetState(GPIO_OPAMP_LDAC, true);
-	GPIO_SetState(GPIO_SYNC, false);
-	GPIO_SetState(GPIO_PS_EN, true);
 
 
 	// Альтернативные функции
 	GPIO_InitAltFunction(GPIO_ALT_UART1_RX, AltFn_7);
 	GPIO_InitAltFunction(GPIO_ALT_UART1_TX, AltFn_7);
-	GPIO_InitAltFunction(GPIO_ALT_SPI2_CLK, AltFn_5);
-	GPIO_InitAltFunction(GPIO_ALT_SPI2_DAT, AltFn_5);
+	GPIO_InitAltFunction(GPIO_ALT_CAN1_RX, AltFn_9);
+	GPIO_InitAltFunction(GPIO_ALT_CAN1_TX, AltFn_9);
+	GPIO_InitAltFunction(GPIO_ALT_SPI3_CLK, AltFn_5);
+	GPIO_InitAltFunction(GPIO_ALT_SPI3_DAT, AltFn_5);
 }
 
 //------------------------------------------------
