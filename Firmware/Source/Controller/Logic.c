@@ -18,6 +18,7 @@ float VoltageTarget, VoltageSetpoint, RegulatorPcoef, RegulatorIcoef, VoltageThr
 float RegulatorAlowedError, dV;
 float  Qi;
 bool VoltageRange = VOLTAGE_RANGE_0;
+bool IsImpulse = false;
 Int16U RegulatorPulseCounter = 0;
 Int16U PulsePointsQuantity = 0;
 volatile Int64U LOGIC_PowerOnCounter = 0;
@@ -246,6 +247,7 @@ void LOGIC_ClearVariables()
 	VoltageTarget = 0;
 	LOGIC_TestTime = 0;
 	FollowingErrorCounter = 0;
+	IsImpulse = false;
 }
 //-----------------------------
 
@@ -259,3 +261,34 @@ void LOGIC_SetVolatgeRange()
 	LL_VoltageRangeSet(VoltageRange);
 }
 //-----------------------------
+
+void LOGIC_HandleFan(bool IsImpulse)
+{
+	static uint32_t IncrementCounter = 0;
+	static uint64_t FanOnTimeout = 0;
+
+	if(DataTable[REG_FAN_CTRL])
+	{
+		// Увеличение счётчика в простое
+		if (!IsImpulse)
+			IncrementCounter++;
+
+		// Включение вентилятора
+		if ((IncrementCounter > ((uint32_t)DataTable[REG_FAN_OPERATE_PERIOD] * 1000)) || IsImpulse)
+		{
+			IncrementCounter = 0;
+			FanOnTimeout = CONTROL_TimeCounter + ((uint32_t)DataTable[REG_FAN_OPERATE_TIME] * 1000);
+			LL_FanControl(true);
+		}
+
+		// Отключение вентилятора
+		if (FanOnTimeout && (CONTROL_TimeCounter > FanOnTimeout))
+		{
+			FanOnTimeout = 0;
+			LL_FanControl(false);
+		}
+	}
+	else
+		LL_FanControl(false);
+}
+//-----------------------------------------------

@@ -73,6 +73,14 @@
 #define VOLTAGE_THRESHOLD_MIN		500			// В
 #define VOLTAGE_THRESHOLD_MAX		2000		// В
 #define VOLTAGE_THRESHOLD_DEF		1300		// В
+//
+#define FAN_PERIOD_MIN				60			// c
+#define FAN_PERIOD_MAX				300			// c
+#define FAN_PERIOD_DEF				60			// c
+
+#define FAN_TIME_MIN				10			// c
+#define FAN_TIME_MAX				200			// c
+#define FAN_TIME_DEF				40			// c
 
 // Types
 typedef struct __TableItemConstraint

@@ -32,40 +32,43 @@
 
 // Регистры
 // Сохраняемые регистры
-#define REG_PULSE_FRONT_WIDTH			0	// Длительность фронта импульса в (мс)
-#define REG_REGULATOR_ALOWED_ERR		1	// Допустимая ошибка регулирования (% * 10)
-#define REG_SCOPE_STEP					2	// Сохранение измеренных данных с заданным шагом
-#define REG_AFTER_PULSE_PAUSE			3	// Время выдержки перед началом следующего измерения (мс)
-#define REG_REGULATOR_QI_MAX			4	// Максимально допустимое значение Qi регулятора
-#define REG_FOLLOWING_ERR_CNT			5	// Счетчик выставления ошибки FollowingError
-#define REG_FOLLOWING_ERR_MUTE			6	// Выключение слежения за ошибкой FollowingError
-#define REG_PS_FIRST_START_TIME			7	// Время готовности системы питания при первом старте (мс)
-#define REG_PS_PREPARE_TIME				8	// Время готовности системы питания после формирования импульса (мс)
-#define REG_VOLTAGE_RANGE_THRESHOLD		9	// Порог переключения диапазона напряжения (В)
+#define REG_DAC_V_K						0	// Коэффициент грубой подстройки К
+#define REG_DAC_V_B						1	// Смещение грубой подстройки B
 //
-#define REG_DAC_V_K						10	// Коэффициент грубой подстройки К
-#define REG_DAC_V_B						11	// Смещение грубой подстройки B
+#define REG_ADC_V_R0_P2					2	// Коэффициент тонкой подстройки Р2 х1е6
+#define REG_ADC_V_R0_P1					3	// Коэффициент тонкой подстройки Р1 х1000
+#define REG_ADC_V_R0_P0					4	// Смещение тонкой подстройки Р0
+#define REG_ADC_V_R0_K					5	// Коэффициент грубой подстройки K
+#define REG_ADC_V_R0_B					6	// Смещение грубой подстройки B
 //
-#define REG_ADC_V_R0_P2					12	// Коэффициент тонкой подстройки Р2 х1е6
-#define REG_ADC_V_R0_P1					13	// Коэффициент тонкой подстройки Р1 х1000
-#define REG_ADC_V_R0_P0					14	// Смещение тонкой подстройки Р0
-#define REG_ADC_V_R0_K					15	// Коэффициент грубой подстройки K
-#define REG_ADC_V_R0_B					16	// Смещение грубой подстройки B
+#define REG_ADC_V_R1_P2					7	// Коэффициент тонкой подстройки Р2 х1е6
+#define REG_ADC_V_R1_P1					8	// Коэффициент тонкой подстройки Р1 х1000
+#define REG_ADC_V_R1_P0					9	// Смещение тонкой подстройки Р0
+#define REG_ADC_V_R1_K					10	// Коэффициент грубой подстройки K
+#define REG_ADC_V_R1_B					11	// Смещение грубой подстройки B
 //
-#define REG_ADC_V_R1_P2					17	// Коэффициент тонкой подстройки Р2 х1е6
-#define REG_ADC_V_R1_P1					18	// Коэффициент тонкой подстройки Р1 х1000
-#define REG_ADC_V_R1_P0					19	// Смещение тонкой подстройки Р0
-#define REG_ADC_V_R1_K					20	// Коэффициент грубой подстройки K
-#define REG_ADC_V_R1_B					21	// Смещение грубой подстройки B
+#define REG_ADC_I_P2					12	// Коэффициент тонкой подстройки Р2 х1е6
+#define REG_ADC_I_P1					13	// Коэффициент тонкой подстройки Р1 х1000
+#define REG_ADC_I_P0					14	// Смещение тонкой подстройки Р0
+#define REG_ADC_I_K						15	// Коэффициент грубой подстройки K
+#define REG_ADC_I_B						16	// Смещение грубой подстройки B
 //
-#define REG_ADC_I_P2					22	// Коэффициент тонкой подстройки Р2 х1е6
-#define REG_ADC_I_P1					23	// Коэффициент тонкой подстройки Р1 х1000
-#define REG_ADC_I_P0					24	// Смещение тонкой подстройки Р0
-#define REG_ADC_I_K						25	// Коэффициент грубой подстройки K
-#define REG_ADC_I_B						26	// Смещение грубой подстройки B
+#define REG_REGULATOR_Kp				17	// Пропорциональный коэффициент регулятора
+#define REG_REGULATOR_Ki				18	// Интегральный коэффициент регулятора
 //
-#define REG_REGULATOR_Kp				27	// Пропорциональный коэффициент регулятора
-#define REG_REGULATOR_Ki				28	// Интегральный коэффициент регулятора
+#define REG_PULSE_FRONT_WIDTH			30	// Длительность фронта импульса в (мс)
+#define REG_REGULATOR_ALOWED_ERR		31	// Допустимая ошибка регулирования (% * 10)
+#define REG_SCOPE_STEP					32	// Сохранение измеренных данных с заданным шагом
+#define REG_AFTER_PULSE_PAUSE			33	// Время выдержки перед началом следующего измерения (мс)
+#define REG_REGULATOR_QI_MAX			34	// Максимально допустимое значение Qi регулятора
+#define REG_FOLLOWING_ERR_CNT			35	// Счетчик выставления ошибки FollowingError
+#define REG_FOLLOWING_ERR_MUTE			36	// Выключение слежения за ошибкой FollowingError
+#define REG_PS_FIRST_START_TIME			37	// Время готовности системы питания при первом старте (мс)
+#define REG_PS_PREPARE_TIME				38	// Время готовности системы питания после формирования импульса (мс)
+#define REG_VOLTAGE_RANGE_THRESHOLD		39	// Порог переключения диапазона напряжения (В)
+#define REG_FAN_CTRL					40	// Контроль вентилятора
+#define REG_FAN_OPERATE_PERIOD			41	// Период работы вентилятора (с)
+#define REG_FAN_OPERATE_TIME			42	// Время работы вентилятора (с)
 
 #define REG_VOLTAGE_SETPOINT			128	// Уставка по напряжению, В
 #define REG_PULSE_WIDTH					129	// Длительность импульса напряжения, мс

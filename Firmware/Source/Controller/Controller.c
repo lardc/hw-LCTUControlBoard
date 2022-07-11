@@ -267,6 +267,8 @@ void CONTROL_StartProcess()
 {
 	MEASURE_DMABuffersClear();
 	TIM_Start(TIM6);
+
+	IsImpulse = true;
 }
 //-----------------------------------------------
 

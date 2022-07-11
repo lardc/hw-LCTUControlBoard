@@ -8,16 +8,16 @@
 // Constants
 //
 const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
-		{FRONT_WIDTH_MIN, FRONT_WIDTH_MAX, FRONT_WIDTH_DEF},						// 0
-		{ALOWED_ERROR_MIN, ALOWED_ERROR_MAX, ALOWED_ERROR_DEF},						// 1
-		{0, INT16U_MAX, 0},															// 2
-		{AFTER_PULSE_PAUSE_MIN, AFTER_PULSE_PAUSE_MAX, AFTER_PULSE_PAUSE_DEF},		// 3
-		{0, INT16U_MAX, 0},															// 4
-		{FOLLOWING_ERR_CNT_MIN, FOLLOWING_ERR_CNT_MAX, FOLLOWING_ERR_CNT_DEF},		// 5
-		{NO, YES, YES},																// 6
-		{PS_FIRST_START_TIME_MIN, PS_FIRST_START_TIME_MAX, PS_FIRST_START_TIME_DEF},// 7
-		{PS_PREPARE_TIME_MIN, PS_PREPARE_TIME_MAX, PS_PREPARE_TIME_DEF},			// 8
-		{VOLTAGE_THRESHOLD_MIN, VOLTAGE_THRESHOLD_MAX, VOLTAGE_THRESHOLD_DEF},		// 9
+		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 0
+		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 1
+		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 2
+		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 3
+		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 4
+		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 5
+		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 6
+		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 7
+		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 8
+		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 9
 		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 10
 		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 11
 		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 12
@@ -25,32 +25,32 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 14
 		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 15
 		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 16
-		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 17
-		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 18
-		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 19
-		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 20
-		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 21
-		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 22
-		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 23
-		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 24
-		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 25
-		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 26
-		{REGULATOR_KP_MIN, REGULATOR_KP_MAX, REGULATOR_KP_DEF},						// 27
-		{REGULATOR_KI_MIN, REGULATOR_KI_MAX, REGULATOR_KI_DEF},						// 28
+		{REGULATOR_KP_MIN, REGULATOR_KP_MAX, REGULATOR_KP_DEF},						// 17
+		{REGULATOR_KI_MIN, REGULATOR_KI_MAX, REGULATOR_KI_DEF},						// 18
+		{0, 0, 0},																	// 19
+		{0, 0, 0},																	// 20
+		{0, 0, 0},																	// 21
+		{0, 0, 0},																	// 22
+		{0, 0, 0},																	// 23
+		{0, 0, 0},																	// 24
+		{0, 0, 0},																	// 25
+		{0, 0, 0},																	// 26
+		{0, 0, 0},																	// 27
+		{0, 0, 0},																	// 28
 		{0, 0, 0},																	// 29
-		{0, 0, 0},																	// 30
-		{0, 0, 0},																	// 31
-		{0, 0, 0},																	// 32
-		{0, 0, 0},																	// 33
-		{0, 0, 0},																	// 34
-		{0, 0, 0},																	// 35
-		{0, 0, 0},																	// 36
-		{0, 0, 0},																	// 37
-		{0, 0, 0},																	// 38
-		{0, 0, 0},																	// 39
-		{0, 0, 0},																	// 40
-		{0, 0, 0},																	// 41
-		{0, 0, 0},																	// 42
+		{FRONT_WIDTH_MIN, FRONT_WIDTH_MAX, FRONT_WIDTH_DEF},						// 30
+		{ALOWED_ERROR_MIN, ALOWED_ERROR_MAX, ALOWED_ERROR_DEF},						// 31
+		{0, INT16U_MAX, 0},															// 32
+		{AFTER_PULSE_PAUSE_MIN, AFTER_PULSE_PAUSE_MAX, AFTER_PULSE_PAUSE_DEF},		// 33
+		{0, INT16U_MAX, 0},															// 34
+		{FOLLOWING_ERR_CNT_MIN, FOLLOWING_ERR_CNT_MAX, FOLLOWING_ERR_CNT_DEF},		// 35
+		{NO, YES, YES},																// 36
+		{PS_FIRST_START_TIME_MIN, PS_FIRST_START_TIME_MAX, PS_FIRST_START_TIME_DEF},// 37
+		{PS_PREPARE_TIME_MIN, PS_PREPARE_TIME_MAX, PS_PREPARE_TIME_DEF},			// 38
+		{VOLTAGE_THRESHOLD_MIN, VOLTAGE_THRESHOLD_MAX, VOLTAGE_THRESHOLD_DEF},		// 39
+		{NO, YES, YES},																// 40
+		{FAN_PERIOD_MIN, FAN_PERIOD_MAX, FAN_PERIOD_DEF},							// 41
+		{FAN_TIME_MIN, FAN_TIME_MAX, FAN_TIME_DEF},									// 42
 		{0, 0, 0},																	// 43
 		{0, 0, 0},																	// 44
 		{0, 0, 0},																	// 45
