@@ -16,6 +16,7 @@
 #define DISOPAMP_CURRENT_MAX					32000	// мкА
 //
 #define COMMUTATION_DELAY						100		// мс
+#define EXT_LAMP_ON_STATE_TIME					500		// мс
 //
 #define VOLTAGE_RANGE_0							0
 #define VOLTAGE_RANGE_1							1

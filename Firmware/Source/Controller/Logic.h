@@ -18,5 +18,6 @@ float LOGIC_GetAverageVoltage();
 float LOGIC_GetLastSampledVoltage();
 void LOGIC_SetVolatgeRange();
 void LOGIC_HandleFan(bool IsImpulse);
+void CONTROL_HandleExternalLamp(bool IsImpulse);
 
 #endif /* LOGIC_H_ */

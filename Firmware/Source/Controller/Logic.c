@@ -292,3 +292,20 @@ void LOGIC_HandleFan(bool IsImpulse)
 		LL_FanControl(false);
 }
 //-----------------------------------------------
+
+void CONTROL_HandleExternalLamp(bool IsImpulse)
+{
+	static Int64U ExternalLampTimeout = 0;
+
+	if(IsImpulse)
+	{
+		LL_ExtIndicationControl(true);
+		ExternalLampTimeout = CONTROL_TimeCounter + EXT_LAMP_ON_STATE_TIME;
+	}
+	else
+	{
+		if(CONTROL_TimeCounter >= ExternalLampTimeout)
+			LL_ExtIndicationControl(false);
+	}
+}
+//-----------------------------------------------

@@ -57,6 +57,7 @@ void TIM7_IRQHandler()
 		}
 
 		LOGIC_HandleFan(IsImpulse);
+		CONTROL_HandleExternalLamp(IsImpulse);
 
 		TIM_StatusClear(TIM7);
 	}
