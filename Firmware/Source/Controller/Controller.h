@@ -32,7 +32,8 @@ typedef enum __DeviceSubState
 //
 extern volatile Int64U CONTROL_TimeCounter;
 extern Int64U CONTROL_LEDTimeout;
-extern volatile Int16U CONTROL_Values_Counter;
+extern volatile Int16U CONTROL_VoltageCounter;
+extern volatile Int16U CONTROL_CurrentCounter;
 extern volatile Int16U CONTROL_RegulatorErr_Counter;
 extern volatile Int16U CONTROL_ValuesVoltage[VALUES_x_SIZE];
 extern volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];

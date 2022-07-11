@@ -247,7 +247,7 @@ void CONTROL_HighPriorityProcess()
 		Sample = MEASURE_Sample();
 		LOGIC_LoggingProcess(Sample);
 
-		if(LOGIC_RegulatorCycle(Sample.Voltage, &Fault))
+		if(LOGIC_RegulatorCycle(Sample, &Fault))
 		{
 			CONTROL_StopProcess();
 
@@ -256,7 +256,7 @@ void CONTROL_HighPriorityProcess()
 			else
 			{
 				CONTROL_SaveTestResult();
-				CONTROL_SetDeviceState(DS_InProcess, SS_PowerSupplyOn);
+				CONTROL_SetDeviceState(DS_InProcess, SS_PS_WaitingOn);
 			}
 		}
 	}

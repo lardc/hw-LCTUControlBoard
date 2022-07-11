@@ -6,6 +6,7 @@
 #include "DiscreteOpAmp.h"
 #include "LowLevel.h"
 #include "Math.h"
+#include "Delay.h"
 
 // Definitions
 #define MAF_BUFFER_LENGTH				128
@@ -65,7 +66,7 @@ void LOGIC_CacheVariables()
 }
 //-----------------------------
 
-bool LOGIC_RegulatorCycle(float Voltage, Int16U* Fault)
+bool LOGIC_RegulatorCycle(MeasureSample Sample, Int16U* Fault)
 {
 	float RegulatorError, Qp, RegulatorOut;
 	bool Finished = false;
@@ -76,7 +77,7 @@ bool LOGIC_RegulatorCycle(float Voltage, Int16U* Fault)
 	else
 		VoltageTarget = VoltageSetpoint;
 
-	RegulatorError = (RegulatorPulseCounter == 0) ? 0 : (VoltageTarget - Voltage);
+	RegulatorError = (RegulatorPulseCounter == 0) ? 0 : (VoltageTarget - Sample.Voltage);
 
 	if(fabsf(RegulatorError) < RegulatorAlowedError)
 	{
@@ -107,7 +108,11 @@ bool LOGIC_RegulatorCycle(float Voltage, Int16U* Fault)
 
 	if(!DataTable[REG_FOLLOWING_ERR_MUTE] && FollowingErrorCounter >= FollowingErrorCounterMax)
 	{
-		*Fault = DF_FOLLOWING_ERROR;
+		if(Sample.Current >= DISOPAMP_CURRENT_MAX)
+			*Fault = DF_OUTPUT_SHORT;
+		else
+			*Fault = DF_FOLLOWING_ERROR;
+
 		Finished = true;
 	}
 	else
@@ -197,7 +202,7 @@ void LOGIC_LoggingProcess(MeasureSample Sample)
 	static Int16U ScopeLogStep = 0, LocalCounter = 0;
 
 	// Сброс локального счётчика в начале логгирования
-	if (CONTROL_Values_Counter == 0)
+	if (!CONTROL_VoltageCounter)
 		LocalCounter = 0;
 
 	if (ScopeLogStep++ >= DataTable[REG_SCOPE_STEP])
@@ -212,8 +217,8 @@ void LOGIC_LoggingProcess(MeasureSample Sample)
 	LOGIC_SaveToRingBuffer(Sample);
 
 	// Условие обновления глобального счётчика данных
-	if (CONTROL_Values_Counter < VALUES_x_SIZE)
-		CONTROL_Values_Counter = LocalCounter;
+	if (CONTROL_VoltageCounter < VALUES_x_SIZE)
+		CONTROL_CurrentCounter = CONTROL_VoltageCounter = LocalCounter;
 
 	// Сброс локального счётчика
 	if (LocalCounter >= VALUES_x_SIZE)
@@ -225,6 +230,8 @@ void LOGIC_StopProcess()
 {
 	TIM_Stop(TIM6);
 	DISOPAMP_SetVoltage(0);
+	DELAY_MS(20);
+	LL_OutputCommutationControl(false);
 }
 //-----------------------------
 

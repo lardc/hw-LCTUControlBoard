@@ -100,6 +100,7 @@
 //  Fault and disable codes
 #define DF_NONE							0
 #define DF_FOLLOWING_ERROR				1
+#define DF_OUTPUT_SHORT					2
 
 // Problem
 #define PROBLEM_NONE					0
