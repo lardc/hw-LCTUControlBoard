@@ -56,15 +56,19 @@
 #define REGULATOR_KI_MAX			INT16U_MAX
 #define REGULATOR_KI_DEF			0
 //
-#define NO		0
-#define YES		1
-//
-#define PS_ACTIVITY_TIME_MIN		100			// мс
-#define PS_ACTIVITY_TIME_MAX		10000		// мс
-#define PS_ACTIVITY_TIME_DEF		1500		// мс
+#define NO							0
+#define YES							1
 //
 #define VOLTAGE_SETPOINT_MIN		100			// В
 #define VOLTAGE_SETPOINT_MAX		1500		// В
+//
+#define PS_FIRST_START_TIME_MIN		500			// мс
+#define PS_FIRST_START_TIME_MAX		5000		// мс
+#define PS_FIRST_START_TIME_DEF		2000		// мс
+
+#define PS_PREPARE_TIME_MIN			10			// мс
+#define PS_PREPARE_TIME_MAX			500			// мс
+#define PS_PREPARE_TIME_DEF			50			// мс
 
 // Types
 typedef struct __TableItemConstraint

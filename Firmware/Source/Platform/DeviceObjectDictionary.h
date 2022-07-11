@@ -39,6 +39,8 @@
 #define REG_REGULATOR_QI_MAX			4	// Максимально допустимое значение Qi регулятора
 #define REG_FOLLOWING_ERR_CNT			5	// Счетчик выставления ошибки FollowingError
 #define REG_FOLLOWING_ERR_MUTE			6	// Выключение слежения за ошибкой FollowingError
+#define REG_PS_FIRST_START_TIME			7	// Время готовности системы питания при первом старте (мс)
+#define REG_PS_PREPARE_TIME				8	// Время готовности системы питания после формирования импульса (мс)
 //
 #define REG_DAC_V_K						10	// Коэффициент грубой подстройки К
 #define REG_DAC_V_B						11	// Смещение грубой подстройки B

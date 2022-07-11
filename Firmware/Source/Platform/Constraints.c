@@ -15,8 +15,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{0, INT16U_MAX, 0},															// 4
 		{FOLLOWING_ERR_CNT_MIN, FOLLOWING_ERR_CNT_MAX, FOLLOWING_ERR_CNT_DEF},		// 5
 		{NO, YES, YES},																// 6
-		{0, 0, 0},																	// 7
-		{0, 0, 0},																	// 8
+		{PS_FIRST_START_TIME_MIN, PS_FIRST_START_TIME_MAX, PS_FIRST_START_TIME_DEF},// 7
+		{PS_PREPARE_TIME_MIN, PS_PREPARE_TIME_MAX, PS_PREPARE_TIME_DEF},			// 8
 		{0, 0, 0},																	// 9
 		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 10
 		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 11

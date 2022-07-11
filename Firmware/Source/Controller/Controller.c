@@ -16,7 +16,8 @@
 
 // Definitions
 //
-#define POWER_SUPPLY_DELAY			50	// ms
+#define PS_FULL_CHARGE_TIME			2000	// ms
+#define PS_RECHARGE_TIME			50		// ms
 
 // Types
 //
@@ -51,7 +52,7 @@ void CONTROL_StartProcess();
 void CONTROL_ResetOutputRegisters();
 void CONTROL_SaveTestResult();
 void CONTROL_ClearTestResult();
-bool CONTROL_PowerSupplyWaiting();
+bool CONTROL_PowerSupplyWaiting(Int16U Time);
 
 // Functions
 //
@@ -118,10 +119,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	{
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
-			{
-				LL_PowerSupply(true);
-				CONTROL_SetDeviceState(DS_Ready, SS_None);
-			}
+				CONTROL_SetDeviceState(DS_InProcess, SS_PS_WaitingStart);
 			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
@@ -203,12 +201,13 @@ void CONTROL_LogicProcess()
 				CONTROL_StartProcess();
 				break;
 
-			case SS_PowerSupplyOn:
-				if(CONTROL_PowerSupplyWaiting())
-				{
-					LL_PowerSupply(true);
+			case SS_PS_WaitingStart:
+				CONTROL_PowerSupplyWaiting(DataTable[REG_PS_FIRST_START_TIME]);
+			case SS_PS_WaitingOn:
+				LL_PowerSupply(true);
+
+				if(CONTROL_PowerSupplyWaiting(DataTable[REG_PS_PREPARE_TIME]))
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
-				}
 				break;
 
 			default:
@@ -218,10 +217,10 @@ void CONTROL_LogicProcess()
 }
 //-----------------------------------------------
 
-bool CONTROL_PowerSupplyWaiting()
+bool CONTROL_PowerSupplyWaiting(Int16U Time)
 {
 	if(!CONTROL_PowerSupplyDelay)
-		CONTROL_PowerSupplyDelay = CONTROL_TimeCounter + POWER_SUPPLY_DELAY;
+		CONTROL_PowerSupplyDelay = CONTROL_TimeCounter + Time;
 	else
 	{
 		if(CONTROL_TimeCounter >= CONTROL_PowerSupplyDelay)
