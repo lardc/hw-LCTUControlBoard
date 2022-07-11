@@ -21,5 +21,6 @@ void LOGIC_HandleFan(bool IsImpulse);
 void CONTROL_HandleExternalLamp(bool IsImpulse);
 void LOGIC_HarwarePrepare();
 void LOGIC_HarwareDefaultState();
+void LOGIC_OSCSync(bool State);
 
 #endif /* LOGIC_H_ */

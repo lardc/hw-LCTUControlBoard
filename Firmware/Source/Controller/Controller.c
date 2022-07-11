@@ -269,7 +269,7 @@ void CONTROL_StartProcess()
 	TIM_Start(TIM6);
 
 	IsImpulse = true;
-	LL_OscSyncSetState(true);
+	LOGIC_OSCSync(true);
 }
 //-----------------------------------------------
 

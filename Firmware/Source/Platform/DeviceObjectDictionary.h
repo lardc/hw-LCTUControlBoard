@@ -111,6 +111,8 @@
 
 //  Warning
 #define WARNING_NONE					0
+#define WARNING_PAU_SYNC				1
+#define WARNING_OSC_SYNC				2
 
 //  User Errors
 #define ERR_NONE						0

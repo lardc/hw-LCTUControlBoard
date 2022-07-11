@@ -39,6 +39,7 @@ float LOGIC_ExtractAveragedDatas(float* Buffer, Int16U BufferLength);
 void LOGIC_SaveRegulatorErr(float Error);
 void LOGIC_ClearVariables();
 float LOGIC_GetLastSampledData(float* InputBuffer);
+void LOGIC_PAUSync(bool State);
 
 // Functions
 //
@@ -61,8 +62,8 @@ void LOGIC_HarwarePrepare()
 
 void LOGIC_HarwareDefaultState()
 {
-	LL_OscSyncSetState(false);
-	LL_PAUSyncSetState(false);
+	LOGIC_OSCSync(false);
+	LOGIC_PAUSync(false);
 	LL_PAU_Shunting(false);
 
 	DELAY_MS(10);
@@ -102,7 +103,7 @@ bool LOGIC_RegulatorCycle(MeasureSample Sample, Int16U* Fault)
 	if(PAUsyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY])
 	{
 		LL_PAU_Shunting(false);
-		LL_PAUSyncSetState(true);
+		LOGIC_PAUSync(true);
 	}
 
 	RegulatorError = (RegulatorPulseCounter == 0) ? 0 : (VoltageTarget - Sample.Voltage);
@@ -335,5 +336,25 @@ void CONTROL_HandleExternalLamp(bool IsImpulse)
 		if(CONTROL_TimeCounter >= ExternalLampTimeout)
 			LL_ExtIndicationControl(false);
 	}
+}
+//-----------------------------------------------
+
+void LOGIC_PAUSync(bool State)
+{
+	LL_PAUSyncSetState(State);
+
+	if(LL_PAUSyncGetState() != State)
+		DataTable[REG_WARNING] = WARNING_PAU_SYNC;
+
+}
+//-----------------------------------------------
+
+void LOGIC_OSCSync(bool State)
+{
+	LL_OscSyncSetState(State);
+
+	if(LL_OscSyncGetState() != State)
+		DataTable[REG_WARNING] = WARNING_OSC_SYNC;
+
 }
 //-----------------------------------------------
