@@ -116,6 +116,7 @@
 
 // Endpoints
 #define EP_VOLTAGE						1
-#define EP_REGULATOR_ERR				2
+#define EP_CURRENT						2
+#define EP_REGULATOR_ERR				3
 
 #endif //  __DEV_OBJ_DIC_H

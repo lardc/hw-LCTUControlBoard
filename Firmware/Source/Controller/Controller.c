@@ -30,11 +30,13 @@ volatile DeviceSubState CONTROL_SubState = SS_None;
 static Boolean CycleActive = false;
 //
 volatile Int64U CONTROL_TimeCounter = 0;
-volatile Int64U	CONTROL_AfterPulsePause = 0;
+volatile Int64U	CONTROL_PulseToPulseTime = 0;
 volatile Int64U	CONTROL_PowerSupplyDelay = 0;
-volatile Int16U CONTROL_Values_Counter = 0;
+volatile Int16U CONTROL_VoltageCounter = 0;
+volatile Int16U CONTROL_CurrentCounter = 0;
 volatile Int16U CONTROL_RegulatorErr_Counter = 0;
 volatile Int16U CONTROL_ValuesVoltage[VALUES_x_SIZE];
+volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 //
 
@@ -59,10 +61,10 @@ bool CONTROL_PowerSupplyWaiting(Int16U Time);
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
-	Int16U EPIndexes[EP_COUNT] = {EP_VOLTAGE, EP_REGULATOR_ERR};
-	Int16U EPSized[EP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE};
-	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_RegulatorErr_Counter};
-	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ValuesVoltage, (pInt16U)CONTROL_RegulatorErr};
+	Int16U EPIndexes[EP_COUNT] = {EP_VOLTAGE, EP_CURRENT, EP_REGULATOR_ERR};
+	Int16U EPSized[EP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
+	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_VoltageCounter, (pInt16U)&CONTROL_CurrentCounter, (pInt16U)&CONTROL_RegulatorErr_Counter};
+	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ValuesVoltage, (pInt16U)CONTROL_ValuesCurrent, (pInt16U)CONTROL_RegulatorErr};
 
 	// Конфигурация сервиса работы Data-table и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
@@ -142,7 +144,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				CONTROL_ResetOutputRegisters();
 				LOGIC_StartPrepare();
 
-				CONTROL_SetDeviceState(DS_InProcess, SS_WaitAfterPulse);
+				CONTROL_SetDeviceState(DS_InProcess, SS_WaitPulseToPulseTime);
 			}
 			else
 				if (CONTROL_State == DS_InProcess)
@@ -185,13 +187,13 @@ void CONTROL_LogicProcess()
 	{
 		switch(CONTROL_SubState)
 		{
-			case SS_WaitAfterPulse:
-				if(CONTROL_TimeCounter > CONTROL_AfterPulsePause)
-					CONTROL_SetDeviceState(DS_InProcess, SS_PowerSupplyOff);
+			case SS_WaitPulseToPulseTime:
+				if(CONTROL_TimeCounter > CONTROL_PulseToPulseTime)
+					CONTROL_SetDeviceState(DS_InProcess, SS_PS_WaitingOff);
 				break;
 
-			case SS_PowerSupplyOff:
-				if(CONTROL_PowerSupplyWaiting())
+			case SS_PS_WaitingOff:
+				if(CONTROL_PowerSupplyWaiting(DataTable[REG_PS_PREPARE_TIME]))
 					CONTROL_SetDeviceState(DS_InProcess, SS_StartPulse);
 				else
 					LL_PowerSupply(false);
@@ -227,25 +229,25 @@ bool CONTROL_PowerSupplyWaiting(Int16U Time)
 		if(CONTROL_TimeCounter >= CONTROL_PowerSupplyDelay)
 		{
 			CONTROL_PowerSupplyDelay = 0;
-			return 1;
+			return true;
 		}
 	}
 
-	return 0;
+	return false;
 }
 //-----------------------------------------------
 
 void CONTROL_HighPriorityProcess()
 {
-	float Voltage;
+	MeasureSample Sample;
 	Int16U Fault = 0;
 
 	if(CONTROL_SubState == SS_Pulse)
 	{
-		Voltage = MEASURE_SampleVoltage();
-		LOGIC_LoggingProcess(Voltage);
+		Sample = MEASURE_Sample();
+		LOGIC_LoggingProcess(Sample);
 
-		if(LOGIC_RegulatorCycle(Voltage, &Fault))
+		if(LOGIC_RegulatorCycle(Sample.Voltage, &Fault))
 		{
 			CONTROL_StopProcess();
 
@@ -271,7 +273,7 @@ void CONTROL_StartProcess()
 void CONTROL_StopProcess()
 {
 	LOGIC_StopProcess();
-	CONTROL_AfterPulsePause = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE];
+	CONTROL_PulseToPulseTime = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE];
 }
 //-----------------------------------------------
 

@@ -28,6 +28,7 @@ typedef struct __MeasurementConvertParams
 // Variables
 DisOpAmpConvertParams DisOpAmpVParams;
 MeasurementConvertParams MeasureVParams;
+MeasurementConvertParams MeasureIParams;
 //
 
 // Functions prototypes
@@ -78,6 +79,12 @@ float CU_ADCtoV(Int16U Data)
 }
 //-----------------------------
 
+float CU_ADCtoI(Int16U Data)
+{
+	return CU_ADCtoX(Data, &MeasureIParams);
+}
+//-----------------------------
+
 void CU_LoadConvertParams(bool VoltageRange)
 {
 	// Параметры преобразования напряжения
@@ -100,6 +107,12 @@ void CU_LoadConvertParams(bool VoltageRange)
 		MeasureVParams.K = (float)DataTable[REG_ADC_V_R1_K] / 1000;
 		MeasureVParams.B = (Int16S)DataTable[REG_ADC_V_R1_B] / 10;
 	}
+
+	MeasureIParams.P2 = (float)(Int16S)DataTable[REG_ADC_I_P2] / 1e6;
+	MeasureIParams.P1 = (float)DataTable[REG_ADC_I_P1] / 1000;
+	MeasureIParams.P0 = (float)((Int16S)DataTable[REG_ADC_I_P0]) / 10;
+	MeasureIParams.K = (float)DataTable[REG_ADC_I_K] / 1000;
+	MeasureIParams.B = (Int16S)DataTable[REG_ADC_I_B] / 10;
 }
 //-----------------------------
 

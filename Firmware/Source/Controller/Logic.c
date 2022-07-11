@@ -28,10 +28,11 @@ Int16U FollowingErrorCounterMax = 0;
 
 // Arrays
 float RingBuffer_Voltage[MAF_BUFFER_LENGTH];
+float RingBuffer_Current[MAF_BUFFER_LENGTH];
 
 // Functions prototypes
 void LOGIC_CacheVariables();
-void LOGIC_SaveToRingBuffer(float Voltage);
+void LOGIC_SaveToRingBuffer(MeasureSample Sample);
 float LOGIC_ExtractAveragedDatas(float* Buffer, Int16U BufferLength);
 void LOGIC_SaveRegulatorErr(float Error);
 void LOGIC_ClearVariables();
@@ -44,6 +45,8 @@ void LOGIC_StartPrepare()
 	LOGIC_CacheVariables();
 	LOGIC_SetVolatgeRange();
 	CU_LoadConvertParams(VoltageRange);
+
+	LL_OutputCommutationControl(true);
 }
 //-----------------------------
 
@@ -179,16 +182,17 @@ float LOGIC_ExtractAveragedDatas(float* Buffer, Int16U BufferLength)
 }
 //-----------------------------
 
-void LOGIC_SaveToRingBuffer(float Voltage)
+void LOGIC_SaveToRingBuffer(MeasureSample Sample)
 {
-	RingBuffer_Voltage[RingBufferIndex] = Voltage;
+	RingBuffer_Voltage[RingBufferIndex] = Sample.Voltage;
+	RingBuffer_Voltage[RingBufferIndex] = Sample.Current;
 
 	RingBufferIndex++;
 	RingBufferIndex &= MAF_BUFFER_INDEX_MASK;
 }
 //-----------------------------
 
-void LOGIC_LoggingProcess(float Voltage)
+void LOGIC_LoggingProcess(MeasureSample Sample)
 {
 	static Int16U ScopeLogStep = 0, LocalCounter = 0;
 
@@ -198,13 +202,14 @@ void LOGIC_LoggingProcess(float Voltage)
 
 	if (ScopeLogStep++ >= DataTable[REG_SCOPE_STEP])
 	{
-		CONTROL_ValuesVoltage[LocalCounter] = (Int16U)(Voltage * 10);
+		CONTROL_ValuesVoltage[LocalCounter] = (Int16U)(Sample.Voltage * 10);
+		CONTROL_ValuesCurrent[LocalCounter] = (Int16U)(Sample.Current);
 
 		ScopeLogStep = 0;
 		++LocalCounter;
 	}
 
-	LOGIC_SaveToRingBuffer(Voltage);
+	LOGIC_SaveToRingBuffer(Sample);
 
 	// Условие обновления глобального счётчика данных
 	if (CONTROL_Values_Counter < VALUES_x_SIZE)

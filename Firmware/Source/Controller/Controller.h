@@ -23,7 +23,7 @@ typedef enum __DeviceSubState
 	SS_PS_WaitingStart = 1,
 	SS_PS_WaitingOn = 2,
 	SS_PS_WaitingOff = 3,
-	SS_WaitAfterPulse = 4,
+	SS_WaitPulseToPulseTime = 4,
 	SS_StartPulse = 5,
 	SS_Pulse = 6
 } DeviceSubState;

@@ -12,7 +12,7 @@ extern float CurrentCutOff;
 bool LOGIC_RegulatorCycle(float Voltage, Int16U* Fault);
 void LOGIC_StopProcess();
 void LOGIC_StartPrepare();
-void LOGIC_LoggingProcess(float Voltage);
+void LOGIC_LoggingProcess(MeasureSample Sample);
 float LOGIC_GetAverageVoltage();
 float LOGIC_GetLastSampledVoltage();
 void LOGIC_SetVolatgeRange();
