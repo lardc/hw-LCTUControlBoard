@@ -44,18 +44,35 @@ float LOGIC_GetLastSampledData(float* InputBuffer);
 //
 void LOGIC_StartPrepare()
 {
-	LOGIC_CacheVariables();
-	LOGIC_SetVolatgeRange();
-	CU_LoadConvertParams(VoltageRange);
+	LOGIC_HarwarePrepare();
 
+	LOGIC_CacheVariables();
+	CU_LoadConvertParams(VoltageRange);
+}
+//-----------------------------
+
+void LOGIC_HarwarePrepare()
+{
+	LOGIC_SetVolatgeRange();
+	LL_PAU_Shunting(true);
 	LL_OutputCommutationControl(true);
+}
+//-----------------------------
+
+void LOGIC_HarwareDefaultState()
+{
+	LL_OscSyncSetState(false);
+	LL_PAUSyncSetState(false);
+	LL_PAU_Shunting(false);
+
+	DELAY_MS(10);
+	LL_OutputCommutationControl(false);
 }
 //-----------------------------
 
 void LOGIC_CacheVariables()
 {
 	VoltageSetpoint = DataTable[REG_VOLTAGE_SETPOINT];
-	VoltageThreshold = DataTable[REG_VOLTAGE_RANGE_THRESHOLD];
 	PulsePointsQuantity = DataTable[REG_PULSE_WIDTH] * 1000 / TIMER6_uS;
 	RegulatorPcoef = (float)DataTable[REG_REGULATOR_Kp] / 1000;
 	RegulatorIcoef = (float)DataTable[REG_REGULATOR_Ki] / 1000;
@@ -71,12 +88,22 @@ bool LOGIC_RegulatorCycle(MeasureSample Sample, Int16U* Fault)
 {
 	float RegulatorError, Qp, RegulatorOut;
 	bool Finished = false;
+	static Int16U PAUsyncDelayCounter = 0;
 
 	// Формирование линейно нарастающего фронта импульса напряжения
 	if(VoltageTarget < VoltageSetpoint)
 		VoltageTarget += dV;
 	else
+	{
 		VoltageTarget = VoltageSetpoint;
+		PAUsyncDelayCounter++;
+	}
+
+	if(PAUsyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY])
+	{
+		LL_PAU_Shunting(false);
+		LL_PAUSyncSetState(true);
+	}
 
 	RegulatorError = (RegulatorPulseCounter == 0) ? 0 : (VoltageTarget - Sample.Voltage);
 
@@ -121,6 +148,9 @@ bool LOGIC_RegulatorCycle(MeasureSample Sample, Int16U* Fault)
 		RegulatorPulseCounter++;
 		Finished = (RegulatorPulseCounter >= PulsePointsQuantity) ? true : false;
 	}
+
+	if(Finished)
+		PAUsyncDelayCounter = 0;
 
 	return Finished;
 }
@@ -231,8 +261,6 @@ void LOGIC_StopProcess()
 {
 	TIM_Stop(TIM6);
 	DISOPAMP_SetVoltage(0);
-	DELAY_MS(20);
-	LL_OutputCommutationControl(false);
 }
 //-----------------------------
 
@@ -253,7 +281,7 @@ void LOGIC_ClearVariables()
 
 void LOGIC_SetVolatgeRange()
 {
-	if(VoltageSetpoint > VoltageThreshold)
+	if(DataTable[REG_VOLTAGE_SETPOINT] > DataTable[REG_VOLTAGE_RANGE_THRESHOLD])
 		VoltageRange = VOLTAGE_RANGE_1;
 	else
 		VoltageRange = VOLTAGE_RANGE_0;

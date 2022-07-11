@@ -51,7 +51,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{NO, YES, YES},																// 40
 		{FAN_PERIOD_MIN, FAN_PERIOD_MAX, FAN_PERIOD_DEF},							// 41
 		{FAN_TIME_MIN, FAN_TIME_MAX, FAN_TIME_DEF},									// 42
-		{0, 0, 0},																	// 43
+		{PAU_DELAY_SYNC_MIN, PAU_DELAY_SYNC_MAX, PAU_DELAY_SYNC_DEF},				// 43
 		{0, 0, 0},																	// 44
 		{0, 0, 0},																	// 45
 		{0, 0, 0},																	// 46

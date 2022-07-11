@@ -81,6 +81,10 @@
 #define FAN_TIME_MIN				10			// c
 #define FAN_TIME_MAX				200			// c
 #define FAN_TIME_DEF				40			// c
+//
+#define PAU_DELAY_SYNC_MIN			0			// в тиках
+#define PAU_DELAY_SYNC_MAX			50			// в тиках
+#define PAU_DELAY_SYNC_DEF			10			// в тиках
 
 // Types
 typedef struct __TableItemConstraint

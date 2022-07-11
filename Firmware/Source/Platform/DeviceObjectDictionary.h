@@ -69,6 +69,7 @@
 #define REG_FAN_CTRL					40	// Контроль вентилятора
 #define REG_FAN_OPERATE_PERIOD			41	// Период работы вентилятора (с)
 #define REG_FAN_OPERATE_TIME			42	// Время работы вентилятора (с)
+#define REG_PAU_SNC_DELAY				43	// Задержка синхронизации PAU с момента выхода на полку импульса (в тиках таймера регулятора)
 
 #define REG_VOLTAGE_SETPOINT			128	// Уставка по напряжению, В
 #define REG_PULSE_WIDTH					129	// Длительность импульса напряжения, мс
