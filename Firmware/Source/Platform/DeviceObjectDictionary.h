@@ -41,18 +41,31 @@
 #define REG_FOLLOWING_ERR_MUTE			6	// Выключение слежения за ошибкой FollowingError
 #define REG_PS_FIRST_START_TIME			7	// Время готовности системы питания при первом старте (мс)
 #define REG_PS_PREPARE_TIME				8	// Время готовности системы питания после формирования импульса (мс)
+#define REG_VOLTAGE_RANGE_THRESHOLD		9	// Порог переключения диапазона напряжения (В)
 //
 #define REG_DAC_V_K						10	// Коэффициент грубой подстройки К
 #define REG_DAC_V_B						11	// Смещение грубой подстройки B
 //
-#define REG_ADC_V_P2					12	// Коэффициент тонкой подстройки Р2 х1е6
-#define REG_ADC_V_P1					13	// Коэффициент тонкой подстройки Р1 х1000
-#define REG_ADC_V_P0					14	// Смещение тонкой подстройки Р0
-#define REG_ADC_V_K						15	// Коэффициент грубой подстройки K
-#define REG_ADC_V_B						16	// Смещение грубой подстройки B
+#define REG_ADC_V_R0_P2					12	// Коэффициент тонкой подстройки Р2 х1е6
+#define REG_ADC_V_R0_P1					13	// Коэффициент тонкой подстройки Р1 х1000
+#define REG_ADC_V_R0_P0					14	// Смещение тонкой подстройки Р0
+#define REG_ADC_V_R0_K					15	// Коэффициент грубой подстройки K
+#define REG_ADC_V_R0_B					16	// Смещение грубой подстройки B
 //
-#define REG_REGULATOR_Kp				17	// Пропорциональный коэффициент регулятора
-#define REG_REGULATOR_Ki				18	// Интегральный коэффициент регулятора
+#define REG_ADC_V_R1_P2					17	// Коэффициент тонкой подстройки Р2 х1е6
+#define REG_ADC_V_R1_P1					18	// Коэффициент тонкой подстройки Р1 х1000
+#define REG_ADC_V_R1_P0					19	// Смещение тонкой подстройки Р0
+#define REG_ADC_V_R1_K					20	// Коэффициент грубой подстройки K
+#define REG_ADC_V_R1_B					21	// Смещение грубой подстройки B
+//
+#define REG_ADC_I_P2					22	// Коэффициент тонкой подстройки Р2 х1е6
+#define REG_ADC_I_P1					23	// Коэффициент тонкой подстройки Р1 х1000
+#define REG_ADC_I_P0					24	// Смещение тонкой подстройки Р0
+#define REG_ADC_I_K						25	// Коэффициент грубой подстройки K
+#define REG_ADC_I_B						26	// Смещение грубой подстройки B
+//
+#define REG_REGULATOR_Kp				27	// Пропорциональный коэффициент регулятора
+#define REG_REGULATOR_Ki				28	// Интегральный коэффициент регулятора
 
 #define REG_VOLTAGE_SETPOINT			128	// Уставка по напряжению, В
 #define REG_PULSE_WIDTH					129	// Длительность импульса напряжения, мс
@@ -70,6 +83,7 @@
 #define REG_SUB_STATE					198	// Регистр вспомогательного состояния
 
 #define REG_RESULT_VOLTAGE				200	// Достигнутое напряжение во время теста (В * 10)
+#define REG_RESULT_CURRENT				201	// Измеренный ток утечки (мкА)
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID			257	// Device CAN master node ID (if presented)

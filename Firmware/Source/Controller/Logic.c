@@ -13,9 +13,10 @@
 //
 
 // Variables
-float VoltageTarget, VoltageSetpoint, RegulatorPcoef, RegulatorIcoef;
+float VoltageTarget, VoltageSetpoint, RegulatorPcoef, RegulatorIcoef, VoltageThreshold;
 float RegulatorAlowedError, dV;
 float  Qi;
+bool VoltageRange = VOLTAGE_RANGE_0;
 Int16U RegulatorPulseCounter = 0;
 Int16U PulsePointsQuantity = 0;
 volatile Int64U LOGIC_PowerOnCounter = 0;
@@ -41,13 +42,15 @@ float LOGIC_GetLastSampledData(float* InputBuffer);
 void LOGIC_StartPrepare()
 {
 	LOGIC_CacheVariables();
-	CU_LoadConvertParams();
+	LOGIC_SetVolatgeRange();
+	CU_LoadConvertParams(VoltageRange);
 }
 //-----------------------------
 
 void LOGIC_CacheVariables()
 {
 	VoltageSetpoint = DataTable[REG_VOLTAGE_SETPOINT];
+	VoltageThreshold = DataTable[REG_VOLTAGE_RANGE_THRESHOLD];
 	PulsePointsQuantity = DataTable[REG_PULSE_WIDTH] * 1000 / TIMER6_uS;
 	RegulatorPcoef = (float)DataTable[REG_REGULATOR_Kp] / 1000;
 	RegulatorIcoef = (float)DataTable[REG_REGULATOR_Ki] / 1000;
@@ -231,5 +234,16 @@ void LOGIC_ClearVariables()
 	VoltageTarget = 0;
 	LOGIC_TestTime = 0;
 	FollowingErrorCounter = 0;
+}
+//-----------------------------
+
+void LOGIC_SetVolatgeRange()
+{
+	if(VoltageSetpoint > VoltageThreshold)
+		VoltageRange = VOLTAGE_RANGE_1;
+	else
+		VoltageRange = VOLTAGE_RANGE_0;
+
+	LL_VoltageRangeSet(VoltageRange);
 }
 //-----------------------------

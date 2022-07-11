@@ -17,7 +17,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{NO, YES, YES},																// 6
 		{PS_FIRST_START_TIME_MIN, PS_FIRST_START_TIME_MAX, PS_FIRST_START_TIME_DEF},// 7
 		{PS_PREPARE_TIME_MIN, PS_PREPARE_TIME_MAX, PS_PREPARE_TIME_DEF},			// 8
-		{0, 0, 0},																	// 9
+		{VOLTAGE_THRESHOLD_MIN, VOLTAGE_THRESHOLD_MAX, VOLTAGE_THRESHOLD_DEF},		// 9
 		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 10
 		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 11
 		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 12
@@ -25,18 +25,18 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 14
 		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 15
 		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 16
-		{REGULATOR_KP_MIN, REGULATOR_KP_MAX, REGULATOR_KP_DEF},						// 17
-		{REGULATOR_KI_MIN, REGULATOR_KI_MAX, REGULATOR_KI_DEF},						// 18
-		{0, 0, 0},																	// 19
-		{0, 0, 0},																	// 20
-		{0, 0, 0},																	// 21
-		{0, 0, 0},																	// 22
-		{0, 0, 0},																	// 23
-		{0, 0, 0},																	// 24
-		{0, 0, 0},																	// 25
-		{0, 0, 0},																	// 26
-		{0, 0, 0},																	// 27
-		{0, 0, 0},																	// 28
+		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 17
+		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 18
+		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 19
+		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 20
+		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 21
+		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 22
+		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 23
+		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 24
+		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 25
+		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 26
+		{REGULATOR_KP_MIN, REGULATOR_KP_MAX, REGULATOR_KP_DEF},						// 27
+		{REGULATOR_KI_MIN, REGULATOR_KI_MAX, REGULATOR_KI_DEF},						// 28
 		{0, 0, 0},																	// 29
 		{0, 0, 0},																	// 30
 		{0, 0, 0},																	// 31

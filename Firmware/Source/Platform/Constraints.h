@@ -69,6 +69,10 @@
 #define PS_PREPARE_TIME_MIN			10			// мс
 #define PS_PREPARE_TIME_MAX			500			// мс
 #define PS_PREPARE_TIME_DEF			50			// мс
+//
+#define VOLTAGE_THRESHOLD_MIN		500			// В
+#define VOLTAGE_THRESHOLD_MAX		2000		// В
+#define VOLTAGE_THRESHOLD_DEF		1300		// В
 
 // Types
 typedef struct __TableItemConstraint

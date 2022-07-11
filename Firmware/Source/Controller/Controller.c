@@ -87,6 +87,7 @@ void CONTROL_ResetOutputRegisters()
 	DataTable[REG_OP_RESULT] = OPRESULT_NONE;
 	//
 	DataTable[REG_RESULT_VOLTAGE] = 0;
+	DataTable[REG_RESULT_CURRENT] = 0;
 	//
 	DEVPROFILE_ResetScopes(0);
 	DEVPROFILE_ResetEPReadState();

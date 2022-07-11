@@ -13,9 +13,11 @@
 #define DISOPAMP_CELL_VOLATGE_MAX				490		// V
 #define DISOPAMP_TOTAL_CELL						3
 #define DSIOPAMP_STACK_VOLTAGE_MAX				(DISOPAMP_CELL_VOLATGE_MAX * DISOPAMP_TOTAL_CELL)
-
 //
 #define COMMUTATION_DELAY						100		// мс
+//
+#define VOLTAGE_RANGE_0							0
+#define VOLTAGE_RANGE_1							1
 
 // Временные параметры
 #define TIME_LED_BLINK							500		// Мигание светодиодом (в мс)

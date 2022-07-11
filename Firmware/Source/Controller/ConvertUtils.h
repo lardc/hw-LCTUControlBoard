@@ -7,6 +7,6 @@
 // Functions
 Int16U CU_VtoDAC(float Voltage);
 float CU_ADCtoV(Int16U Data);
-void CU_LoadConvertParams();
+void CU_LoadConvertParams(bool VoltageRange);
 
 #endif /* CONVERTUTILS_H_ */
