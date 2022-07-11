@@ -269,6 +269,7 @@ void CONTROL_StartProcess()
 	TIM_Start(TIM6);
 
 	IsImpulse = true;
+	LL_OscSyncSetState(true);
 }
 //-----------------------------------------------
 
@@ -276,6 +277,8 @@ void CONTROL_StopProcess()
 {
 	LOGIC_StopProcess();
 	CONTROL_PulseToPulseTime = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE];
+
+	LL_OscSyncSetState(false);
 }
 //-----------------------------------------------
 
