@@ -70,6 +70,7 @@
 #define REG_FAN_OPERATE_PERIOD			41	// Период работы вентилятора (с)
 #define REG_FAN_OPERATE_TIME			42	// Время работы вентилятора (с)
 #define REG_PAU_SNC_DELAY				43	// Задержка синхронизации PAU с момента выхода на полку импульса (в тиках таймера регулятора)
+#define REG_PAU_EMULATED				44	// Эмуляция работы PAU
 
 #define REG_VOLTAGE_SETPOINT			128	// Уставка по напряжению, В
 #define REG_PULSE_WIDTH					129	// Длительность импульса напряжения, мс
@@ -84,6 +85,7 @@
 #define REG_WARNING						195	// Регистр Warning
 #define REG_PROBLEM						196	// Регистр Problem
 #define REG_OP_RESULT					197	// Регистр результата операции
+#define REG_SELF_TEST_OP_RESULT			198	// Регистр результата самотестирования
 #define REG_SUB_STATE					198	// Регистр вспомогательного состояния
 
 #define REG_RESULT_VOLTAGE				200	// Достигнутое напряжение во время теста (В * 10)
@@ -104,15 +106,16 @@
 //  Fault and disable codes
 #define DF_NONE							0
 #define DF_FOLLOWING_ERROR				1
-#define DF_OUTPUT_SHORT					2
+#define DF_PAU_SYNC						2
+#define DF_CURRENT_MEASURING			3
 
 // Problem
 #define PROBLEM_NONE					0
 
 //  Warning
 #define WARNING_NONE					0
-#define WARNING_PAU_SYNC				1
-#define WARNING_OSC_SYNC				2
+#define WARNING_OSC_SYNC				1
+#define WARNING_OUTPUT_SHORT			2
 
 //  User Errors
 #define ERR_NONE						0

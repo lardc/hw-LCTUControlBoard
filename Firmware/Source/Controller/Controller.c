@@ -13,11 +13,12 @@
 #include "Logic.h"
 #include "BCCIxParams.h"
 #include "DiscreteOpAmp.h"
+#include "SelfTest.h"
 
 // Definitions
 //
-#define PS_FULL_CHARGE_TIME			2000	// ms
-#define PS_RECHARGE_TIME			50		// ms
+#define PS_FULL_CHARGE_TIME			2000	// мс
+#define PS_RECHARGE_TIME			50		// мс
 
 // Types
 //
@@ -43,18 +44,16 @@ volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
 // Forward functions
 //
 static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
-void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
-void CONTROL_SwitchToFault(Int16U Reason);
 void CONTROL_DelayMs(uint32_t Delay);
 void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
 void CONTROL_StopProcess();
-void CONTROL_StartProcess();
 void CONTROL_ResetOutputRegisters();
 void CONTROL_SaveTestResult();
 void CONTROL_ClearTestResult();
 bool CONTROL_PowerSupplyWaiting(Int16U Time);
+void CONTROL_SelfTest();
 
 // Functions
 //
@@ -100,6 +99,7 @@ void CONTROL_ResetToDefaultState()
 {
 	CONTROL_ResetOutputRegisters();
 	DISOPAMP_SetVoltage(0);
+	LOGIC_HarwareDefaultState();
 
 	CONTROL_SetDeviceState(DS_None, SS_None);
 }
@@ -142,9 +142,9 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if (CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
-				LOGIC_StartPrepare();
+				LOGIC_StartPrepare(TT_DUT);
 
-				CONTROL_SetDeviceState(DS_InProcess, SS_WaitPulseToPulseTime);
+				CONTROL_SetDeviceState(DS_InProcess, SS_WaitPause);
 			}
 			else
 				if (CONTROL_State == DS_InProcess)
@@ -187,7 +187,7 @@ void CONTROL_LogicProcess()
 	{
 		switch(CONTROL_SubState)
 		{
-			case SS_WaitPulseToPulseTime:
+			case SS_WaitPause:
 				if(CONTROL_TimeCounter > CONTROL_PulseToPulseTime)
 					CONTROL_SetDeviceState(DS_InProcess, SS_PS_WaitingOff);
 				break;
@@ -205,18 +205,26 @@ void CONTROL_LogicProcess()
 				break;
 
 			case SS_PS_WaitingStart:
-				CONTROL_PowerSupplyWaiting(DataTable[REG_PS_FIRST_START_TIME]);
-			case SS_PS_WaitingOn:
 				LL_PowerSupply(true);
+				if(CONTROL_PowerSupplyWaiting(DataTable[REG_PS_FIRST_START_TIME]))
+					CONTROL_SetDeviceState(DS_SelfTest, SS_None);
+				break;
 
+			case SS_PS_WaitingOn:
 				if(CONTROL_PowerSupplyWaiting(DataTable[REG_PS_PREPARE_TIME]))
-					CONTROL_SetDeviceState(DS_Ready, SS_None);
+				{
+					LL_PowerSupply(true);
+					CONTROL_SetDeviceState(DS_Ready, SS_ST_Sync);
+				}
 				break;
 
 			default:
 				break;
 		}
 	}
+
+	if(CONTROL_State == DS_SelfTest)
+		SELFTEST_Process();
 }
 //-----------------------------------------------
 
@@ -242,7 +250,7 @@ void CONTROL_HighPriorityProcess()
 	MeasureSample Sample;
 	Int16U Fault = 0;
 
-	if(CONTROL_SubState == SS_Pulse)
+	if(CONTROL_SubState == SS_Pulse || CONTROL_SubState == SS_ST_Pulse)
 	{
 		Sample = MEASURE_Sample();
 		LOGIC_LoggingProcess(Sample);
@@ -256,7 +264,11 @@ void CONTROL_HighPriorityProcess()
 			else
 			{
 				CONTROL_SaveTestResult();
-				CONTROL_SetDeviceState(DS_InProcess, SS_PS_WaitingOn);
+
+				if(CONTROL_State == DS_InProcess)
+					CONTROL_SetDeviceState(DS_InProcess, SS_PS_WaitingOn);
+				else
+					CONTROL_SetDeviceState(DS_SelfTest, SS_ST_PulseCheck);
 			}
 		}
 	}
@@ -269,7 +281,7 @@ void CONTROL_StartProcess()
 	TIM_Start(TIM6);
 
 	IsImpulse = true;
-	LOGIC_OSCSync(true);
+	LOGIC_OSCSync(true, 0);
 }
 //-----------------------------------------------
 
@@ -297,6 +309,11 @@ void CONTROL_ClearTestResult()
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {
+	if(CONTROL_State == DS_SelfTest)
+		DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+	else
+		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+
 	CONTROL_SetDeviceState(DS_Fault, SS_None);
 	DataTable[REG_FAULT_REASON] = Reason;
 }

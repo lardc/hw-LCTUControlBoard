@@ -59,32 +59,32 @@
 #define NO							0
 #define YES							1
 //
-#define VOLTAGE_SETPOINT_MIN		100			// В
-#define VOLTAGE_SETPOINT_MAX		1500		// В
+#define VOLTAGE_SETPOINT_MIN		100						// В
+#define VOLTAGE_SETPOINT_MAX		LCTU_VOLTAGE_MAX		// В
 //
-#define PS_FIRST_START_TIME_MIN		500			// мс
-#define PS_FIRST_START_TIME_MAX		5000		// мс
-#define PS_FIRST_START_TIME_DEF		2000		// мс
+#define PS_FIRST_START_TIME_MIN		500						// мс
+#define PS_FIRST_START_TIME_MAX		5000					// мс
+#define PS_FIRST_START_TIME_DEF		2000					// мс
 
-#define PS_PREPARE_TIME_MIN			10			// мс
-#define PS_PREPARE_TIME_MAX			500			// мс
-#define PS_PREPARE_TIME_DEF			50			// мс
+#define PS_PREPARE_TIME_MIN			10						// мс
+#define PS_PREPARE_TIME_MAX			500						// мс
+#define PS_PREPARE_TIME_DEF			50						// мс
 //
-#define VOLTAGE_THRESHOLD_MIN		500			// В
-#define VOLTAGE_THRESHOLD_MAX		2000		// В
-#define VOLTAGE_THRESHOLD_DEF		1300		// В
+#define VOLTAGE_THRESHOLD_MIN		500						// В
+#define VOLTAGE_THRESHOLD_MAX		2000					// В
+#define VOLTAGE_THRESHOLD_DEF		1300					// В
 //
-#define FAN_PERIOD_MIN				60			// c
-#define FAN_PERIOD_MAX				300			// c
-#define FAN_PERIOD_DEF				60			// c
+#define FAN_PERIOD_MIN				60						// c
+#define FAN_PERIOD_MAX				300						// c
+#define FAN_PERIOD_DEF				60						// c
 
-#define FAN_TIME_MIN				10			// c
-#define FAN_TIME_MAX				200			// c
-#define FAN_TIME_DEF				40			// c
+#define FAN_TIME_MIN				10						// c
+#define FAN_TIME_MAX				200						// c
+#define FAN_TIME_DEF				40						// c
 //
-#define PAU_DELAY_SYNC_MIN			0			// в тиках
-#define PAU_DELAY_SYNC_MAX			50			// в тиках
-#define PAU_DELAY_SYNC_DEF			10			// в тиках
+#define PAU_DELAY_SYNC_MIN			0						// в тиках
+#define PAU_DELAY_SYNC_MAX			50						// в тиках
+#define PAU_DELAY_SYNC_DEF			10						// в тиках
 
 // Types
 typedef struct __TableItemConstraint

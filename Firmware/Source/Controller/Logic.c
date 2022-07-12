@@ -7,6 +7,7 @@
 #include "LowLevel.h"
 #include "Math.h"
 #include "Delay.h"
+#include "Controller.h"
 
 // Definitions
 #define MAF_BUFFER_LENGTH				128
@@ -39,35 +40,40 @@ float LOGIC_ExtractAveragedDatas(float* Buffer, Int16U BufferLength);
 void LOGIC_SaveRegulatorErr(float Error);
 void LOGIC_ClearVariables();
 float LOGIC_GetLastSampledData(float* InputBuffer);
-void LOGIC_PAUSync(bool State);
 
 // Functions
 //
-void LOGIC_StartPrepare()
+void LOGIC_StartPrepare(TestType Type)
 {
-	LOGIC_HarwarePrepare();
+	LOGIC_HarwarePrepare(Type);
 
 	LOGIC_CacheVariables();
 	CU_LoadConvertParams(VoltageRange);
 }
 //-----------------------------
 
-void LOGIC_HarwarePrepare()
+void LOGIC_HarwarePrepare(TestType Type)
 {
 	LOGIC_SetVolatgeRange();
-	LL_PAU_Shunting(true);
-	LL_OutputCommutationControl(true);
+
+	if(Type == TT_DUT)
+		LL_OutputCommutationControl(true);
+	else
+		LL_SelfTestCommutationControl(true);
 }
 //-----------------------------
 
 void LOGIC_HarwareDefaultState()
 {
-	LOGIC_OSCSync(false);
-	LOGIC_PAUSync(false);
-	LL_PAU_Shunting(false);
+	LOGIC_OSCSync(false, 0);
+	LOGIC_PAUSync(false, 0);
+	LL_PAU_Shunting(true);
 
-	DELAY_MS(10);
-	LL_OutputCommutationControl(false);
+	if(CONTROL_State == DS_InProcess)
+	{
+		DELAY_MS(10);
+		LL_OutputCommutationControl(false);
+	}
 }
 //-----------------------------
 
@@ -100,10 +106,10 @@ bool LOGIC_RegulatorCycle(MeasureSample Sample, Int16U* Fault)
 		PAUsyncDelayCounter++;
 	}
 
-	if(PAUsyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY])
+	if(!DataTable[REG_PAU_EMULATED] && PAUsyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY] && CONTROL_State != DS_SelfTest)
 	{
 		LL_PAU_Shunting(false);
-		LOGIC_PAUSync(true);
+		LOGIC_PAUSync(true, 0);
 	}
 
 	RegulatorError = (RegulatorPulseCounter == 0) ? 0 : (VoltageTarget - Sample.Voltage);
@@ -138,7 +144,7 @@ bool LOGIC_RegulatorCycle(MeasureSample Sample, Int16U* Fault)
 	if(!DataTable[REG_FOLLOWING_ERR_MUTE] && FollowingErrorCounter >= FollowingErrorCounterMax)
 	{
 		if(Sample.Current >= DISOPAMP_CURRENT_MAX)
-			*Fault = DF_OUTPUT_SHORT;
+			DataTable[REG_WARNING] = WARNING_OUTPUT_SHORT;
 		else
 			*Fault = DF_FOLLOWING_ERROR;
 
@@ -339,19 +345,23 @@ void CONTROL_HandleExternalLamp(bool IsImpulse)
 }
 //-----------------------------------------------
 
-void LOGIC_PAUSync(bool State)
+void LOGIC_PAUSync(bool State, Int16U CheckDelay)
 {
 	LL_PAUSyncSetState(State);
 
+	DELAY_MS(CheckDelay);
+
 	if(LL_PAUSyncGetState() != State)
-		DataTable[REG_WARNING] = WARNING_PAU_SYNC;
+		CONTROL_SwitchToFault(DF_PAU_SYNC);
 
 }
 //-----------------------------------------------
 
-void LOGIC_OSCSync(bool State)
+void LOGIC_OSCSync(bool State, Int16U CheckDelay)
 {
 	LL_OscSyncSetState(State);
+
+	DELAY_MS(CheckDelay);
 
 	if(LL_OscSyncGetState() != State)
 		DataTable[REG_WARNING] = WARNING_OSC_SYNC;

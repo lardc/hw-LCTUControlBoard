@@ -11,12 +11,13 @@
 
 // Параметры DiscreteOpAmp
 #define DISOPAMP_CELL_VOLATGE_MAX				490		// V
-#define DISOPAMP_TOTAL_CELL						3
+#define DISOPAMP_TOTAL_CELL						7
 #define DSIOPAMP_STACK_VOLTAGE_MAX				(DISOPAMP_CELL_VOLATGE_MAX * DISOPAMP_TOTAL_CELL)
 #define DISOPAMP_CURRENT_MAX					32000	// мкА
 //
 #define COMMUTATION_DELAY						100		// мс
 #define EXT_LAMP_ON_STATE_TIME					500		// мс
+#define LCTU_VOLTAGE_MAX						3300	// В
 //
 #define VOLTAGE_RANGE_0							0
 #define VOLTAGE_RANGE_1							1
