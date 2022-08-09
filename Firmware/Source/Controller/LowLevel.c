@@ -19,6 +19,12 @@ void LL_PowerSupply(bool State)
 }
 //-----------------------------
 
+bool LL_SafetyGetState()
+{
+	return GPIO_GetState(GPIO_SAFETY);
+}
+//-----------------------------
+
 void LL_OscSyncSetState(bool State)
 {
 	GPIO_SetState(GPIO_OSC_SYNC, State);

@@ -106,7 +106,7 @@
 //  Fault and disable codes
 #define DF_NONE							0
 #define DF_FOLLOWING_ERROR				1
-#define DF_PAU_SYNC						2
+#define DF_SAFETY						2
 #define DF_CURRENT_MEASURING			3
 
 // Problem

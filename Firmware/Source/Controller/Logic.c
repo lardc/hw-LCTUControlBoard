@@ -97,6 +97,12 @@ bool LOGIC_RegulatorCycle(MeasureSample Sample, Int16U* Fault)
 	bool Finished = false;
 	static Int16U PAUsyncDelayCounter = 0;
 
+	if(LL_SafetyGetState())
+	{
+		*Fault = DF_SAFETY;
+		return true;
+	}
+
 	// Формирование линейно нарастающего фронта импульса напряжения
 	if(VoltageTarget < VoltageSetpoint)
 		VoltageTarget += dV;
