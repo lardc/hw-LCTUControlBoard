@@ -65,8 +65,8 @@ void LOGIC_HarwarePrepare(TestType Type)
 
 void LOGIC_HarwareDefaultState()
 {
-	LOGIC_OSCSync(false, 0);
-	LOGIC_PAUSync(false, 0);
+	LOGIC_OSCSync(false);
+	LOGIC_PAUSync(false);
 	LL_PAU_Shunting(true);
 
 	if(CONTROL_State == DS_InProcess)
@@ -109,7 +109,7 @@ bool LOGIC_RegulatorCycle(MeasureSample Sample, Int16U* Fault)
 	if(!DataTable[REG_PAU_EMULATED] && PAUsyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY] && CONTROL_State != DS_SelfTest)
 	{
 		LL_PAU_Shunting(false);
-		LOGIC_PAUSync(true, 0);
+		LOGIC_PAUSync(true);
 	}
 
 	RegulatorError = (RegulatorPulseCounter == 0) ? 0 : (VoltageTarget - Sample.Voltage);
@@ -345,26 +345,14 @@ void CONTROL_HandleExternalLamp(bool IsImpulse)
 }
 //-----------------------------------------------
 
-void LOGIC_PAUSync(bool State, Int16U CheckDelay)
+void LOGIC_PAUSync(bool State)
 {
 	LL_PAUSyncSetState(State);
-
-	DELAY_MS(CheckDelay);
-
-	if(LL_PAUSyncGetState() != State)
-		CONTROL_SwitchToFault(DF_PAU_SYNC);
-
 }
 //-----------------------------------------------
 
-void LOGIC_OSCSync(bool State, Int16U CheckDelay)
+void LOGIC_OSCSync(bool State)
 {
 	LL_OscSyncSetState(State);
-
-	DELAY_MS(CheckDelay);
-
-	if(LL_OscSyncGetState() != State)
-		DataTable[REG_WARNING] = WARNING_OSC_SYNC;
-
 }
 //-----------------------------------------------

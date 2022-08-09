@@ -31,8 +31,7 @@ GPIO_PortPinSettingMacro GPIO_IND_CTRL			= {GPIOA, Pin_7};
 GPIO_PortPinSettingMacro GPIO_PAU_SYNC			= {GPIOB, Pin_13};//
 
 // Определения для входных портов
-GPIO_PortPinSettingMacro GPIO_OSC_SYNC_CHK		= {GPIOA, Pin_8};
-GPIO_PortPinSettingMacro GPIO_PAU_SYNC_CHK		= {GPIOB, Pin_14};
+GPIO_PortPinSettingMacro GPIO_SAFETY			= {GPIOB, Pin_14};
 
 
 // Определения для портов альтернативных функций

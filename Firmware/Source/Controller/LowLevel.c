@@ -31,18 +31,6 @@ void LL_PAUSyncSetState(bool State)
 }
 //-----------------------------
 
-bool LL_OscSyncGetState()
-{
-	return GPIO_GetState(GPIO_OSC_SYNC_CHK);
-}
-//-----------------------------
-
-bool LL_PAUSyncGetState()
-{
-	return GPIO_GetState(GPIO_PAU_SYNC_CHK);
-}
-//-----------------------------
-
 void LL_VoltageRangeSet(bool Range)
 {
 	GPIO_SetState(GPIO_U_RANGE, Range);

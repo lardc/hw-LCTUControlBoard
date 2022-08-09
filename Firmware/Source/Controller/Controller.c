@@ -281,7 +281,7 @@ void CONTROL_StartProcess()
 	TIM_Start(TIM6);
 
 	IsImpulse = true;
-	LOGIC_OSCSync(true, 0);
+	LOGIC_OSCSync(true);
 }
 //-----------------------------------------------
 
