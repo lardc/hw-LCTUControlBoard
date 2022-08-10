@@ -1,4 +1,4 @@
-﻿// -----------------------------------------
+﻿// ----------------------------------------
 // Global definitions
 // ----------------------------------------
 
@@ -7,7 +7,7 @@
 
 // Constants
 //
-const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
+const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{COEF_K_MIN, COEF_K_MAX, COEF_K_DEF},										// 0
 		{OFFSET_MIN, OFFSET_MAX, OFFSET_DEF},										// 1
 		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 2
@@ -135,10 +135,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] = {
 		{0, 0, 0},																	// 124
 		{0, 0, 0},																	// 125
 		{0, 0, 0},																	// 126
-		{0, 0, 0}																	// 127
-};
-
-const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START] = {
+		{0, 0, 0},																	// 127
 		{VOLTAGE_SETPOINT_MIN, VOLTAGE_SETPOINT_MAX, 0},							// 128
 		{PULSE_WIDTH_MIN, PULSE_WIDTH_MAX, PULSE_WIDTH_DEF},						// 129
 		{0, 0, 0},																	// 130

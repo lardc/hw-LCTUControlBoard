@@ -89,13 +89,12 @@
 // Types
 typedef struct __TableItemConstraint
 {
-	Int16U Min;
-	Int16U Max;
-	Int16U Default;
+	float Min;
+	float Max;
+	float Default;
 } TableItemConstraint;
 
 // Variables
-extern const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE];
-extern const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START];
+extern const TableItemConstraint Constraint[];
 
 #endif // __CONSTRAINTS_H

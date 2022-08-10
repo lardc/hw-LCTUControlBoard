@@ -39,6 +39,8 @@ volatile Int16U CONTROL_RegulatorErr_Counter = 0;
 volatile Int16U CONTROL_ValuesVoltage[VALUES_x_SIZE];
 volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];
 volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
+volatile float CONTROL_FloatEP[VALUES_x_SIZE];
+volatile Int16U CONTROL_FloatEP_Counter = 0;
 //
 
 // Forward functions
@@ -65,6 +67,11 @@ void CONTROL_Init()
 	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_VoltageCounter, (pInt16U)&CONTROL_CurrentCounter, (pInt16U)&CONTROL_RegulatorErr_Counter};
 	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ValuesVoltage, (pInt16U)CONTROL_ValuesCurrent, (pInt16U)CONTROL_RegulatorErr};
 
+	Int16U FEPIndexes[FEP_COUNT] = {FEP_TEST};
+	Int16U FEPSized[FEP_COUNT] = {VALUES_x_SIZE};
+	pInt16U FEPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_FloatEP_Counter};
+	float* FEPDatas[FEP_COUNT] = {(float*)CONTROL_FloatEP};
+
 	// Конфигурация сервиса работы Data-table и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
 	// Инициализация data table
@@ -73,6 +80,7 @@ void CONTROL_Init()
 	// Инициализация device profile
 	DEVPROFILE_Init(&CONTROL_DispatchAction, &CycleActive);
 	DEVPROFILE_InitEPService(EPIndexes, EPSized, EPCounters, EPDatas);
+	DEVPROFILE_InitFEPService(FEPIndexes, FEPSized, FEPCounters, FEPDatas);
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
 	CONTROL_ResetToDefaultState();
