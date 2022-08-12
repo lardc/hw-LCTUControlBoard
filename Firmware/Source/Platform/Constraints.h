@@ -16,9 +16,9 @@
 #define FRONT_WIDTH_MAX				10			// (мс)
 #define FRONT_WIDTH_DEF				5			// (мс)
 //
-#define ALOWED_ERROR_MIN			0			// (% * 10)
-#define ALOWED_ERROR_MAX			1000		// (% * 10)
-#define ALOWED_ERROR_DEF			30			// (% * 10)
+#define ALOWED_ERROR_MIN			0			// (%)
+#define ALOWED_ERROR_MAX			1000		// (%)
+#define ALOWED_ERROR_DEF			30			// (%)
 //
 #define FOLLOWING_ERR_CNT_MIN		0
 #define FOLLOWING_ERR_CNT_MAX		1000

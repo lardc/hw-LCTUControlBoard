@@ -35,20 +35,20 @@
 #define REG_DAC_V_K						0	// Коэффициент грубой подстройки К
 #define REG_DAC_V_B						1	// Смещение грубой подстройки B
 //
-#define REG_ADC_V_R0_P2					2	// Коэффициент тонкой подстройки Р2 х1е6
-#define REG_ADC_V_R0_P1					3	// Коэффициент тонкой подстройки Р1 х1000
+#define REG_ADC_V_R0_P2					2	// Коэффициент тонкой подстройки Р2
+#define REG_ADC_V_R0_P1					3	// Коэффициент тонкой подстройки Р1
 #define REG_ADC_V_R0_P0					4	// Смещение тонкой подстройки Р0
 #define REG_ADC_V_R0_K					5	// Коэффициент грубой подстройки K
 #define REG_ADC_V_R0_B					6	// Смещение грубой подстройки B
 //
-#define REG_ADC_V_R1_P2					7	// Коэффициент тонкой подстройки Р2 х1е6
-#define REG_ADC_V_R1_P1					8	// Коэффициент тонкой подстройки Р1 х1000
+#define REG_ADC_V_R1_P2					7	// Коэффициент тонкой подстройки Р2
+#define REG_ADC_V_R1_P1					8	// Коэффициент тонкой подстройки Р1
 #define REG_ADC_V_R1_P0					9	// Смещение тонкой подстройки Р0
 #define REG_ADC_V_R1_K					10	// Коэффициент грубой подстройки K
 #define REG_ADC_V_R1_B					11	// Смещение грубой подстройки B
 //
-#define REG_ADC_I_P2					12	// Коэффициент тонкой подстройки Р2 х1е6
-#define REG_ADC_I_P1					13	// Коэффициент тонкой подстройки Р1 х1000
+#define REG_ADC_I_P2					12	// Коэффициент тонкой подстройки Р2
+#define REG_ADC_I_P1					13	// Коэффициент тонкой подстройки Р1
 #define REG_ADC_I_P0					14	// Смещение тонкой подстройки Р0
 #define REG_ADC_I_K						15	// Коэффициент грубой подстройки K
 #define REG_ADC_I_B						16	// Смещение грубой подстройки B
@@ -57,7 +57,7 @@
 #define REG_REGULATOR_Ki				18	// Интегральный коэффициент регулятора
 //
 #define REG_PULSE_FRONT_WIDTH			30	// Длительность фронта импульса в (мс)
-#define REG_REGULATOR_ALOWED_ERR		31	// Допустимая ошибка регулирования (% * 10)
+#define REG_REGULATOR_ALOWED_ERR		31	// Допустимая ошибка регулирования (%)
 #define REG_SCOPE_STEP					32	// Сохранение измеренных данных с заданным шагом
 #define REG_AFTER_PULSE_PAUSE			33	// Время выдержки перед началом следующего измерения (мс)
 #define REG_REGULATOR_QI_MAX			34	// Максимально допустимое значение Qi регулятора
@@ -88,7 +88,7 @@
 #define REG_SELF_TEST_OP_RESULT			198	// Регистр результата самотестирования
 #define REG_SUB_STATE					198	// Регистр вспомогательного состояния
 
-#define REG_RESULT_VOLTAGE				200	// Достигнутое напряжение во время теста (В * 10)
+#define REG_RESULT_VOLTAGE				200	// Достигнутое напряжение во время теста (В)
 #define REG_RESULT_CURRENT				201	// Измеренный ток утечки (мкА)
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID

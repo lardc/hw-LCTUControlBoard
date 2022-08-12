@@ -304,7 +304,7 @@ void CONTROL_StopProcess()
 
 void CONTROL_SaveTestResult()
 {
-	DataTable[REG_RESULT_VOLTAGE] = (Int16U)(LOGIC_GetAverageVoltage() * 10);
+	DataTable[REG_RESULT_VOLTAGE] = LOGIC_GetAverageVoltage();
 	DataTable[REG_OP_RESULT] = OPRESULT_OK;
 }
 //-----------------------------------------------

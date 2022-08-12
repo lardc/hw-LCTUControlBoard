@@ -84,7 +84,7 @@ void LOGIC_CacheVariables()
 	RegulatorPcoef = DataTable[REG_REGULATOR_Kp] / 1000;
 	RegulatorIcoef = DataTable[REG_REGULATOR_Ki] / 1000;
 	dV = VoltageSetpoint / DataTable[REG_PULSE_FRONT_WIDTH] * TIMER6_uS / 1000;
-	RegulatorAlowedError = DataTable[REG_REGULATOR_ALOWED_ERR] / 10;
+	RegulatorAlowedError = DataTable[REG_REGULATOR_ALOWED_ERR];
 	FollowingErrorCounterMax = DataTable[REG_FOLLOWING_ERR_CNT];
 
 	LOGIC_ClearVariables();
