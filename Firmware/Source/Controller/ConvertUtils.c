@@ -88,31 +88,31 @@ float CU_ADCtoI(Int16U Data)
 void CU_LoadConvertParams(bool VoltageRange)
 {
 	// Параметры преобразования напряжения
-	DisOpAmpVParams.K = (float)DataTable[REG_DAC_V_K] / 1000;
-	DisOpAmpVParams.B = (Int16S)DataTable[REG_DAC_V_B];
+	DisOpAmpVParams.K = DataTable[REG_DAC_V_K] / 1000;
+	DisOpAmpVParams.B = DataTable[REG_DAC_V_B];
 
 	if(VoltageRange == VOLTAGE_RANGE_0)
 	{
-		MeasureVParams.P2 = (float)(Int16S)DataTable[REG_ADC_V_R0_P2] / 1e6;
-		MeasureVParams.P1 = (float)DataTable[REG_ADC_V_R0_P1] / 1000;
-		MeasureVParams.P0 = (float)((Int16S)DataTable[REG_ADC_V_R0_P0]) / 10;
-		MeasureVParams.K = (float)DataTable[REG_ADC_V_R0_K] / 1000;
-		MeasureVParams.B = (Int16S)DataTable[REG_ADC_V_R0_B] / 10;
+		MeasureVParams.P2 = DataTable[REG_ADC_V_R0_P2] / 1e6;
+		MeasureVParams.P1 = DataTable[REG_ADC_V_R0_P1] / 1000;
+		MeasureVParams.P0 = DataTable[REG_ADC_V_R0_P0] / 10;
+		MeasureVParams.K = DataTable[REG_ADC_V_R0_K] / 1000;
+		MeasureVParams.B = DataTable[REG_ADC_V_R0_B] / 10;
 	}
 	else
 	{
-		MeasureVParams.P2 = (float)(Int16S)DataTable[REG_ADC_V_R1_P2] / 1e6;
-		MeasureVParams.P1 = (float)DataTable[REG_ADC_V_R1_P1] / 1000;
-		MeasureVParams.P0 = (float)((Int16S)DataTable[REG_ADC_V_R1_P0]) / 10;
-		MeasureVParams.K = (float)DataTable[REG_ADC_V_R1_K] / 1000;
-		MeasureVParams.B = (Int16S)DataTable[REG_ADC_V_R1_B] / 10;
+		MeasureVParams.P2 = DataTable[REG_ADC_V_R1_P2] / 1e6;
+		MeasureVParams.P1 = DataTable[REG_ADC_V_R1_P1] / 1000;
+		MeasureVParams.P0 = DataTable[REG_ADC_V_R1_P0] / 10;
+		MeasureVParams.K = DataTable[REG_ADC_V_R1_K] / 1000;
+		MeasureVParams.B = DataTable[REG_ADC_V_R1_B] / 10;
 	}
 
-	MeasureIParams.P2 = (float)(Int16S)DataTable[REG_ADC_I_P2] / 1e6;
-	MeasureIParams.P1 = (float)DataTable[REG_ADC_I_P1] / 1000;
-	MeasureIParams.P0 = (float)((Int16S)DataTable[REG_ADC_I_P0]) / 10;
-	MeasureIParams.K = (float)DataTable[REG_ADC_I_K] / 1000;
-	MeasureIParams.B = (Int16S)DataTable[REG_ADC_I_B] / 10;
+	MeasureIParams.P2 = DataTable[REG_ADC_I_P2] / 1e6;
+	MeasureIParams.P1 = DataTable[REG_ADC_I_P1] / 1000;
+	MeasureIParams.P0 = DataTable[REG_ADC_I_P0] / 10;
+	MeasureIParams.K = DataTable[REG_ADC_I_K] / 1000;
+	MeasureIParams.B = DataTable[REG_ADC_I_B] / 10;
 }
 //-----------------------------
 

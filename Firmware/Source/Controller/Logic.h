@@ -7,7 +7,7 @@
 typedef enum __TestType
 {
 	TT_DUT = 0,
-	TT_SelfTest = 1
+	TT_SelfTest
 } TestType;
 
 // Variables
