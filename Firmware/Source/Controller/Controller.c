@@ -56,6 +56,7 @@ void CONTROL_SaveTestResult();
 void CONTROL_ClearTestResult();
 bool CONTROL_PowerSupplyWaiting(Int16U Time);
 void CONTROL_SelfTest();
+void CONTROL_ForceStopProcess();
 
 // Functions
 //
@@ -164,12 +165,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_STOP_PROCESS:
 			if (CONTROL_State == DS_InProcess)
 			{
-				LOGIC_StopProcess();
-				CONTROL_ResetOutputRegisters();
-				LOGIC_HarwareDefaultState();
-
-				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-
+				CONTROL_ForceStopProcess();
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
 			}
 			break;
@@ -191,6 +187,16 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			
 	}
 	return true;
+}
+//-----------------------------------------------
+
+void CONTROL_ForceStopProcess()
+{
+	LOGIC_StopProcess();
+	CONTROL_ResetOutputRegisters();
+	LOGIC_HarwareDefaultState();
+
+	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 }
 //-----------------------------------------------
 
@@ -270,18 +276,26 @@ void CONTROL_HighPriorityProcess()
 
 		if(LOGIC_RegulatorCycle(Sample, &Fault))
 		{
-			CONTROL_StopProcess();
-
-			if(Fault != DF_NONE)
-				CONTROL_SwitchToFault(Fault);
+			if(Fault == DF_SAFETY)
+			{
+				CONTROL_ForceStopProcess();
+				CONTROL_SetDeviceState(DS_Ready, SS_None);;
+			}
 			else
 			{
-				CONTROL_SaveTestResult();
+				CONTROL_StopProcess();
 
-				if(CONTROL_State == DS_InProcess)
-					CONTROL_SetDeviceState(DS_InProcess, SS_PS_WaitingOn);
+				if(Fault != DF_NONE)
+					CONTROL_SwitchToFault(Fault);
 				else
-					CONTROL_SetDeviceState(DS_SelfTest, SS_ST_PulseCheck);
+				{
+					CONTROL_SaveTestResult();
+
+					if(CONTROL_State == DS_InProcess)
+						CONTROL_SetDeviceState(DS_InProcess, SS_PS_WaitingOn);
+					else
+						CONTROL_SetDeviceState(DS_SelfTest, SS_ST_PulseCheck);
+				}
 			}
 		}
 	}
