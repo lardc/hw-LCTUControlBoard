@@ -36,10 +36,9 @@ volatile Int64U	CONTROL_PowerSupplyDelay = 0;
 volatile Int16U CONTROL_VoltageCounter = 0;
 volatile Int16U CONTROL_CurrentCounter = 0;
 volatile Int16U CONTROL_RegulatorErr_Counter = 0;
-volatile Int16U CONTROL_ValuesVoltage[VALUES_x_SIZE];
-volatile Int16U CONTROL_ValuesCurrent[VALUES_x_SIZE];
-volatile Int16U CONTROL_RegulatorErr[VALUES_x_SIZE];
-volatile float CONTROL_FloatEP[VALUES_x_SIZE];
+volatile float CONTROL_ValuesVoltage[VALUES_x_SIZE];
+volatile float CONTROL_ValuesCurrent[VALUES_x_SIZE];
+volatile float CONTROL_RegulatorErr[VALUES_x_SIZE];
 volatile Int16U CONTROL_FloatEP_Counter = 0;
 //
 
@@ -65,12 +64,7 @@ void CONTROL_Init()
 	Int16U EPIndexes[EP_COUNT] = {EP_VOLTAGE, EP_CURRENT, EP_REGULATOR_ERR};
 	Int16U EPSized[EP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
 	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_VoltageCounter, (pInt16U)&CONTROL_CurrentCounter, (pInt16U)&CONTROL_RegulatorErr_Counter};
-	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ValuesVoltage, (pInt16U)CONTROL_ValuesCurrent, (pInt16U)CONTROL_RegulatorErr};
-
-	Int16U FEPIndexes[FEP_COUNT] = {FEP_TEST};
-	Int16U FEPSized[FEP_COUNT] = {VALUES_x_SIZE};
-	pInt16U FEPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_FloatEP_Counter};
-	float* FEPDatas[FEP_COUNT] = {(float*)CONTROL_FloatEP};
+	pFloat32 EPDatas[EP_COUNT] = {(pFloat32)CONTROL_ValuesVoltage, (pFloat32)CONTROL_ValuesCurrent, (pFloat32)CONTROL_RegulatorErr};
 
 	// Конфигурация сервиса работы Data-table и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
@@ -79,8 +73,7 @@ void CONTROL_Init()
 	DT_SaveFirmwareInfo(CAN_SLAVE_NID, 0);
 	// Инициализация device profile
 	DEVPROFILE_Init(&CONTROL_DispatchAction, &CycleActive);
-	DEVPROFILE_InitEPService(EPIndexes, EPSized, EPCounters, EPDatas);
-	DEVPROFILE_InitFEPService(FEPIndexes, FEPSized, FEPCounters, FEPDatas);
+	DEVPROFILE_InitFEPService(EPIndexes, EPSized, EPCounters, EPDatas);
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
 	CONTROL_ResetToDefaultState();

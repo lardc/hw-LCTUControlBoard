@@ -166,7 +166,7 @@ void LOGIC_SaveRegulatorErr(float Error)
 	{
 		ScopeLogStep = 0;
 
-		CONTROL_RegulatorErr[LocalCounter] = (Int16S)(Error * 10);
+		CONTROL_RegulatorErr[LocalCounter] = Error;
 		CONTROL_RegulatorErr_Counter = LocalCounter;
 
 		++LocalCounter;
@@ -236,8 +236,8 @@ void LOGIC_LoggingProcess(MeasureSample Sample)
 
 	if (ScopeLogStep++ >= DataTable[REG_SCOPE_STEP])
 	{
-		CONTROL_ValuesVoltage[LocalCounter] = (Int16U)(Sample.Voltage * 10);
-		CONTROL_ValuesCurrent[LocalCounter] = (Int16U)(Sample.Current);
+		CONTROL_ValuesVoltage[LocalCounter] = Sample.Voltage;
+		CONTROL_ValuesCurrent[LocalCounter] = Sample.Current;
 
 		ScopeLogStep = 0;
 		++LocalCounter;
