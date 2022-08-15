@@ -56,7 +56,6 @@ void CONTROL_SaveTestResult();
 void CONTROL_ClearTestResult();
 bool CONTROL_PowerSupplyWaiting(Int16U Time);
 void CONTROL_SelfTest();
-void CONTROL_ForceStopProcess();
 
 // Functions
 //
@@ -164,10 +163,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 		case ACT_STOP_PROCESS:
 			if (CONTROL_State == DS_InProcess)
-			{
 				CONTROL_ForceStopProcess();
-				CONTROL_SetDeviceState(DS_Ready, SS_None);
-			}
 			break;
 
 		case ACT_CLR_FAULT:
@@ -197,6 +193,8 @@ void CONTROL_ForceStopProcess()
 	LOGIC_HarwareDefaultState();
 
 	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+
+	CONTROL_SetDeviceState(DS_Ready, SS_None);
 }
 //-----------------------------------------------
 
@@ -267,36 +265,37 @@ bool CONTROL_PowerSupplyWaiting(Int16U Time)
 void CONTROL_HighPriorityProcess()
 {
 	MeasureSample Sample;
-	Int16U Fault = 0;
+	RegulatorState RegulatorResult;
 
 	if(CONTROL_SubState == SS_Pulse || CONTROL_SubState == SS_ST_Pulse)
 	{
 		Sample = MEASURE_Sample();
 		LOGIC_LoggingProcess(Sample);
 
-		if(LOGIC_RegulatorCycle(Sample, &Fault))
+		RegulatorResult = LOGIC_RegulatorCycle(Sample);
+
+		if(LL_SafetyGetState())
 		{
-			if(Fault == DF_SAFETY)
-			{
-				CONTROL_ForceStopProcess();
-				CONTROL_SetDeviceState(DS_Ready, SS_None);;
-			}
+			CONTROL_ForceStopProcess();
+			DataTable[REG_WARNING] = WARNING_SAFETY;
+
+			return;
+		}
+		else if(RegulatorResult == RS_FollowingError)
+		{
+			if(Sample.Current >= DISOPAMP_CURRENT_MAX)
+				DataTable[REG_WARNING] = WARNING_OUTPUT_SHORT;
 			else
 			{
-				CONTROL_StopProcess();
-
-				if(Fault != DF_NONE)
-					CONTROL_SwitchToFault(Fault);
-				else
-				{
-					CONTROL_SaveTestResult();
-
-					if(CONTROL_State == DS_InProcess)
-						CONTROL_SetDeviceState(DS_InProcess, SS_PS_WaitingOn);
-					else
-						CONTROL_SetDeviceState(DS_SelfTest, SS_ST_PulseCheck);
-				}
+				CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
+				return;
 			}
+		}
+
+		if(RegulatorResult == RS_Finished || RegulatorResult == RS_FollowingError)
+		{
+			CONTROL_StopProcess();
+			CONTROL_SaveTestResult();
 		}
 	}
 }
@@ -318,6 +317,11 @@ void CONTROL_StopProcess()
 	CONTROL_PulseToPulseTime = CONTROL_TimeCounter + DataTable[REG_AFTER_PULSE_PAUSE];
 
 	LOGIC_HarwareDefaultState();
+
+	if(CONTROL_State == DS_InProcess)
+		CONTROL_SetDeviceState(DS_InProcess, SS_PS_WaitingOn);
+	else
+		CONTROL_SetDeviceState(DS_SelfTest, SS_ST_PulseCheck);
 }
 //-----------------------------------------------
 

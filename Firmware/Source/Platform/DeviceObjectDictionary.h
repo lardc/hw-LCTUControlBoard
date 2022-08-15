@@ -106,15 +106,14 @@
 //  Fault and disable codes
 #define DF_NONE							0
 #define DF_FOLLOWING_ERROR				1
-#define DF_SAFETY						2
-#define DF_CURRENT_MEASURING			3
+#define DF_CURRENT_MEASURING			2
 
 // Problem
 #define PROBLEM_NONE					0
 
 //  Warning
 #define WARNING_NONE					0
-#define WARNING_OSC_SYNC				1
+#define WARNING_SAFETY					1
 #define WARNING_OUTPUT_SHORT			2
 
 //  User Errors

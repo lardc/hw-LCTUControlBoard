@@ -28,6 +28,7 @@ volatile Int64U LOGIC_TestTime = 0;
 volatile Int16U RingBufferIndex = 0;
 Int16U FollowingErrorCounter = 0;
 Int16U FollowingErrorCounterMax = 0;
+Int16U PAUsyncDelayCounter = 0;
 
 // Arrays
 float RingBuffer_Voltage[MAF_BUFFER_LENGTH];
@@ -91,17 +92,11 @@ void LOGIC_CacheVariables()
 }
 //-----------------------------
 
-bool LOGIC_RegulatorCycle(MeasureSample Sample, Int16U* Fault)
+RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 {
 	float RegulatorError, Qp, RegulatorOut;
-	bool Finished = false;
 	static Int16U PAUsyncDelayCounter = 0;
-
-	if(LL_SafetyGetState())
-	{
-		*Fault = DF_SAFETY;
-		return true;
-	}
+	RegulatorState Result = RS_InProcess;
 
 	// Формирование линейно нарастающего фронта импульса напряжения
 	if(VoltageTarget < VoltageSetpoint)
@@ -126,7 +121,12 @@ bool LOGIC_RegulatorCycle(MeasureSample Sample, Int16U* Fault)
 			FollowingErrorCounter--;
 	}
 	else
+	{
 		FollowingErrorCounter++;
+
+		if(FollowingErrorCounter >= FollowingErrorCounterMax && !DataTable[REG_FOLLOWING_ERR_MUTE])
+			Result = RS_FollowingError;
+	}
 
 	Qi += RegulatorError * RegulatorIcoef;
 
@@ -146,26 +146,11 @@ bool LOGIC_RegulatorCycle(MeasureSample Sample, Int16U* Fault)
 
 	LOGIC_SaveRegulatorErr(RegulatorError);
 
+	RegulatorPulseCounter++;
+	if (RegulatorPulseCounter >= PulsePointsQuantity)
+		Result = RS_Finished;
 
-	if(!DataTable[REG_FOLLOWING_ERR_MUTE] && FollowingErrorCounter >= FollowingErrorCounterMax)
-	{
-		if(Sample.Current >= DISOPAMP_CURRENT_MAX)
-			DataTable[REG_WARNING] = WARNING_OUTPUT_SHORT;
-		else
-			*Fault = DF_FOLLOWING_ERROR;
-
-		Finished = true;
-	}
-	else
-	{
-		RegulatorPulseCounter++;
-		Finished = (RegulatorPulseCounter >= PulsePointsQuantity) ? true : false;
-	}
-
-	if(Finished)
-		PAUsyncDelayCounter = 0;
-
-	return Finished;
+	return Result;
 }
 //-----------------------------
 
@@ -288,6 +273,7 @@ void LOGIC_ClearVariables()
 	VoltageTarget = 0;
 	LOGIC_TestTime = 0;
 	FollowingErrorCounter = 0;
+	PAUsyncDelayCounter = 0;
 	IsImpulse = false;
 }
 //-----------------------------

@@ -59,5 +59,6 @@ void CONTROL_HighPriorityProcess();
 void CONTROL_SwitchToFault(Int16U Reason);
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
 void CONTROL_StartProcess();
+void CONTROL_ForceStopProcess();
 
 #endif // __CONTROLLER_H

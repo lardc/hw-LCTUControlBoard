@@ -10,13 +10,20 @@ typedef enum __TestType
 	TT_SelfTest
 } TestType;
 
+typedef enum __RegulatorState
+{
+	RS_InProcess = 1,
+	RS_Finished = 2,
+	RS_FollowingError = 3,
+} RegulatorState;
+
 // Variables
 extern float VoltageTarget;
 extern float CurrentCutOff;
 extern bool IsImpulse;
 
 // Functions
-bool LOGIC_RegulatorCycle(MeasureSample Sample, Int16U* Fault);
+RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample);
 void LOGIC_StopProcess();
 void LOGIC_StartPrepare(TestType Type);
 void LOGIC_LoggingProcess(MeasureSample Sample);
