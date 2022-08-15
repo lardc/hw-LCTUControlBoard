@@ -165,6 +165,11 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if (CONTROL_State == DS_InProcess)
 			{
 				LOGIC_StopProcess();
+				CONTROL_ResetOutputRegisters();
+				LOGIC_HarwareDefaultState();
+
+				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
 			}
 			break;
@@ -317,11 +322,6 @@ void CONTROL_ClearTestResult()
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {
-	if(CONTROL_State == DS_SelfTest)
-		DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-	else
-		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-
 	CONTROL_SetDeviceState(DS_Fault, SS_None);
 	DataTable[REG_FAULT_REASON] = Reason;
 }
