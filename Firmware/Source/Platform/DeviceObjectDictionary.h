@@ -66,11 +66,12 @@
 #define REG_PS_FIRST_START_TIME			37	// Время готовности системы питания при первом старте (мс)
 #define REG_PS_PREPARE_TIME				38	// Время готовности системы питания после формирования импульса (мс)
 #define REG_VOLTAGE_RANGE_THRESHOLD		39	// Порог переключения диапазона напряжения (В)
-#define REG_FAN_CTRL					40	// Контроль вентилятора
+#define REG_FAN_CTRL					40	// Управление вентилятором
 #define REG_FAN_OPERATE_PERIOD			41	// Период работы вентилятора (с)
 #define REG_FAN_OPERATE_TIME			42	// Время работы вентилятора (с)
 #define REG_PAU_SNC_DELAY				43	// Задержка синхронизации PAU с момента выхода на полку импульса (в тиках таймера регулятора)
 #define REG_PAU_EMULATED				44	// Эмуляция работы PAU
+#define REG_LAMP_CTRL					45	// Управление внешним индикатором
 
 #define REG_VOLTAGE_SETPOINT			128	// Уставка по напряжению, В
 #define REG_PULSE_WIDTH					129	// Длительность импульса напряжения, мс

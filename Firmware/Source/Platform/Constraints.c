@@ -53,7 +53,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{FAN_TIME_MIN, FAN_TIME_MAX, FAN_TIME_DEF},									// 42
 		{PAU_DELAY_SYNC_MIN, PAU_DELAY_SYNC_MAX, PAU_DELAY_SYNC_DEF},				// 43
 		{NO, YES, YES},																// 44
-		{0, 0, 0},																	// 45
+		{NO, YES, YES},																// 45
 		{0, 0, 0},																	// 46
 		{0, 0, 0},																	// 47
 		{0, 0, 0},																	// 48

@@ -315,8 +315,6 @@ void LOGIC_HandleFan(bool IsImpulse)
 			LL_FanControl(false);
 		}
 	}
-	else
-		LL_FanControl(false);
 }
 //-----------------------------------------------
 
@@ -324,15 +322,18 @@ void CONTROL_HandleExternalLamp(bool IsImpulse)
 {
 	static Int64U ExternalLampTimeout = 0;
 
-	if(IsImpulse)
+	if(DataTable[REG_LAMP_CTRL])
 	{
-		LL_ExtIndicationControl(true);
-		ExternalLampTimeout = CONTROL_TimeCounter + EXT_LAMP_ON_STATE_TIME;
-	}
-	else
-	{
-		if(CONTROL_TimeCounter >= ExternalLampTimeout)
-			LL_ExtIndicationControl(false);
+		if(IsImpulse)
+		{
+			LL_ExtIndicationControl(true);
+			ExternalLampTimeout = CONTROL_TimeCounter + EXT_LAMP_ON_STATE_TIME;
+		}
+		else
+		{
+			if(CONTROL_TimeCounter >= ExternalLampTimeout)
+				LL_ExtIndicationControl(false);
+		}
 	}
 }
 //-----------------------------------------------
