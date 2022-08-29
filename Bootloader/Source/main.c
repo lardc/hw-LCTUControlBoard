@@ -53,6 +53,7 @@ void ConfigGPIO()
 {
 	// Включение тактирования портов
 	RCC_GPIO_Clk_EN(PORTA);
+	RCC_GPIO_Clk_EN(PORTB);
 	
 	//Выходы
 	GPIO_Config(LED_BLINK_PORT, LED_BLINK_PIN, Output, PushPull, HighSpeed, NoPull);
