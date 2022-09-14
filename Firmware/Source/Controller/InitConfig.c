@@ -29,12 +29,13 @@ void INITCFG_ConfigIO()
 	GPIO_InitPushPullOutput(GPIO_PAU_SHUNT);
 	GPIO_InitPushPullOutput(GPIO_STST);
 	GPIO_InitPushPullOutput(GPIO_COMM);
-	GPIO_InitPushPullOutput(GPIO_FAN_CTRL);
 	GPIO_InitPushPullOutput(GPIO_IND_CTRL);
-	GPIO_InitPushPullOutput(GPIO_PAU_SYNC);
+	GPIO_InitPushPullOutput(GPIO_PAU_SO);
+	GPIO_InitPushPullOutput(GPIO_FAN_CTRL);
 
 	// Входы
 	GPIO_InitInput(GPIO_SAFETY, Pull_Up);
+	GPIO_InitInput(GPIO_PAU_SI, NoPull);
 
 	// Начальная установка состояний выводов
 	GPIO_SetState(GPIO_OPAMP_SYNC, true);
