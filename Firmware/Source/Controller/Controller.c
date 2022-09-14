@@ -45,7 +45,6 @@ volatile Int16U CONTROL_FloatEP_Counter = 0;
 // Forward functions
 //
 static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
-void CONTROL_DelayMs(uint32_t Delay);
 void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
@@ -344,14 +343,6 @@ void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState)
 	CONTROL_SubState = NewSubState;
 	DataTable[REG_DEV_STATE] = NewState;
 	DataTable[REG_SUB_STATE] = NewSubState;
-}
-//------------------------------------------
-
-void CONTROL_DelayMs(uint32_t Delay)
-{
-	uint64_t Counter = (uint64_t)CONTROL_TimeCounter + Delay;
-	while(Counter > CONTROL_TimeCounter)
-		CONTROL_UpdateWatchDog();
 }
 //------------------------------------------
 
