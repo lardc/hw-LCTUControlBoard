@@ -72,6 +72,7 @@
 #define REG_PAU_SNC_DELAY				43	// Задержка синхронизации PAU с момента выхода на полку импульса (в тиках таймера регулятора)
 #define REG_PAU_EMULATED				44	// Эмуляция работы PAU
 #define REG_LAMP_CTRL					45	// Управление внешним индикатором
+#define REG_SELF_TEST_ACTIVE			46	// Активация самотестирования при запуске блока
 
 #define REG_VOLTAGE_SETPOINT			128	// Уставка по напряжению, В
 #define REG_PULSE_WIDTH					129	// Длительность импульса напряжения, мс

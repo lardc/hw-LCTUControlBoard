@@ -33,7 +33,7 @@ void LL_OscSyncSetState(bool State)
 
 void LL_PAUSyncSetState(bool State)
 {
-	GPIO_SetState(GPIO_PAU_SYNC, State);
+	GPIO_SetState(GPIO_PAU_SO, State);
 }
 //-----------------------------
 

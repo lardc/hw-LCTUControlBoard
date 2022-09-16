@@ -216,7 +216,12 @@ void CONTROL_LogicProcess()
 			case SS_PS_WaitingStart:
 				LL_PowerSupply(true);
 				if(CONTROL_PowerSupplyWaiting(DataTable[REG_PS_FIRST_START_TIME]))
-					CONTROL_SetDeviceState(DS_SelfTest, SS_None);
+				{
+					if(DataTable[REG_SELF_TEST_ACTIVE])
+						CONTROL_SetDeviceState(DS_SelfTest, SS_None);
+					else
+						CONTROL_SetDeviceState(DS_Ready, SS_None);
+				}
 				break;
 
 			case SS_PS_WaitingOn:
