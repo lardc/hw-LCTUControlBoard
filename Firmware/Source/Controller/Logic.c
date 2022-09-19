@@ -10,7 +10,7 @@
 #include "Controller.h"
 
 // Definitions
-#define MAF_BUFFER_LENGTH				128
+#define MAF_BUFFER_LENGTH				16
 #define MAF_BUFFER_INDEX_MASK			MAF_BUFFER_LENGTH - 1
 //
 
