@@ -29,7 +29,7 @@ void DBGACT_GeneratePAUSync()
 
 void DBGACT_OpAmpSetVoltage(uint16_t Data)
 {
-	LL_WriteDACx(Data | DAC_CHANNEL_B);
+	LL_WriteDACx(Data);
 }
 //-----------------------------
 
