@@ -73,6 +73,7 @@
 #define REG_PAU_EMULATED				44	// Эмуляция работы PAU
 #define REG_LAMP_CTRL					45	// Управление внешним индикатором
 #define REG_SELF_TEST_ACTIVE			46	// Активация самотестирования при запуске блока
+#define REG_SAFETY_ACTIVE				47	// Активация системы безопасности
 
 #define REG_VOLTAGE_SETPOINT			128	// Уставка по напряжению, В
 #define REG_PULSE_WIDTH					129	// Длительность импульса напряжения, мс

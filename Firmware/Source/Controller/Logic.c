@@ -274,7 +274,6 @@ void LOGIC_ClearVariables()
 	LOGIC_TestTime = 0;
 	FollowingErrorCounter = 0;
 	PAUsyncDelayCounter = 0;
-	IsImpulse = false;
 }
 //-----------------------------
 

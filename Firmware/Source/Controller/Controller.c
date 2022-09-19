@@ -187,6 +187,8 @@ void CONTROL_ForceStopProcess()
 	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 
 	CONTROL_SetDeviceState(DS_Ready, SS_None);
+
+	IsImpulse = false;
 }
 //-----------------------------------------------
 
@@ -271,7 +273,7 @@ void CONTROL_HighPriorityProcess()
 
 		RegulatorResult = LOGIC_RegulatorCycle(Sample);
 
-		if(LL_SafetyGetState())
+		if(LL_SafetyGetState() && DataTable[REG_SAFETY_ACTIVE])
 		{
 			CONTROL_ForceStopProcess();
 			DataTable[REG_WARNING] = WARNING_SAFETY;
@@ -319,6 +321,8 @@ void CONTROL_StopProcess()
 		CONTROL_SetDeviceState(DS_InProcess, SS_PS_WaitingOn);
 	else
 		CONTROL_SetDeviceState(DS_SelfTest, SS_ST_PulseCheck);
+
+	IsImpulse = false;
 }
 //-----------------------------------------------
 

@@ -55,7 +55,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{NO, YES, YES},																// 44
 		{NO, YES, YES},																// 45
 		{NO, YES, YES},																// 46
-		{0, 0, 0},																	// 47
+		{NO, YES, YES},																// 47
 		{0, 0, 0},																	// 48
 		{0, 0, 0},																	// 49
 		{0, 0, 0},																	// 50
