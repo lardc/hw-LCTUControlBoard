@@ -72,7 +72,7 @@ void LOGIC_HarwareDefaultState()
 
 	if(CONTROL_State == DS_InProcess)
 	{
-		DELAY_MS(10);
+		DELAY_US(500);
 		LL_OutputCommutationControl(false);
 	}
 }
@@ -279,12 +279,8 @@ void LOGIC_ClearVariables()
 
 void LOGIC_SetVolatgeRange()
 {
-	if(DataTable[REG_VOLTAGE_SETPOINT] > DataTable[REG_VOLTAGE_RANGE_THRESHOLD])
-		VoltageRange = VOLTAGE_RANGE_1;
-	else
-		VoltageRange = VOLTAGE_RANGE_0;
-
-	LL_VoltageRangeSet(VoltageRange);
+	(DataTable[REG_VOLTAGE_SETPOINT] > DataTable[REG_VOLTAGE_RANGE_THRESHOLD]) ?
+			LL_VoltageRangeSet(VOLTAGE_RANGE_1) : LL_VoltageRangeSet(VOLTAGE_RANGE_0);
 }
 //-----------------------------
 
