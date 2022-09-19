@@ -142,8 +142,6 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if (CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
-				LOGIC_StartPrepare(TT_DUT);
-
 				CONTROL_SetDeviceState(DS_InProcess, SS_WaitPause);
 			}
 			else
@@ -211,6 +209,7 @@ void CONTROL_LogicProcess()
 				break;
 
 			case SS_StartPulse:
+				LOGIC_StartPrepare(TT_DUT);
 				CONTROL_SetDeviceState(DS_InProcess, SS_Pulse);
 				CONTROL_StartProcess();
 				break;
