@@ -28,9 +28,9 @@
 #define AFTER_PULSE_PAUSE_MAX		5000		// (мс)
 #define AFTER_PULSE_PAUSE_DEF		2000		// (мс)
 //
-#define COEF_K_MIN					1
+#define COEF_K_MIN					0
 #define COEF_K_MAX					INT16U_MAX
-#define COEF_K_DEF					1000
+#define COEF_K_DEF					1
 //
 #define OFFSET_MIN					0
 #define OFFSET_MAX					INT16U_MAX
@@ -42,7 +42,7 @@
 //
 #define COEF_P1_MIN					0
 #define COEF_P1_MAX					INT16U_MAX
-#define COEF_P1_DEF					1000
+#define COEF_P1_DEF					1
 //
 #define COEF_P0_MIN					0
 #define COEF_P0_MAX					INT16U_MAX
