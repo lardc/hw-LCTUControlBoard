@@ -25,7 +25,7 @@ extern bool IsImpulse;
 // Functions
 RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample);
 void LOGIC_StopProcess();
-void LOGIC_StartPrepare(TestType Type);
+void LOGIC_StartPrepare();
 void LOGIC_LoggingProcess(MeasureSample Sample);
 float LOGIC_GetAverageVoltage();
 float LOGIC_GetLastSampledVoltage();

@@ -44,23 +44,11 @@ float LOGIC_GetLastSampledData(float* InputBuffer);
 
 // Functions
 //
-void LOGIC_StartPrepare(TestType Type)
-{
-	LOGIC_HarwarePrepare(Type);
-
-	LOGIC_CacheVariables();
-	CU_LoadConvertParams(VoltageRange);
-}
-//-----------------------------
-
-void LOGIC_HarwarePrepare(TestType Type)
+void LOGIC_StartPrepare()
 {
 	LOGIC_SetVolatgeRange();
-
-	if(Type == TT_DUT)
-		LL_OutputCommutationControl(true);
-	else
-		LL_SelfTestCommutationControl(true);
+	LOGIC_CacheVariables();
+	CU_LoadConvertParams(VoltageRange);
 }
 //-----------------------------
 
@@ -69,12 +57,6 @@ void LOGIC_HarwareDefaultState()
 	LOGIC_OSCSync(false);
 	LOGIC_PAUSync(false);
 	LL_PAU_Shunting(true);
-
-	if(CONTROL_State == DS_InProcess)
-	{
-		DELAY_US(500);
-		LL_OutputCommutationControl(false);
-	}
 }
 //-----------------------------
 

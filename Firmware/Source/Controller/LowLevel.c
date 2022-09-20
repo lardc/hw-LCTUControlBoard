@@ -53,8 +53,6 @@ void LL_SelfTestCommutationControl(bool State)
 {
 	GPIO_SetState(GPIO_COMM, false);
 	GPIO_SetState(GPIO_STST, State);
-
-	DELAY_MS(COMMUTATION_DELAY);
 }
 //-----------------------------
 
@@ -62,8 +60,6 @@ void LL_OutputCommutationControl(bool State)
 {
 	GPIO_SetState(GPIO_STST, false);
 	GPIO_SetState(GPIO_COMM, State);
-
-	DELAY_MS(COMMUTATION_DELAY);
 }
 //-----------------------------
 

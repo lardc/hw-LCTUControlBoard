@@ -44,7 +44,7 @@ void SELFTEST_Process()
 		if(DataTable[REG_VOLTAGE_SETPOINT] > LCTU_VOLTAGE_MAX)
 			DataTable[REG_VOLTAGE_SETPOINT] = LCTU_VOLTAGE_MAX;
 
-		LOGIC_StartPrepare(TT_SelfTest);
+		LOGIC_StartPrepare();
 
 		CONTROL_SetDeviceState(DS_SelfTest, SS_ST_Pulse);
 		CONTROL_StartProcess();

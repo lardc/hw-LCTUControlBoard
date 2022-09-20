@@ -6,7 +6,7 @@
 #define	SCCI_TIMEOUT_TICKS						1000	// Таймаут интерфейса SCCI (в мс)
 #define EP_WRITE_COUNT							0		// Количество массивов для записи
 #define EP_COUNT								3		// Количество массивов для чтения
-#define FEP_COUNT								1		// Количество массивов для чтения типа float
+#define FEP_COUNT								3		// Количество массивов для чтения типа float
 #define VALUES_x_SIZE							300		// Размер массивов
 #define ENABLE_LOCKING							FALSE	// Защита NV регистров паролем
 
@@ -17,6 +17,7 @@
 #define DISOPAMP_CURRENT_MAX					32000	// мкА
 //
 #define COMMUTATION_DELAY						7		// мс
+#define POST_PULSE_DELAY						1000	// мкс
 #define EXT_LAMP_ON_STATE_TIME					500		// мс
 #define LCTU_VOLTAGE_MAX						3300	// В
 //

@@ -21,12 +21,15 @@ typedef enum __DeviceState
 typedef enum __DeviceSubState
 {
 	SS_None = 0,
-	SS_PS_WaitingStart,
-	SS_PS_WaitingOn,
-	SS_PS_WaitingOff,
-	SS_WaitPause,
+	SS_StartProcess,
+	SS_IdleTimeCheck,
+	SS_CapChargeStart,
+	SS_CapChargeStop,
+	SS_CommutationEnable,
+	SS_CommutationDisable,
 	SS_StartPulse,
 	SS_Pulse,
+	SS_PostPulseDelay,
 
 	SS_ST_Sync = 10,
 	SS_ST_StartPulse,
@@ -58,6 +61,7 @@ void CONTROL_DelayMs(uint32_t Delay);
 void CONTROL_HighPriorityProcess();
 void CONTROL_SwitchToFault(Int16U Reason);
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
+void CONTROL_SetDeviceSubState(DeviceSubState NewSubState);
 void CONTROL_StartProcess();
 void CONTROL_ForceStopProcess();
 
