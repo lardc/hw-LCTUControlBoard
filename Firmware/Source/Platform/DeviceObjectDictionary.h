@@ -89,7 +89,7 @@
 #define REG_PROBLEM						196	// Регистр Problem
 #define REG_OP_RESULT					197	// Регистр результата операции
 #define REG_SELF_TEST_OP_RESULT			198	// Регистр результата самотестирования
-#define REG_SUB_STATE					198	// Регистр вспомогательного состояния
+#define REG_SUB_STATE					199	// Регистр вспомогательного состояния
 
 #define REG_RESULT_VOLTAGE				200	// Достигнутое напряжение во время теста (В)
 #define REG_RESULT_CURRENT				201	// Измеренный ток утечки (мкА)
