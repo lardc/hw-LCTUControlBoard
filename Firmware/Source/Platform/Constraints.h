@@ -63,8 +63,8 @@
 #define VOLTAGE_SETPOINT_MAX		LCTU_VOLTAGE_MAX		// В
 //
 #define PS_FIRST_START_TIME_MIN		500						// мс
-#define PS_FIRST_START_TIME_MAX		5000					// мс
-#define PS_FIRST_START_TIME_DEF		2000					// мс
+#define PS_FIRST_START_TIME_MAX		20000					// мс
+#define PS_FIRST_START_TIME_DEF		10000					// мс
 
 #define PS_PREPARE_TIME_MIN			10						// мс
 #define PS_PREPARE_TIME_MAX			500						// мс
