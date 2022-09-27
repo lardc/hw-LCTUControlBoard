@@ -328,7 +328,9 @@ void CONTROL_HighPriorityProcess()
 		if(RegulatorResult == RS_Finished || RegulatorResult == RS_FollowingError)
 		{
 			CONTROL_StopProcess();
-			CONTROL_SaveTestResult();
+
+			if(CONTROL_State == DS_InProcess)
+				CONTROL_SaveTestResult();
 		}
 	}
 }
