@@ -170,6 +170,12 @@ float LOGIC_GetAverageVoltage()
 }
 //-----------------------------
 
+float LOGIC_GetAverageCurrent()
+{
+	return LOGIC_ExtractAveragedDatas(&RingBuffer_Current[0], MAF_BUFFER_LENGTH);
+}
+//-----------------------------
+
 float LOGIC_GetLastSampledVoltage()
 {
 	return LOGIC_GetLastSampledData(&RingBuffer_Voltage[0]);
@@ -201,7 +207,7 @@ float LOGIC_ExtractAveragedDatas(float* Buffer, Int16U BufferLength)
 void LOGIC_SaveToRingBuffer(MeasureSample Sample)
 {
 	RingBuffer_Voltage[RingBufferIndex] = Sample.Voltage;
-	RingBuffer_Voltage[RingBufferIndex] = Sample.Current;
+	RingBuffer_Current[RingBufferIndex] = Sample.Current;
 
 	RingBufferIndex++;
 	RingBufferIndex &= MAF_BUFFER_INDEX_MASK;

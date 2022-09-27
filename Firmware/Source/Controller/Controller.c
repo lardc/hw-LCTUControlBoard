@@ -50,7 +50,6 @@ void CONTROL_LogicProcess();
 void CONTROL_StopProcess();
 void CONTROL_ResetOutputRegisters();
 void CONTROL_SaveTestResult();
-void CONTROL_ClearTestResult();
 bool CONTROL_Delay(Int16U Time);
 void CONTROL_SelfTest();
 void CONTROL_Commutation(TestType Type, bool State);
@@ -201,7 +200,7 @@ void CONTROL_LogicProcess()
 					CONTROL_Commutation(TT_SelfTest, true);
 					DELAY_MS(COMMUTATION_DELAY);
 
-					CONTROL_SetDeviceState(DS_SelfTest, SS_ST_StartPulse);
+					CONTROL_SetDeviceState(DS_SelfTest, SS_ST_StartPrepare);
 				}
 				else
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
@@ -358,13 +357,8 @@ void CONTROL_Commutation(TestType Type, bool State)
 void CONTROL_SaveTestResult()
 {
 	DataTable[REG_RESULT_VOLTAGE] = LOGIC_GetAverageVoltage();
+	DataTable[REG_RESULT_CURRENT] = LOGIC_GetAverageCurrent();
 	DataTable[REG_OP_RESULT] = OPRESULT_OK;
-}
-//-----------------------------------------------
-
-void CONTROL_ClearTestResult()
-{
-	DataTable[REG_RESULT_VOLTAGE] = 0;
 }
 //-----------------------------------------------
 

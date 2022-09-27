@@ -28,6 +28,7 @@ void LOGIC_StopProcess();
 void LOGIC_StartPrepare();
 void LOGIC_LoggingProcess(MeasureSample Sample);
 float LOGIC_GetAverageVoltage();
+float LOGIC_GetAverageCurrent();
 float LOGIC_GetLastSampledVoltage();
 void LOGIC_SetVolatgeRange();
 void LOGIC_HandleFan(bool IsImpulse);
