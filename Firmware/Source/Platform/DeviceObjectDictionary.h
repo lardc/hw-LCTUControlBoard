@@ -131,6 +131,4 @@
 #define EP_CURRENT						2
 #define EP_REGULATOR_ERR				3
 
-#define FEP_TEST						1
-
 #endif //  __DEV_OBJ_DIC_H
