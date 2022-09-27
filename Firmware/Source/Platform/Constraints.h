@@ -28,23 +28,23 @@
 #define AFTER_PULSE_PAUSE_MAX		5000		// (мс)
 #define AFTER_PULSE_PAUSE_DEF		2000		// (мс)
 //
-#define COEF_K_MIN					0
-#define COEF_K_MAX					INT16U_MAX
+#define COEF_K_MIN					-INT16S_MAX
+#define COEF_K_MAX					INT16S_MAX
 #define COEF_K_DEF					1
 //
-#define OFFSET_MIN					0
-#define OFFSET_MAX					INT16U_MAX
+#define OFFSET_MIN					-INT16S_MAX
+#define OFFSET_MAX					INT16S_MAX
 #define OFFSET_DEF					0
 //
-#define COEF_P2_MIN					0
-#define COEF_P2_MAX					INT16U_MAX
+#define COEF_P2_MIN					-INT16S_MAX
+#define COEF_P2_MAX					INT16S_MAX
 #define COEF_P2_DEF					0
 //
-#define COEF_P1_MIN					0
-#define COEF_P1_MAX					INT16U_MAX
+#define COEF_P1_MIN					-INT16S_MAX
+#define COEF_P1_MAX					INT16S_MAX
 #define COEF_P1_DEF					1
 //
-#define COEF_P0_MIN					0
+#define COEF_P0_MIN					-INT16S_MAX
 #define COEF_P0_MAX					INT16U_MAX
 #define COEF_P0_DEF					0
 //
@@ -59,7 +59,7 @@
 #define NO							0
 #define YES							1
 //
-#define VOLTAGE_SETPOINT_MIN		100						// В
+#define VOLTAGE_SETPOINT_MIN		200						// В
 #define VOLTAGE_SETPOINT_MAX		LCTU_VOLTAGE_MAX		// В
 //
 #define PS_FIRST_START_TIME_MIN		500						// мс
@@ -70,8 +70,8 @@
 #define PS_PREPARE_TIME_MAX			500						// мс
 #define PS_PREPARE_TIME_DEF			50						// мс
 //
-#define VOLTAGE_THRESHOLD_MIN		500						// В
-#define VOLTAGE_THRESHOLD_MAX		2000					// В
+#define VOLTAGE_THRESHOLD_MIN		VOLTAGE_SETPOINT_MIN	// В
+#define VOLTAGE_THRESHOLD_MAX		LCTU_VOLTAGE_MAX		// В
 #define VOLTAGE_THRESHOLD_DEF		1300					// В
 //
 #define FAN_PERIOD_MIN				60						// c
