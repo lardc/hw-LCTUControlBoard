@@ -154,6 +154,16 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				CONTROL_ForceStopProcess();
 			break;
 
+		case ACT_START_SELF_TEST:
+			if(CONTROL_State == DS_None || CONTROL_State == DS_Ready)
+			{
+				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
+				CONTROL_SetDeviceState(DS_InProcess, SS_StartProcess);
+			}
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
 		case ACT_CLR_FAULT:
 			if (CONTROL_State == DS_Fault)
 			{

@@ -22,6 +22,8 @@
 
 #define ACT_START_PROCESS				100	// Старт измерения
 #define ACT_STOP_PROCESS				101	// Стоп измерения
+//
+#define ACT_START_SELF_TEST				105	// Запуск самотестирования
 
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
