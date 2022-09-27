@@ -11,13 +11,13 @@
 #define ENABLE_LOCKING							FALSE	// Защита NV регистров паролем
 
 // Параметры DiscreteOpAmp
-#define DISOPAMP_CELL_VOLATGE_MAX				490		// V
+#define DISOPAMP_CELL_VOLATGE_MAX				520		// V
 #define DISOPAMP_TOTAL_CELL						7
 #define DSIOPAMP_STACK_VOLTAGE_MAX				(DISOPAMP_CELL_VOLATGE_MAX * DISOPAMP_TOTAL_CELL)
 #define DISOPAMP_CURRENT_MAX					32000	// мкА
 //
 #define COMMUTATION_DELAY						7		// мс
-#define POST_PULSE_DELAY						1000	// мкс
+#define POST_PULSE_DELAY						500		// мкс
 #define EXT_LAMP_ON_STATE_TIME					500		// мс
 #define LCTU_VOLTAGE_MAX						3300	// В
 //

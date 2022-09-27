@@ -201,7 +201,7 @@ void CONTROL_LogicProcess()
 					CONTROL_Commutation(TT_SelfTest, true);
 					DELAY_MS(COMMUTATION_DELAY);
 
-					CONTROL_SetDeviceState(DS_SelfTest, SS_None);
+					CONTROL_SetDeviceState(DS_SelfTest, SS_ST_StartPulse);
 				}
 				else
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
@@ -246,7 +246,10 @@ void CONTROL_LogicProcess()
 			if(CONTROL_Delay(COMMUTATION_DELAY))
 			{
 				if(CONTROL_State != DS_Fault)
+				{
+					LL_PowerSupply(true);
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
+				}
 				else
 					CONTROL_SetDeviceSubState(SS_None);
 			}
@@ -343,8 +346,6 @@ void CONTROL_StopProcess()
 		CONTROL_SetDeviceSubState(SS_PostPulseDelay);
 	else
 		CONTROL_SetDeviceState(DS_SelfTest, SS_ST_PulseCheck);
-
-	LL_PowerSupply(true);
 }
 //-----------------------------------------------
 
