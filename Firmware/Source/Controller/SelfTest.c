@@ -27,6 +27,7 @@ void SELFTEST_Process()
 	{
 		case SS_ST_StartPrepare:
 			DataTable[REG_VOLTAGE_SETPOINT] = 0;
+			LOGIC_ResetOutputRegisters();
 			CONTROL_SetDeviceState(DS_SelfTest, SS_ST_StartPulse);
 			break;
 
