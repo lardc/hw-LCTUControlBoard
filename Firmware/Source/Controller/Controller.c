@@ -14,6 +14,7 @@
 #include "BCCIxParams.h"
 #include "DiscreteOpAmp.h"
 #include "SelfTest.h"
+#include "Measurement.h"
 
 // Definitions
 //
@@ -352,8 +353,8 @@ void CONTROL_Commutation(TestType Type, bool State)
 
 void CONTROL_SaveTestResult()
 {
-	DataTable[REG_RESULT_VOLTAGE] = LOGIC_GetAverageVoltage();
-	DataTable[REG_RESULT_CURRENT] = LOGIC_GetAverageCurrent();
+	DataTable[REG_RESULT_VOLTAGE] = MEASURE_GetAverageVoltage();
+	DataTable[REG_RESULT_CURRENT] = MEASURE_GetAverageCurrent();
 	DataTable[REG_OP_RESULT] = OPRESULT_OK;
 }
 //-----------------------------------------------

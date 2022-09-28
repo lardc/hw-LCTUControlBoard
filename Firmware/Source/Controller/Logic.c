@@ -9,10 +9,6 @@
 #include "Delay.h"
 #include "Controller.h"
 
-// Definitions
-#define MAF_BUFFER_LENGTH				16
-#define MAF_BUFFER_INDEX_MASK			MAF_BUFFER_LENGTH - 1
-//
 
 // Variables
 float VoltageTarget, VoltageSetpoint, RegulatorPcoef, RegulatorIcoef, VoltageThreshold;
@@ -37,9 +33,7 @@ float RingBuffer_Current[MAF_BUFFER_LENGTH];
 // Functions prototypes
 void LOGIC_CacheVariables();
 void LOGIC_SaveToRingBuffer(MeasureSample Sample);
-float LOGIC_ExtractAveragedDatas(float* Buffer, Int16U BufferLength);
 void LOGIC_ClearVariables();
-float LOGIC_GetLastSampledData(float* InputBuffer);
 
 // Functions
 //
@@ -135,46 +129,6 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 }
 //-----------------------------
 
-float LOGIC_GetAverageVoltage()
-{
-	return LOGIC_ExtractAveragedDatas(&RingBuffer_Voltage[0], MAF_BUFFER_LENGTH);
-}
-//-----------------------------
-
-float LOGIC_GetAverageCurrent()
-{
-	return LOGIC_ExtractAveragedDatas(&RingBuffer_Current[0], MAF_BUFFER_LENGTH);
-}
-//-----------------------------
-
-float LOGIC_GetLastSampledVoltage()
-{
-	return LOGIC_GetLastSampledData(&RingBuffer_Voltage[0]);
-}
-//-----------------------------
-
-float LOGIC_GetLastSampledData(float* InputBuffer)
-{
-	Int16U Index;
-
-	Index = RingBufferIndex - 1;
-	Index &= MAF_BUFFER_INDEX_MASK;
-
-	return *(InputBuffer + Index);
-}
-//-----------------------------
-
-float LOGIC_ExtractAveragedDatas(float* Buffer, Int16U BufferLength)
-{
-	float Temp = 0;
-
-	for(int i = 0; i < BufferLength; i++)
-		Temp += *(Buffer + i);
-
-	return (Temp / BufferLength);
-}
-//-----------------------------
-
 void LOGIC_SaveToRingBuffer(MeasureSample Sample)
 {
 	RingBuffer_Voltage[RingBufferIndex] = Sample.Voltage;
@@ -187,31 +141,23 @@ void LOGIC_SaveToRingBuffer(MeasureSample Sample)
 
 void LOGIC_LoggingProcess(MeasureSample Sample, float RegulatorErr)
 {
-	static Int16U ScopeLogStep = 0, LocalCounter = 0;
+	static Int16U ScopeLogStep = 0;
 
 	// Сброс локального счётчика в начале логгирования
 	if (!CONTROL_ValuesCounter)
-		LocalCounter = 0;
-
-	if (ScopeLogStep++ >= DataTable[REG_SCOPE_STEP])
-	{
-		CONTROL_ValuesVoltage[LocalCounter] = Sample.Voltage;
-		CONTROL_ValuesCurrent[LocalCounter] = Sample.Current;
-		CONTROL_RegulatorErr[LocalCounter] = RegulatorErr;
-
 		ScopeLogStep = 0;
-		++LocalCounter;
+
+	if (ScopeLogStep++ >= DataTable[REG_SCOPE_STEP] && CONTROL_ValuesCounter < VALUES_x_SIZE)
+	{
+		ScopeLogStep = 0;
+
+		CONTROL_ValuesVoltage[CONTROL_ValuesCounter] = Sample.Voltage;
+		CONTROL_ValuesCurrent[CONTROL_ValuesCounter] = Sample.Current;
+		CONTROL_RegulatorErr[CONTROL_ValuesCounter] = RegulatorErr;
+		CONTROL_ValuesCounter++;
 	}
 
 	LOGIC_SaveToRingBuffer(Sample);
-
-	// Условие обновления глобального счётчика данных
-	if (CONTROL_ValuesCounter < VALUES_x_SIZE)
-		CONTROL_ValuesCounter = LocalCounter;
-
-	// Сброс локального счётчика
-	if (LocalCounter >= VALUES_x_SIZE)
-		LocalCounter = 0;
 }
 //-----------------------------
 

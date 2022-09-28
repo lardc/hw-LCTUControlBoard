@@ -21,15 +21,16 @@ typedef enum __RegulatorState
 extern float VoltageTarget;
 extern float CurrentCutOff;
 extern bool IsImpulse;
+extern volatile Int16U RingBufferIndex;
+//
+extern float RingBuffer_Voltage[MAF_BUFFER_LENGTH];
+extern float RingBuffer_Current[MAF_BUFFER_LENGTH];
 
 // Functions
 RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample);
 void LOGIC_StopProcess();
 void LOGIC_StartPrepare();
 void LOGIC_LoggingProcess(MeasureSample Sample, float RegulatorErr);
-float LOGIC_GetAverageVoltage();
-float LOGIC_GetAverageCurrent();
-float LOGIC_GetLastSampledVoltage();
 void LOGIC_SetVolatgeRange();
 void LOGIC_HandleFan(bool IsImpulse);
 void CONTROL_HandleExternalLamp(bool IsImpulse);

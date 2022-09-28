@@ -5,6 +5,8 @@
 #include "DiscreteOpAmp.h"
 #include "Global.h"
 #include "LowLevel.h"
+#include "Logic.h"
+
 
 // Variables
 Int16U MEASURE_ADC_CurrentRaw[ADC_DMA_BUFF_SIZE];
@@ -14,6 +16,8 @@ Int16U MEASURE_ADC_VoltageRaw[ADC_DMA_BUFF_SIZE];
 Int16U MEASURE_DMAExtractX(Int16U* InputArray, Int16U ArraySize);
 Int16U MEASURE_DMAExtract(Int16U* InputArray);
 void MEASURE_StartNewSampling();
+float MEASURE_ExtractAveragedDatas(float* Buffer, Int16U BufferLength);
+float MEASURE_GetLastSampledData(float* InputBuffer);
 
 // Functions
 //
@@ -61,5 +65,45 @@ void MEASURE_StartNewSampling()
 	ADC_SamplingStart(ADC3);
 }
 //-----------------------------------------------
+
+float MEASURE_GetAverageVoltage()
+{
+	return MEASURE_ExtractAveragedDatas(&RingBuffer_Voltage[0], MAF_BUFFER_LENGTH);
+}
+//-----------------------------
+
+float MEASURE_GetAverageCurrent()
+{
+	return MEASURE_ExtractAveragedDatas(&RingBuffer_Current[0], MAF_BUFFER_LENGTH);
+}
+//-----------------------------
+
+float MEASURE_GetLastSampledVoltage()
+{
+	return MEASURE_GetLastSampledData(&RingBuffer_Voltage[0]);
+}
+//-----------------------------
+
+float MEASURE_GetLastSampledData(float* InputBuffer)
+{
+	Int16U Index;
+
+	Index = RingBufferIndex - 1;
+	Index &= MAF_BUFFER_INDEX_MASK;
+
+	return *(InputBuffer + Index);
+}
+//-----------------------------
+
+float MEASURE_ExtractAveragedDatas(float* Buffer, Int16U BufferLength)
+{
+	float Temp = 0;
+
+	for(int i = 0; i < BufferLength; i++)
+		Temp += *(Buffer + i);
+
+	return (Temp / BufferLength);
+}
+//-----------------------------
 
 
