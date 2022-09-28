@@ -45,7 +45,7 @@ void LL_VoltageRangeSet(bool Range)
 
 void LL_PAU_Shunting(bool State)
 {
-	GPIO_SetState(GPIO_PAU_SHUNT, State);
+	GPIO_SetState(GPIO_PAU_SHUNT, !State);
 }
 //-----------------------------
 
