@@ -36,8 +36,6 @@ void LOGIC_HandleFan(bool IsImpulse);
 void CONTROL_HandleExternalLamp(bool IsImpulse);
 void LOGIC_HarwarePrepare(TestType Type);
 void LOGIC_HarwareDefaultState();
-void LOGIC_OSCSync(bool State);
-void LOGIC_PAUSync(bool State);
 void LOGIC_ResetOutputRegisters();
 
 #endif /* LOGIC_H_ */

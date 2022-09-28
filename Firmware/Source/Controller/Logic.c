@@ -47,8 +47,8 @@ void LOGIC_StartPrepare()
 
 void LOGIC_HarwareDefaultState()
 {
-	LOGIC_OSCSync(false);
-	LOGIC_PAUSync(false);
+	LL_OscSyncSetState(false);
+	LL_PAUSyncSetState(false);
 	LL_PAU_Shunting(true);
 }
 //-----------------------------
@@ -80,12 +80,14 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 	{
 		VoltageTarget = VoltageSetpoint;
 		PAUsyncDelayCounter++;
-	}
 
-	if(!DataTable[REG_PAU_EMULATED] && PAUsyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY] && CONTROL_State != DS_SelfTest)
-	{
-		LL_PAU_Shunting(false);
-		LOGIC_PAUSync(true);
+		if(!DataTable[REG_PAU_EMULATED] && PAUsyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY] && CONTROL_State != DS_SelfTest)
+		{
+			PAUsyncDelayCounter = 0;
+
+			LL_PAU_Shunting(false);
+			LL_PAUSyncSetState(true);
+		}
 	}
 
 	RegulatorError = (RegulatorPulseCounter == 0) ? 0 : (VoltageTarget - Sample.Voltage);
@@ -244,18 +246,6 @@ void CONTROL_HandleExternalLamp(bool IsImpulse)
 				LL_ExtIndicationControl(false);
 		}
 	}
-}
-//-----------------------------------------------
-
-void LOGIC_PAUSync(bool State)
-{
-	LL_PAUSyncSetState(State);
-}
-//-----------------------------------------------
-
-void LOGIC_OSCSync(bool State)
-{
-	LL_OscSyncSetState(State);
 }
 //-----------------------------------------------
 
