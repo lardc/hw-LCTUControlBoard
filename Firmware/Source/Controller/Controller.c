@@ -29,6 +29,7 @@ typedef void (*FUNC_AsyncDelegate)();
 volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = SS_None;
 static Boolean CycleActive = false;
+Boolean DeviceIsPowered = false;
 //
 volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int64U	CONTROL_PulseToPulseTime = 0;
@@ -111,6 +112,8 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Ready)
 			{
 				LL_PowerSupply(false);
+				DeviceIsPowered = false;
+
 				CONTROL_SetDeviceState(DS_None, SS_None);
 			}
 			else if(CONTROL_State != DS_None)
@@ -182,8 +185,10 @@ void CONTROL_LogicProcess()
 		case SS_StartProcess:
 			LL_PowerSupply(true);
 
-			if(CONTROL_Delay(DataTable[REG_PS_FIRST_START_TIME]))
+			if(DeviceIsPowered || CONTROL_Delay(DataTable[REG_PS_FIRST_START_TIME]))
 			{
+				DeviceIsPowered = true;
+
 				if(DataTable[REG_SELF_TEST_ACTIVE])
 				{
 					CONTROL_Commutation(TT_SelfTest, true);
@@ -357,6 +362,8 @@ void CONTROL_SwitchToFault(Int16U Reason)
 {
 	CONTROL_SetDeviceState(DS_Fault, SS_PostPulseDelay);
 	DataTable[REG_FAULT_REASON] = Reason;
+
+	DeviceIsPowered = false;
 }
 //------------------------------------------
 
