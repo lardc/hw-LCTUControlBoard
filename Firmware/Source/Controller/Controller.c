@@ -135,6 +135,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_START_SELF_TEST:
 			if(CONTROL_State == DS_None || CONTROL_State == DS_Ready)
 			{
+				LOGIC_ResetOutputRegisters();
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
 				CONTROL_SetDeviceState(DS_InProcess, SS_StartProcess);
 			}
