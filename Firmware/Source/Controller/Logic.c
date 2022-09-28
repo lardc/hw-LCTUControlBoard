@@ -38,7 +38,6 @@ float RingBuffer_Current[MAF_BUFFER_LENGTH];
 void LOGIC_CacheVariables();
 void LOGIC_SaveToRingBuffer(MeasureSample Sample);
 float LOGIC_ExtractAveragedDatas(float* Buffer, Int16U BufferLength);
-void LOGIC_SaveRegulatorErr(float Error);
 void LOGIC_ClearVariables();
 float LOGIC_GetLastSampledData(float* InputBuffer);
 
@@ -126,41 +125,13 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 
 	DISOPAMP_SetVoltage(RegulatorOut);
 
-	LOGIC_SaveRegulatorErr(RegulatorError);
+	LOGIC_LoggingProcess(Sample, RegulatorError);
 
 	RegulatorPulseCounter++;
 	if (RegulatorPulseCounter >= PulsePointsQuantity)
 		Result = RS_Finished;
 
 	return Result;
-}
-//-----------------------------
-
-void LOGIC_SaveRegulatorErr(float Error)
-{
-	static Int16U ScopeLogStep = 0, LocalCounter = 0;
-
-	// Сброс локального счетчика в начале логгирования
-	if (CONTROL_RegulatorErr_Counter == 0)
-		LocalCounter = 0;
-
-	if (ScopeLogStep++ >= DataTable[REG_SCOPE_STEP])
-	{
-		ScopeLogStep = 0;
-
-		CONTROL_RegulatorErr[LocalCounter] = Error;
-		CONTROL_RegulatorErr_Counter = LocalCounter;
-
-		++LocalCounter;
-	}
-
-	// Условие обновления глобального счетчика данных
-	if (CONTROL_RegulatorErr_Counter < VALUES_x_SIZE)
-		CONTROL_RegulatorErr_Counter = LocalCounter;
-
-	// Сброс локального счетчика
-	if (LocalCounter >= VALUES_x_SIZE)
-		LocalCounter = 0;
 }
 //-----------------------------
 
@@ -214,18 +185,19 @@ void LOGIC_SaveToRingBuffer(MeasureSample Sample)
 }
 //-----------------------------
 
-void LOGIC_LoggingProcess(MeasureSample Sample)
+void LOGIC_LoggingProcess(MeasureSample Sample, float RegulatorErr)
 {
 	static Int16U ScopeLogStep = 0, LocalCounter = 0;
 
 	// Сброс локального счётчика в начале логгирования
-	if (!CONTROL_VoltageCounter)
+	if (!CONTROL_ValuesCounter)
 		LocalCounter = 0;
 
 	if (ScopeLogStep++ >= DataTable[REG_SCOPE_STEP])
 	{
 		CONTROL_ValuesVoltage[LocalCounter] = Sample.Voltage;
 		CONTROL_ValuesCurrent[LocalCounter] = Sample.Current;
+		CONTROL_RegulatorErr[LocalCounter] = RegulatorErr;
 
 		ScopeLogStep = 0;
 		++LocalCounter;
@@ -234,8 +206,8 @@ void LOGIC_LoggingProcess(MeasureSample Sample)
 	LOGIC_SaveToRingBuffer(Sample);
 
 	// Условие обновления глобального счётчика данных
-	if (CONTROL_VoltageCounter < VALUES_x_SIZE)
-		CONTROL_CurrentCounter = CONTROL_VoltageCounter = LocalCounter;
+	if (CONTROL_ValuesCounter < VALUES_x_SIZE)
+		CONTROL_ValuesCounter = LocalCounter;
 
 	// Сброс локального счётчика
 	if (LocalCounter >= VALUES_x_SIZE)
@@ -340,3 +312,19 @@ void LOGIC_OSCSync(bool State)
 	LL_OscSyncSetState(State);
 }
 //-----------------------------------------------
+
+void LOGIC_ResetOutputRegisters()
+{
+	DataTable[REG_FAULT_REASON] = DF_NONE;
+	DataTable[REG_DISABLE_REASON] = DF_NONE;
+	DataTable[REG_WARNING] = WARNING_NONE;
+	DataTable[REG_PROBLEM] = PROBLEM_NONE;
+	DataTable[REG_OP_RESULT] = OPRESULT_NONE;
+	//
+	DataTable[REG_RESULT_VOLTAGE] = 0;
+	DataTable[REG_RESULT_CURRENT] = 0;
+	//
+	DEVPROFILE_ResetScopes(0);
+	DEVPROFILE_ResetEPReadState();
+}
+//------------------------------------------

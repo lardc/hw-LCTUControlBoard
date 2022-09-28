@@ -32,9 +32,7 @@ static Boolean CycleActive = false;
 //
 volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int64U	CONTROL_PulseToPulseTime = 0;
-volatile Int16U CONTROL_VoltageCounter = 0;
-volatile Int16U CONTROL_CurrentCounter = 0;
-volatile Int16U CONTROL_RegulatorErr_Counter = 0;
+volatile Int16U CONTROL_ValuesCounter = 0;
 volatile float CONTROL_ValuesVoltage[VALUES_x_SIZE];
 volatile float CONTROL_ValuesCurrent[VALUES_x_SIZE];
 volatile float CONTROL_RegulatorErr[VALUES_x_SIZE];
@@ -48,7 +46,6 @@ void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
 void CONTROL_StopProcess();
-void CONTROL_ResetOutputRegisters();
 void CONTROL_SaveTestResult();
 bool CONTROL_Delay(Int16U Time);
 void CONTROL_SelfTest();
@@ -61,7 +58,7 @@ void CONTROL_Init()
 	// Переменные для конфигурации EndPoint
 	Int16U EPIndexes[FEP_COUNT] = {EP_VOLTAGE, EP_CURRENT, EP_REGULATOR_ERR};
 	Int16U EPSized[FEP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
-	pInt16U EPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_VoltageCounter, (pInt16U)&CONTROL_CurrentCounter, (pInt16U)&CONTROL_RegulatorErr_Counter};
+	pInt16U EPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_ValuesCounter, (pInt16U)&CONTROL_ValuesCounter, (pInt16U)&CONTROL_ValuesCounter};
 	pFloat32 EPDatas[FEP_COUNT] = {(pFloat32)CONTROL_ValuesVoltage, (pFloat32)CONTROL_ValuesCurrent, (pFloat32)CONTROL_RegulatorErr};
 
 	// Конфигурация сервиса работы Data-table и EPROM
@@ -78,25 +75,9 @@ void CONTROL_Init()
 }
 //------------------------------------------
 
-void CONTROL_ResetOutputRegisters()
-{
-	DataTable[REG_FAULT_REASON] = DF_NONE;
-	DataTable[REG_DISABLE_REASON] = DF_NONE;
-	DataTable[REG_WARNING] = WARNING_NONE;
-	DataTable[REG_PROBLEM] = PROBLEM_NONE;
-	DataTable[REG_OP_RESULT] = OPRESULT_NONE;
-	//
-	DataTable[REG_RESULT_VOLTAGE] = 0;
-	DataTable[REG_RESULT_CURRENT] = 0;
-	//
-	DEVPROFILE_ResetScopes(0);
-	DEVPROFILE_ResetEPReadState();
-}
-//------------------------------------------
-
 void CONTROL_ResetToDefaultState()
 {
-	CONTROL_ResetOutputRegisters();
+	LOGIC_ResetOutputRegisters();
 	DISOPAMP_SetVoltage(0);
 	LOGIC_HarwareDefaultState();
 
@@ -138,10 +119,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 		case ACT_START_PROCESS:
 			if (CONTROL_State == DS_Ready)
-			{
-				CONTROL_ResetOutputRegisters();
 				CONTROL_SetDeviceState(DS_InProcess, SS_IdleTimeCheck);
-			}
 			else
 				if (CONTROL_State == DS_InProcess)
 					*pUserError = ERR_OPERATION_BLOCKED;
@@ -187,7 +165,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 void CONTROL_ForceStopProcess()
 {
 	LOGIC_StopProcess();
-	CONTROL_ResetOutputRegisters();
+	LOGIC_ResetOutputRegisters();
 	LOGIC_HarwareDefaultState();
 
 	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
@@ -237,6 +215,7 @@ void CONTROL_LogicProcess()
 			break;
 
 		case SS_StartPulse:
+			LOGIC_ResetOutputRegisters();
 			LOGIC_StartPrepare();
 			CONTROL_StartProcess();
 			CONTROL_SetDeviceSubState(SS_Pulse);
@@ -300,7 +279,6 @@ void CONTROL_HighPriorityProcess()
 	if(CONTROL_SubState == SS_Pulse || CONTROL_SubState == SS_ST_Pulse)
 	{
 		Sample = MEASURE_Sample();
-		LOGIC_LoggingProcess(Sample);
 
 		RegulatorResult = LOGIC_RegulatorCycle(Sample);
 

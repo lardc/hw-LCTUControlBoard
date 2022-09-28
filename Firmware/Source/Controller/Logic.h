@@ -26,7 +26,7 @@ extern bool IsImpulse;
 RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample);
 void LOGIC_StopProcess();
 void LOGIC_StartPrepare();
-void LOGIC_LoggingProcess(MeasureSample Sample);
+void LOGIC_LoggingProcess(MeasureSample Sample, float RegulatorErr);
 float LOGIC_GetAverageVoltage();
 float LOGIC_GetAverageCurrent();
 float LOGIC_GetLastSampledVoltage();
@@ -37,5 +37,6 @@ void LOGIC_HarwarePrepare(TestType Type);
 void LOGIC_HarwareDefaultState();
 void LOGIC_OSCSync(bool State);
 void LOGIC_PAUSync(bool State);
+void LOGIC_ResetOutputRegisters();
 
 #endif /* LOGIC_H_ */
