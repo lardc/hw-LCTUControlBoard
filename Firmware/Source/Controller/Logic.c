@@ -172,10 +172,6 @@ void LOGIC_LoggingProcess(MeasureSample Sample, float RegulatorErr)
 {
 	static Int16U ScopeLogStep = 0;
 
-	// Сброс локального счётчика в начале логгирования
-	if (!CONTROL_ValuesCounter)
-		ScopeLogStep = 0;
-
 	if (ScopeLogStep++ >= DataTable[REG_SCOPE_STEP] && CONTROL_ValuesCounter < VALUES_x_SIZE)
 	{
 		ScopeLogStep = 0;
