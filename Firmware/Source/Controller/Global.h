@@ -21,7 +21,7 @@
 #define EXT_LAMP_ON_STATE_TIME					500		// мс
 #define LCTU_VOLTAGE_MAX						3300	// В
 #define PAU_SYNC_WIDTH_CORR						2		// мкс
-#define LCTU_CURRENT_MIN						1000	// мкА
+#define LCTU_CURRENT_MIN						50	// мкА
 //
 #define VOLTAGE_RANGE_0							0
 #define VOLTAGE_RANGE_1							1
