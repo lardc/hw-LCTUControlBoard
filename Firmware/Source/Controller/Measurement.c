@@ -74,7 +74,8 @@ float MEASURE_GetAverageVoltage()
 
 float MEASURE_GetAverageCurrent()
 {
-	return MEASURE_ExtractAveragedDatas(&RingBuffer_Current[0], MAF_BUFFER_LENGTH);
+	float Current = MEASURE_ExtractAveragedDatas(&RingBuffer_Current[0], MAF_BUFFER_LENGTH);
+	return (Current >= LCTU_CURRENT_MIN) ? Current : 0;
 }
 //-----------------------------
 
@@ -100,9 +101,9 @@ float MEASURE_ExtractAveragedDatas(float* Buffer, Int16U BufferLength)
 	float Temp = 0;
 
 	for(int i = 0; i < BufferLength; i++)
-		Temp += *(Buffer + i);
+		Temp += *(Buffer + i) / BufferLength;
 
-	return (Temp / BufferLength);
+	return Temp;
 }
 //-----------------------------
 
