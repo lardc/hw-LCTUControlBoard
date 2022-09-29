@@ -59,7 +59,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, PAU_SYNC_STEP_MAX, PAU_SYNC_STEP_DEF},									// 48
 		{PAU_SYNC_CNT_MIN, PAU_SYNC_CNT_MAX, PAU_SYNC_CNT_DEF},						// 49
 		{PAU_SYNC_WIDTH_MIN, PAU_SYNC_WIDTH_MAX, PAU_SYNC_WIDTH_DEF},				// 50
-		{0, 0, 0},																	// 51
+		{NO, YES, YES},																// 51
 		{0, 0, 0},																	// 52
 		{0, 0, 0},																	// 53
 		{0, 0, 0},																	// 54

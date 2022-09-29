@@ -79,6 +79,7 @@
 #define REG_PAU_SYNC_STEP				48	// Период импульсов синхронизации (кратно периоду регулятора)
 #define REG_PAU_SYNC_CNT				49	// Количество импульсов синхронизации
 #define REG_PAU_SYNC_WIDTH				50	// Длительность импульса синхронизации (мкс)
+#define REG_PAU_SYNC_TRACKING			51	// Отслеживание поступления испульсов синхронизации от PAU
 
 #define REG_VOLTAGE_SETPOINT			128	// Уставка по напряжению, В
 #define REG_PULSE_WIDTH					129	// Длительность импульса напряжения, мс

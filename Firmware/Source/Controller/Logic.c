@@ -142,7 +142,7 @@ void LOGIC_PAUSyncProcess(RegulatorState* State)
 
 		if(LocalCounter >= DataTable[REG_PAU_SYNC_STEP])
 		{
-			if(PAUSyncTransmitCounter <= PAUSyncReceiveCounter)
+			if(!DataTable[REG_PAU_SYNC_TRACKING] || PAUSyncTransmitCounter <= PAUSyncReceiveCounter)
 			{
 				LL_PAUSyncFlip();
 				PAUSyncTransmitCounter++;
