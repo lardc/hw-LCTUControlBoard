@@ -104,7 +104,10 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	{
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
+			{
+				LOGIC_ResetOutputRegisters();
 				CONTROL_SetDeviceState(DS_InProcess, SS_StartProcess);
+			}
 			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
@@ -321,9 +324,7 @@ void CONTROL_HighPriorityProcess()
 		if(RegulatorResult == RS_Finished || RegulatorResult == RS_FollowingError)
 		{
 			CONTROL_StopProcess();
-
-			if(CONTROL_State == DS_InProcess)
-				CONTROL_SaveTestResult();
+			CONTROL_SaveTestResult();
 		}
 	}
 }
