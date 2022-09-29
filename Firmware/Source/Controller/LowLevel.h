@@ -20,6 +20,7 @@ void LL_SelfTestCommutationControl(bool State);
 void LL_OutputCommutationControl(bool State);
 void LL_FanControl(bool State);
 void LL_ExtIndicationControl(bool State);
+void LL_ToggleExtIndication();
 void LL_WriteDACx(Int16U Data);
 void LL_ToggleLDAC();
 bool LL_SafetyGetState();

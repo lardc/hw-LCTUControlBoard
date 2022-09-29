@@ -28,5 +28,6 @@
 
 // Временные параметры
 #define TIME_LED_BLINK							500		// Мигание светодиодом (в мс)
+#define TIME_FAULT_LED_BLINK					250		// Мигание светодиодом в состоянии Fault
 
 #endif //  __GLOBAL_H

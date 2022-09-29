@@ -51,7 +51,7 @@ void SELFTEST_Process()
 			Current = DataTable[REG_RESULT_VOLTAGE] / ST_LOAD_RESISTANCE * 1000;
 			Err = fabsf((Current - DataTable[REG_RESULT_CURRENT]) / DataTable[REG_RESULT_CURRENT] * 100);
 
-			if(Err >= ST_ALOWED_ERROR)
+			if(Err >= ST_ALOWED_ERROR || !DataTable[REG_RESULT_CURRENT])
 			{
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
 				CONTROL_SwitchToFault(DF_CURRENT_MEASURING);

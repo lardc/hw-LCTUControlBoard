@@ -83,6 +83,12 @@ void LL_ExtIndicationControl(bool State)
 }
 //-----------------------------
 
+void LL_ToggleExtIndication()
+{
+	GPIO_Toggle(GPIO_IND_CTRL);
+}
+//-----------------------------
+
 void LL_WriteDACx(Int16U Data)
 {
 	GPIO_SetState(GPIO_OPAMP_SYNC, false);

@@ -260,20 +260,31 @@ void LOGIC_HandleFan(bool IsImpulse)
 
 void CONTROL_HandleExternalLamp(bool IsImpulse)
 {
-	static Int64U ExternalLampTimeout = 0;
+	static Int64U ExternalLampCounter = 0;
 
 	if(DataTable[REG_LAMP_CTRL])
 	{
-		if(IsImpulse)
+		if(CONTROL_State == DS_Fault)
 		{
-			LL_ExtIndicationControl(true);
-			ExternalLampTimeout = CONTROL_TimeCounter + EXT_LAMP_ON_STATE_TIME;
+			if(++ExternalLampCounter > TIME_FAULT_LED_BLINK)
+			{
+				LL_ToggleExtIndication();
+				ExternalLampCounter = 0;
+			}
 		}
 		else
-		{
-			if(CONTROL_TimeCounter >= ExternalLampTimeout)
-				LL_ExtIndicationControl(false);
-		}
+			{
+				if(IsImpulse)
+				{
+					LL_ExtIndicationControl(true);
+					ExternalLampCounter = CONTROL_TimeCounter + EXT_LAMP_ON_STATE_TIME;
+				}
+				else
+				{
+					if(CONTROL_TimeCounter >= ExternalLampCounter)
+						LL_ExtIndicationControl(false);
+				}
+			}
 	}
 }
 //-----------------------------------------------
