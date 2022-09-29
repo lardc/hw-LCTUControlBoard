@@ -76,6 +76,9 @@
 #define REG_LAMP_CTRL					45	// Управление внешним индикатором
 #define REG_SELF_TEST_ACTIVE			46	// Активация самотестирования при запуске блока
 #define REG_SAFETY_ACTIVE				47	// Активация системы безопасности
+#define REG_PAU_SYNC_STEP				48	// Период импульсов синхронизации (кратно периоду регулятора)
+#define REG_PAU_SYNC_CNT				49	// Количество импульсов синхронизации
+#define REG_PAU_SYNC_WIDTH				50	// Длительность импульса синхронизации (мкс)
 
 #define REG_VOLTAGE_SETPOINT			128	// Уставка по напряжению, В
 #define REG_PULSE_WIDTH					129	// Длительность импульса напряжения, мс
@@ -112,6 +115,7 @@
 #define DF_NONE							0
 #define DF_FOLLOWING_ERROR				1
 #define DF_CURRENT_MEASURING			2
+#define DF_PAU_SYNC						3
 
 // Problem
 #define PROBLEM_NONE					0

@@ -4,6 +4,7 @@
 #include "Board.h"
 #include "Delay.h"
 #include "Global.h"
+#include "DataTable.h"
 
 // Functions
 //
@@ -36,6 +37,13 @@ void LL_PAUSyncSetState(bool State)
 	GPIO_SetState(GPIO_PAU_SO, State);
 }
 //-----------------------------
+
+void LL_PAUSyncFlip()
+{
+	LL_PAUSyncSetState(true);
+	DELAY_US(DataTable[REG_PAU_SYNC_WIDTH] - PAU_SYNC_WIDTH_CORR);
+	LL_PAUSyncSetState(false);
+}
 
 void LL_VoltageRangeSet(bool Range)
 {

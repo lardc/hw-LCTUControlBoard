@@ -15,6 +15,7 @@ typedef enum __RegulatorState
 	RS_InProcess = 1,
 	RS_Finished = 2,
 	RS_FollowingError = 3,
+	RS_PAU_Sync = 4
 } RegulatorState;
 
 // Variables
@@ -22,6 +23,7 @@ extern float VoltageTarget;
 extern float CurrentCutOff;
 extern bool IsImpulse;
 extern volatile Int16U RingBufferIndex;
+extern Int16U PAUSyncReceiveCounter;
 //
 extern float RingBuffer_Voltage[MAF_BUFFER_LENGTH];
 extern float RingBuffer_Current[MAF_BUFFER_LENGTH];

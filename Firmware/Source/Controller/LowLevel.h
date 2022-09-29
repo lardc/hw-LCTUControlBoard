@@ -23,5 +23,6 @@ void LL_ExtIndicationControl(bool State);
 void LL_WriteDACx(Int16U Data);
 void LL_ToggleLDAC();
 bool LL_SafetyGetState();
+void LL_PAUSyncFlip();
 
 #endif //__LOWLEVEL_H

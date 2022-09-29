@@ -24,7 +24,9 @@ volatile Int64U LOGIC_TestTime = 0;
 volatile Int16U RingBufferIndex = 0;
 Int16U FollowingErrorCounter = 0;
 Int16U FollowingErrorCounterMax = 0;
-Int16U PAUsyncDelayCounter = 0;
+Int16U PAUSyncDelayCounter = 0;
+Int16U PAUSyncTransmitCounter = 0;
+Int16U PAUSyncReceiveCounter = 0;
 
 // Arrays
 float RingBuffer_Voltage[MAF_BUFFER_LENGTH];
@@ -34,6 +36,7 @@ float RingBuffer_Current[MAF_BUFFER_LENGTH];
 void LOGIC_CacheVariables();
 void LOGIC_SaveToRingBuffer(MeasureSample Sample);
 void LOGIC_ClearVariables();
+void LOGIC_PAUSyncProcess();
 
 // Functions
 //
@@ -70,24 +73,22 @@ void LOGIC_CacheVariables()
 RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 {
 	float RegulatorError, Qp, RegulatorOut;
-	static Int16U PAUsyncDelayCounter = 0;
+	static Int16U PAUSyncDelayCounter = 0;
 	RegulatorState Result = RS_InProcess;
 
 	// Формирование линейно нарастающего фронта импульса напряжения
 	if(VoltageTarget < VoltageSetpoint)
+	{
+		PAUSyncDelayCounter = 0;
 		VoltageTarget += dV;
+	}
 	else
 	{
 		VoltageTarget = VoltageSetpoint;
-		PAUsyncDelayCounter++;
+		PAUSyncDelayCounter++;
 
-		if(!DataTable[REG_PAU_EMULATED] && PAUsyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY] && CONTROL_State != DS_SelfTest)
-		{
-			PAUsyncDelayCounter = 0;
-
-			LL_PAU_Shunting(false);
-			LL_PAUSyncSetState(true);
-		}
+		if(!DataTable[REG_PAU_EMULATED] && PAUSyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY] && CONTROL_State != DS_SelfTest)
+			LOGIC_PAUSyncProcess(&Result);
 	}
 
 	RegulatorError = (RegulatorPulseCounter == 0) ? 0 : (VoltageTarget - Sample.Voltage);
@@ -101,7 +102,7 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 	{
 		FollowingErrorCounter++;
 
-		if(FollowingErrorCounter >= FollowingErrorCounterMax && !DataTable[REG_FOLLOWING_ERR_MUTE])
+		if(FollowingErrorCounter >= FollowingErrorCounterMax && !DataTable[REG_FOLLOWING_ERR_MUTE] && Result == RS_InProcess)
 			Result = RS_FollowingError;
 	}
 
@@ -124,10 +125,37 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 	LOGIC_LoggingProcess(Sample, RegulatorError);
 
 	RegulatorPulseCounter++;
-	if (RegulatorPulseCounter >= PulsePointsQuantity)
+	if (RegulatorPulseCounter >= PulsePointsQuantity && Result == RS_InProcess)
 		Result = RS_Finished;
 
 	return Result;
+}
+//-----------------------------
+
+void LOGIC_PAUSyncProcess(RegulatorState* State)
+{
+	static Int16U LocalCounter = 0;
+
+	if(*State == RS_InProcess && PAUSyncTransmitCounter < DataTable[REG_PAU_SYNC_CNT])
+	{
+		LL_PAU_Shunting(false);
+
+		if(LocalCounter >= DataTable[REG_PAU_SYNC_STEP])
+		{
+			if(PAUSyncTransmitCounter <= PAUSyncReceiveCounter)
+			{
+				LL_PAUSyncFlip();
+				PAUSyncTransmitCounter++;
+				PAUSyncReceiveCounter = PAUSyncTransmitCounter;
+			}
+			else
+				*State = RS_PAU_Sync;
+
+			LocalCounter = 0;
+		}
+		else
+			LocalCounter++;
+	}
 }
 //-----------------------------
 
@@ -181,7 +209,9 @@ void LOGIC_ClearVariables()
 	VoltageTarget = 0;
 	LOGIC_TestTime = 0;
 	FollowingErrorCounter = 0;
-	PAUsyncDelayCounter = 0;
+	PAUSyncDelayCounter = 0;
+	PAUSyncReceiveCounter = 0;
+	PAUSyncTransmitCounter = 0;
 }
 //-----------------------------
 

@@ -309,6 +309,14 @@ void CONTROL_HighPriorityProcess()
 				return;
 			}
 		}
+		else if(RegulatorResult == RS_PAU_Sync)
+		{
+			LOGIC_StopProcess();
+			LOGIC_HarwareDefaultState();
+
+			CONTROL_SwitchToFault(DF_PAU_SYNC);
+			return;
+		}
 
 		if(RegulatorResult == RS_Finished || RegulatorResult == RS_FollowingError)
 		{
