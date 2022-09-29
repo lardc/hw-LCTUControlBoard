@@ -63,3 +63,18 @@ void TIM7_IRQHandler()
 	}
 }
 //-----------------------------------------
+
+void EXTI9_5_IRQHandler()
+{
+	static bool Flag = false;
+
+	if (EXTI_FlagCheck(EXTI_6))
+	{
+		PAUSyncReceiveCounter++;
+
+		(Flag) ? LL_ExtIndicationControl(false) : LL_ExtIndicationControl(true);
+	}
+
+	EXTI_FlagReset(EXTI_6);
+}
+//-----------------------------------------

@@ -53,6 +53,14 @@ void INITCFG_ConfigIO()
 
 //------------------------------------------------
 
+void INITCFG_ConfigExtInterrupt()
+{
+	// Вход SYNC
+	EXTI_Config(EXTI_PA, EXTI_6, FALL_TRIG, 0);
+	EXTI_EnableInterrupt(EXTI9_5_IRQn, 0, true);
+}
+//------------------------------------------------
+
 void INITCFG_ConfigUART()
 {
 	USART_Init(USART1, SYSCLK, USART_BAUDRATE);

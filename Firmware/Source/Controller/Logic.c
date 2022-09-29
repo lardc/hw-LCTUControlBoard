@@ -146,7 +146,6 @@ void LOGIC_PAUSyncProcess(RegulatorState* State)
 			{
 				LL_PAUSyncFlip();
 				PAUSyncTransmitCounter++;
-				PAUSyncReceiveCounter = PAUSyncTransmitCounter;
 			}
 			else
 				*State = RS_PAU_Sync;

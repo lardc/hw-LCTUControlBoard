@@ -14,5 +14,6 @@ void INITCFG_ConfigWatchDog();
 void INITCFG_ConfigADC();
 void INITCFG_ConfigDMA();
 void INITCFG_ConfigSPI();
+void INITCFG_ConfigExtInterrupt();
 
 #endif //__INITCONFIG_H
