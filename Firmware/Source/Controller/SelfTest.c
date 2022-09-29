@@ -65,6 +65,9 @@ void SELFTEST_Process()
 					LL_SelfTestCommutationControl(false);
 
 					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_OK;
+					DataTable[REG_RESULT_VOLTAGE] = 0;
+					DataTable[REG_RESULT_CURRENT] = 0;
+
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
 				}
 			break;
