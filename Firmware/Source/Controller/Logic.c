@@ -75,12 +75,15 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 	float RegulatorError, Qp, RegulatorOut;
 	static Int16U PAUSyncDelayCounter = 0;
 	RegulatorState Result = RS_InProcess;
+	static bool RegulatorActive = false;
 
 	// Формирование линейно нарастающего фронта импульса напряжения
 	if(VoltageTarget < VoltageSetpoint)
 	{
 		PAUSyncDelayCounter = 0;
 		VoltageTarget += dV;
+
+		RegulatorActive = false;
 	}
 	else
 	{
@@ -89,6 +92,8 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 
 		if(!DataTable[REG_PAU_EMULATED] && PAUSyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY] && CONTROL_State != DS_SelfTest)
 			LOGIC_PAUSyncProcess(&Result);
+
+		RegulatorActive = true;
 	}
 
 	RegulatorError = (RegulatorPulseCounter == 0) ? 0 : (VoltageTarget - Sample.Voltage);
@@ -106,15 +111,23 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 			Result = RS_FollowingError;
 	}
 
-	Qi += RegulatorError * RegulatorIcoef;
+	if(RegulatorActive)
+	{
+		Qi += RegulatorError * RegulatorIcoef;
 
-	if(Qi > DataTable[REG_REGULATOR_QI_MAX])
-		Qi = DataTable[REG_REGULATOR_QI_MAX];
+		if(Qi > DataTable[REG_REGULATOR_QI_MAX])
+			Qi = DataTable[REG_REGULATOR_QI_MAX];
 
-	if(Qi < (-1) * DataTable[REG_REGULATOR_QI_MAX])
-		Qi = (-1) * DataTable[REG_REGULATOR_QI_MAX];
+		if(Qi < (-1) * DataTable[REG_REGULATOR_QI_MAX])
+			Qi = (-1) * DataTable[REG_REGULATOR_QI_MAX];
 
-	Qp = RegulatorError * RegulatorPcoef;
+		Qp = RegulatorError * RegulatorPcoef;
+	}
+	else
+	{
+		Qi = Qp = 0;
+	}
+
 	RegulatorOut = VoltageTarget + Qp +Qi;
 
 	if(RegulatorOut > DSIOPAMP_STACK_VOLTAGE_MAX)
