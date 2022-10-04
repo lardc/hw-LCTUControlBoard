@@ -48,7 +48,7 @@ void SELFTEST_Process()
 		case SS_ST_PulseCheck:
 			IsImpulse = false;
 
-			Current = DataTable[REG_RESULT_VOLTAGE] / ST_LOAD_RESISTANCE * 1000;
+			Current = DataTable[REG_RESULT_VOLTAGE] / ST_LOAD_RESISTANCE;
 			Err = fabsf((Current - DataTable[REG_RESULT_CURRENT]) / DataTable[REG_RESULT_CURRENT] * 100);
 
 			if(Err >= ST_ALOWED_ERROR || !DataTable[REG_RESULT_CURRENT])

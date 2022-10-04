@@ -98,7 +98,7 @@
 #define REG_SUB_STATE					199	// Регистр вспомогательного состояния
 
 #define REG_RESULT_VOLTAGE				200	// Достигнутое напряжение во время теста (В)
-#define REG_RESULT_CURRENT				201	// Измеренный ток утечки (мкА)
+#define REG_RESULT_CURRENT				201	// Измеренный ток утечки (мА)
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID			257	// Device CAN master node ID (if presented)
