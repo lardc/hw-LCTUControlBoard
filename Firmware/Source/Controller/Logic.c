@@ -87,8 +87,16 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 		VoltageTarget = VoltageSetpoint;
 		PAUSyncDelayCounter++;
 
-		if(!DataTable[REG_PAU_EMULATED] && PAUSyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY] && CONTROL_State != DS_SelfTest)
-			LOGIC_PAUSyncProcess(&Result);
+		if(!DataTable[REG_PAU_EMULATED])
+		{
+			if(PAUSyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY] && CONTROL_State != DS_SelfTest)
+			{
+				LOGIC_PAUSyncProcess(&Result);
+				LL_OscSyncSetState(true);
+			}
+		}
+		else
+			LL_OscSyncSetState(true);
 	}
 
 	RegulatorError = (RegulatorPulseCounter == 0) ? 0 : (VoltageTarget - Sample.Voltage);
