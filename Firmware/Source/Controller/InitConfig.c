@@ -82,6 +82,7 @@ void INITCFG_ConfigTimer6()
 	TIM_Clock_En(TIM_6);
 	TIM_Config(TIM6, SYSCLK, TIMER6_uS);
 	TIM_Interupt(TIM6, 1, true);
+	NVIC_SetPriority(TIM6_DAC_IRQn, 18);
 }
 //------------------------------------------------
 
