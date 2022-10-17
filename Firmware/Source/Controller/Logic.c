@@ -27,6 +27,7 @@ Int16U FollowingErrorCounterMax = 0;
 Int16U PAUSyncDelayCounter = 0;
 Int16U PAUSyncTransmitCounter = 0;
 Int16U PAUSyncReceiveCounter = 0;
+Int16U OSCSyncTimeStart = 0;
 
 // Arrays
 float RingBuffer_Voltage[MAF_BUFFER_LENGTH];
@@ -65,6 +66,7 @@ void LOGIC_CacheVariables()
 	dV = VoltageSetpoint / DataTable[REG_PULSE_FRONT_WIDTH] * TIMER6_uS / 1000;
 	RegulatorAlowedError = DataTable[REG_REGULATOR_ALOWED_ERR];
 	FollowingErrorCounterMax = DataTable[REG_FOLLOWING_ERR_CNT];
+	OSCSyncTimeStart = (PulsePointsQuantity > DataTable[REG_OSC_SYNC_WIDTH]) ? PulsePointsQuantity - DataTable[REG_OSC_SYNC_WIDTH] : 0;
 
 	LOGIC_ClearVariables();
 }
@@ -90,13 +92,8 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 		if(!DataTable[REG_PAU_EMULATED])
 		{
 			if(PAUSyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY] && CONTROL_State != DS_SelfTest)
-			{
 				LOGIC_PAUSyncProcess(&Result);
-				LL_OscSyncSetState(true);
-			}
 		}
-		else
-			LL_OscSyncSetState(true);
 	}
 
 	RegulatorError = (RegulatorPulseCounter == 0) ? 0 : (VoltageTarget - Sample.Voltage);
@@ -134,8 +131,13 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 	LOGIC_LoggingProcess(Sample, RegulatorError);
 
 	RegulatorPulseCounter++;
+
+	if(RegulatorPulseCounter >= OSCSyncTimeStart)
+		LL_OscSyncSetState(true);
+
 	if (RegulatorPulseCounter >= PulsePointsQuantity && Result == RS_InProcess)
 	{
+		LL_OscSyncSetState(false);
 		FollowingErrorCounter = 0;
 		Result = RS_Finished;
 	}

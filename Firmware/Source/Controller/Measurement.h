@@ -7,7 +7,7 @@
 
 // Definitions
 #define PULSE_ARR_MAX_LENGTH					300				// Количество точек оцифровки
-#define MAF_BUFFER_LENGTH						16
+#define MAF_BUFFER_LENGTH						64
 #define MAF_BUFFER_INDEX_MASK					MAF_BUFFER_LENGTH - 1
 
 // Types

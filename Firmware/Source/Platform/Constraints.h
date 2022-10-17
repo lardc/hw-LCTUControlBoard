@@ -96,6 +96,10 @@
 #define PAU_SYNC_WIDTH_MIN			3						// мкс
 #define PAU_SYNC_WIDTH_MAX			10						// мкс
 #define PAU_SYNC_WIDTH_DEF			5						// мкс
+//
+#define OSC_SYNC_WIDTH_MIN			5						// в тиках
+#define OSC_SYNC_WIDTH_MAX			650						// в тиках
+#define OSC_SYNC_WIDTH_DEF			10						// в тиках
 
 // Types
 typedef struct __TableItemConstraint
