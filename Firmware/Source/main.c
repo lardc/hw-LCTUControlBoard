@@ -20,6 +20,9 @@ int main()
 	// Настройка UART
 	INITCFG_ConfigUART();
 	
+	// Настройка CAN
+	INITCFG_ConfigCAN();
+
 	// Настройка системного счетчика
 	INITCFG_ConfigTimer7();
 	

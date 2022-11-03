@@ -55,6 +55,26 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>Source/Interface/BCCIMHighLevel.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Interface/BCCIMHighLevel.c</locationURI>
+		</link>
+		<link>
+			<name>Source/Interface/BCCIMHighLevel.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Interface/BCCIMHighLevel.h</locationURI>
+		</link>
+		<link>
+			<name>Source/Interface/BCCIMaster.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Interface/BCCIMaster.c</locationURI>
+		</link>
+		<link>
+			<name>Source/Interface/BCCIMaster.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Interface/BCCIMaster.h</locationURI>
+		</link>
+		<link>
 			<name>Source/Interface/BCCISlave.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Interface/BCCISlave.c</locationURI>
