@@ -28,7 +28,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{REGULATOR_KP_MIN, REGULATOR_KP_MAX, REGULATOR_KP_DEF},						// 17
 		{REGULATOR_KI_MIN, REGULATOR_KI_MAX, REGULATOR_KI_DEF},						// 18
 		{0, 0, 0},																	// 19
-		{0, 0, 0},																	// 20
+		{0, INT16U_MAX, PAU_CAN_ID_DEF},											// 20
 		{0, 0, 0},																	// 21
 		{0, 0, 0},																	// 22
 		{0, 0, 0},																	// 23
@@ -138,7 +138,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 127
 		{VOLTAGE_SETPOINT_MIN, VOLTAGE_SETPOINT_MAX, 0},							// 128
 		{PULSE_WIDTH_MIN, PULSE_WIDTH_MAX, PULSE_WIDTH_DEF},						// 129
-		{0, 0, 0},																	// 130
+		{0, INT16U_MAX, 0},															// 130
 		{0, 0, 0},																	// 131
 		{0, 0, 0},																	// 132
 		{0, 0, 0},																	// 133

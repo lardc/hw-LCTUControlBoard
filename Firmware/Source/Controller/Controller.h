@@ -25,6 +25,7 @@ typedef enum __DeviceSubState
 	SS_IdleTimeCheck,
 	SS_CapChargeStart,
 	SS_CapChargeStop,
+	SS_PAUConfig,
 	SS_CommutationEnable,
 	SS_CommutationDisable,
 	SS_StartPulse,

@@ -39,5 +39,6 @@ void CONTROL_HandleExternalLamp(bool IsImpulse);
 void LOGIC_HarwarePrepare(TestType Type);
 void LOGIC_HarwareDefaultState();
 void LOGIC_ResetOutputRegisters();
+bool LOGIC_PAUConfigProcess();
 
 #endif /* LOGIC_H_ */

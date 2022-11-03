@@ -8,6 +8,7 @@
 #include "Math.h"
 #include "Delay.h"
 #include "Controller.h"
+#include "PAU.h"
 
 
 // Variables
@@ -312,5 +313,42 @@ void LOGIC_ResetOutputRegisters()
 	//
 	DEVPROFILE_ResetScopes(0);
 	DEVPROFILE_ResetEPReadState();
+}
+//------------------------------------------
+
+bool LOGIC_PAUConfigProcess()
+{
+	Int16U PAU_State;
+	static Int64U Timeout = 0;
+
+	// Обновление состояния PAU
+	if(!PAU_UpdateState(&PAU_State))
+		CONTROL_SwitchToFault(DF_INTERFACE);
+
+	switch(PAU_State)
+	{
+	case PS_Ready:
+		if(!PAU_Configure(PAU_CHANNEL_LCTU, DataTable[REG_CURRENT_CUT_OFF], DataTable[REG_PULSE_WIDTH]))
+			CONTROL_SwitchToFault(DF_INTERFACE);
+		break;
+
+	case PS_InProcess:
+		if(!Timeout)
+			Timeout = CONTROL_TimeCounter + PAU_CONFIG_TIMEOUT;
+		else
+			if(CONTROL_TimeCounter >= Timeout)
+				CONTROL_SwitchToFault(DF_PAU_CONFIG_TIMEOUT);
+		break;
+
+	case PS_ConfigReady:
+		return true;
+		break;
+
+	case PS_Fault:
+		CONTROL_SwitchToFault(DF_PAU);
+		break;
+	}
+
+	return false;
 }
 //------------------------------------------

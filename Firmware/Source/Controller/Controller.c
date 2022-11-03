@@ -15,6 +15,8 @@
 #include "DiscreteOpAmp.h"
 #include "SelfTest.h"
 #include "Measurement.h"
+#include "BCCIMHighLevel.h"
+#include "PAU.h"
 
 // Definitions
 //
@@ -207,6 +209,11 @@ void CONTROL_LogicProcess()
 
 		case SS_IdleTimeCheck:
 			if(CONTROL_TimeCounter > CONTROL_PulseToPulseTime)
+				CONTROL_SetDeviceSubState(SS_PAUConfig);
+			break;
+
+		case SS_PAUConfig:
+			if(LOGIC_PAUConfigProcess())
 				CONTROL_SetDeviceSubState(SS_CapChargeStop);
 			break;
 
@@ -361,14 +368,29 @@ void CONTROL_Commutation(TestType Type, bool State)
 
 void CONTROL_SaveTestResult()
 {
-	DataTable[REG_RESULT_VOLTAGE] = MEASURE_GetAverageVoltage();
-	DataTable[REG_RESULT_CURRENT] = MEASURE_GetAverageCurrent();
-	DataTable[REG_OP_RESULT] = OPRESULT_OK;
+	float Current;
+
+	if(!PAU_ReadMeasuredData(&Current))
+		CONTROL_SwitchToFault(DF_INTERFACE);
+	else
+	{
+		DataTable[REG_RESULT_CURRENT] = Current;
+		DataTable[REG_RESULT_VOLTAGE] = MEASURE_GetAverageVoltage();
+		DataTable[REG_OP_RESULT] = OPRESULT_OK;
+	}
 }
 //-----------------------------------------------
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {
+	if(Reason == DF_INTERFACE)
+	{
+		BHLError Error = BHL_GetError();
+		DataTable[REG_PAU_ERROR_CODE] = Error.ErrorCode;
+		DataTable[REG_PAU_FUNCTION] = Error.Func;
+		DataTable[REG_PAU_EXT_DATA] = Error.ExtData;
+	}
+
 	CONTROL_SetDeviceState(DS_Fault, SS_PostPulseDelay);
 	DataTable[REG_FAULT_REASON] = Reason;
 

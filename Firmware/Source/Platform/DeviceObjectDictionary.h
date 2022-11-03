@@ -58,6 +58,8 @@
 #define REG_REGULATOR_Kp				17	// Пропорциональный коэффициент регулятора
 #define REG_REGULATOR_Ki				18	// Интегральный коэффициент регулятора
 //
+#define REG_PAU_CAN_ID					20	// CAN ID PAU
+//
 #define REG_PULSE_FRONT_WIDTH			30	// Длительность фронта импульса в (мс)
 #define REG_REGULATOR_ALOWED_ERR		31	// Допустимая ошибка регулирования (%)
 #define REG_SCOPE_STEP					32	// Сохранение измеренных данных с заданным шагом
@@ -81,9 +83,11 @@
 #define REG_PAU_SYNC_WIDTH				50	// Длительность импульса синхронизации (мкс)
 #define REG_PAU_SYNC_TRACKING			51	// Отслеживание поступления испульсов синхронизации от PAU
 #define REG_OSC_SYNC_WIDTH				52	// Длительность импульса синхронизации осциллографа (в тиках регулятора)
+//
 
 #define REG_VOLTAGE_SETPOINT			128	// Уставка по напряжению, В
 #define REG_PULSE_WIDTH					129	// Длительность импульса напряжения, мс
+#define REG_CURRENT_CUT_OFF				130	// Отсечтка по току утечки (мА)
 
 // Несохраняемы регистры чтения-записи
 #define REG_DBG							150	// Отладочный регистр
@@ -100,12 +104,38 @@
 
 #define REG_RESULT_VOLTAGE				200	// Достигнутое напряжение во время теста (В)
 #define REG_RESULT_CURRENT				201	// Измеренный ток утечки (мА)
+
+#define REG_PAU_ERROR_CODE				210	// Ошибка интерфейса PAU: код ошибки
+#define REG_PAU_FUNCTION				212	// Ошибка интерфейса PAU: код функции
+#define REG_PAU_EXT_DATA				213	// Ошибка интерфейса PAU: расширенная информация
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID			257	// Device CAN master node ID (if presented)
 // 258 - 259
 #define REG_FWINFO_STR_LEN				260	// Length of the information string record
 #define REG_FWINFO_STR_BEGIN			261	// Begining of the information string record
+
+
+// PAU commands
+#define ACT_PAU_FAULT_CLEAR				3	// Очистка fault
+#define ACT_PAU_WARNING_CLEAR			4	// Очистка warning
+//
+#define ACT_PAU_PULSE_CONFIG			100	// Конфигурация PAU
+// -----------------------------
+
+// Регистры PAU
+#define REG_PAU_CHANNEL					128	// Выбор канала измерения PAU
+#define REG_PAU_RANGE					129	// Диапазон измерения тока (мА)
+#define REG_PAU_MEASUREMENT_TIME		130	// Время измерения (мс)
+//
+#define REG_PAU_RESULT_CURRENT			200	// Измеренное значение тока
+//
+#define REG_PAU_DEV_STATE				192	// Состояние блока
+#define REG_PAU_FAULT_REASON			193
+#define REG_PAU_DISABLE_REASON			194
+#define REG_PAU_WARNING					195
+#define REG_PAU_PROBLEM					196
+// -----------------------------
 
 
 // Operation results
@@ -118,6 +148,9 @@
 #define DF_FOLLOWING_ERROR				1
 #define DF_CURRENT_MEASURING			2
 #define DF_PAU_SYNC						3
+#define DF_INTERFACE					4
+#define DF_PAU							5
+#define DF_PAU_CONFIG_TIMEOUT			6
 
 // Problem
 #define PROBLEM_NONE					0

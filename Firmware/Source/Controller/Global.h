@@ -23,6 +23,7 @@
 #define LCTU_VOLTAGE_MAX						3300	// В
 #define PAU_SYNC_WIDTH_CORR						2		// мкс
 #define LCTU_CURRENT_MIN						1		// мА
+#define LCTU_CURRENT_MAX						30		// мА
 //
 #define VOLTAGE_RANGE_0							0
 #define VOLTAGE_RANGE_1							1
