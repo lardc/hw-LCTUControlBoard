@@ -13,6 +13,7 @@
 #include "Constraints.h"
 #include "ZwNCAN.h"
 #include "ZwSCI.h"
+#include "BCCIMHighLevel.h"
 
 // Types
 //
@@ -51,6 +52,7 @@ BCCIM_Interface MASTER_DEVICE_CAN_Interface;
 //
 static SCCI_IOConfig RS232_IOConfig;
 static BCCI_IOConfig CAN_IOConfig;
+static BCCI_IOConfig CAN_Master_IOConfig;
 static xCCI_ServiceConfig X_ServiceConfig;
 static EPStates RS232_EPState, CAN_EPState;
 static xCCI_FUNC_CallbackAction ControllerDispatchFunction;
@@ -77,11 +79,18 @@ void DEVPROFILE_Init(xCCI_FUNC_CallbackAction SpecializedDispatch, Boolean* Mask
 	RS232_IOConfig.IO_ReceiveArray16 = &ZwSCI_ReceiveArray16;
 	RS232_IOConfig.IO_GetBytesToReceive = &ZwSCI_GetBytesToReceive;
 	RS232_IOConfig.IO_ReceiveByte = &ZwSCI_ReceiveChar;
+	//
 	CAN_IOConfig.IO_SendMessage = &NCAN_SendMessage;
 	CAN_IOConfig.IO_SendMessageEx = &NCAN_SendMessageEx;
 	CAN_IOConfig.IO_GetMessage = &NCAN_GetMessage;
 	CAN_IOConfig.IO_IsMessageReceived = &NCAN_IsMessageReceived;
 	CAN_IOConfig.IO_ConfigMailbox = &NCAN_ConfigMailbox;
+	//
+	CAN_Master_IOConfig.IO_SendMessage = &NCAN_SendMessage;
+	CAN_Master_IOConfig.IO_SendMessageEx = &NCAN_SendMessageEx;
+	CAN_Master_IOConfig.IO_GetMessage = &NCAN_GetMessage;
+	CAN_Master_IOConfig.IO_IsMessageReceived = &NCAN_IsMessageReceived;
+	CAN_Master_IOConfig.IO_ConfigMailbox = &NCAN_ConfigMailbox;
 	
 	// Init service
 	X_ServiceConfig.UserActionCallback = &DEVPROFILE_DispatchAction;
@@ -92,6 +101,8 @@ void DEVPROFILE_Init(xCCI_FUNC_CallbackAction SpecializedDispatch, Boolean* Mask
 	SCCI_Init(&DEVICE_RS232_Interface, &RS232_IOConfig, &X_ServiceConfig, (pInt16U)DataTable, DATA_TABLE_SIZE,
 			SCCI_TIMEOUT_TICKS, &RS232_EPState);
 	BCCI_Init(&DEVICE_CAN_Interface, &CAN_IOConfig, &X_ServiceConfig, (pInt16U)DataTable, DATA_TABLE_SIZE, &CAN_EPState);
+	BCCIM_Init(&MASTER_DEVICE_CAN_Interface, &CAN_Master_IOConfig, BCCIM_TIMEOUT_TICKS, &CONTROL_TimeCounter);
+	BHL_Init(&MASTER_DEVICE_CAN_Interface);
 
 	// Set write protection
 	SCCI_AddProtectedArea(&DEVICE_RS232_Interface, DATA_TABLE_WP_START, DATA_TABLE_SIZE - 1);
