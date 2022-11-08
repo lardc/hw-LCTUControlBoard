@@ -435,7 +435,16 @@ void CONTROL_SaveTestResult()
 			break;
 
 		default:
-			CONTROL_SwitchToFault(DF_PAU_ABNORMAL_STATE);
+			if(DataTable[REG_PAU_EMULATED])
+			{
+				DataTable[REG_RESULT_CURRENT] = MEASURE_GetAverageCurrent();
+				DataTable[REG_RESULT_VOLTAGE] = MEASURE_GetAverageVoltage();
+				DataTable[REG_OP_RESULT] = OPRESULT_OK;
+
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
+			}
+			else
+				CONTROL_SwitchToFault(DF_PAU_ABNORMAL_STATE);
 			break;
 		}
 	}
