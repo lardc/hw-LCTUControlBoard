@@ -155,13 +155,17 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_CLR_FAULT:
 			if (CONTROL_State == DS_Fault)
 			{
-				CONTROL_SetDeviceState(DS_None, SS_None);
-				DataTable[REG_FAULT_REASON] = DF_NONE;
+				if(PAU_ClearFault())
+				{
+					CONTROL_SetDeviceState(DS_None, SS_None);
+					DataTable[REG_FAULT_REASON] = DF_NONE;
+				}
 			}
 			break;
 
 		case ACT_CLR_WARNING:
-			DataTable[REG_WARNING] = WARNING_NONE;
+			if(PAU_ClearWarning())
+				DataTable[REG_WARNING] = WARNING_NONE;
 			break;
 
 		default:
@@ -253,11 +257,15 @@ void CONTROL_LogicProcess()
 				if(CONTROL_State != DS_Fault)
 				{
 					LL_PowerSupply(true);
-					CONTROL_SetDeviceState(DS_Ready, SS_None);
+					CONTROL_SetDeviceSubState(SS_SaveResult);
 				}
 				else
 					CONTROL_SetDeviceSubState(SS_None);
 			}
+			break;
+
+		case SS_SaveResult:
+			CONTROL_SaveTestResult();
 			break;
 
 		default:
@@ -329,10 +337,7 @@ void CONTROL_HighPriorityProcess()
 		}
 
 		if(RegulatorResult == RS_Finished || RegulatorResult == RS_FollowingError)
-		{
 			CONTROL_StopProcess();
-			CONTROL_SaveTestResult();
-		}
 	}
 }
 //-----------------------------------------------
@@ -377,6 +382,8 @@ void CONTROL_SaveTestResult()
 		DataTable[REG_RESULT_CURRENT] = Current;
 		DataTable[REG_RESULT_VOLTAGE] = MEASURE_GetAverageVoltage();
 		DataTable[REG_OP_RESULT] = OPRESULT_OK;
+
+		CONTROL_SetDeviceState(DS_Ready, SS_None);
 	}
 }
 //-----------------------------------------------

@@ -31,6 +31,7 @@ typedef enum __DeviceSubState
 	SS_StartPulse,
 	SS_Pulse,
 	SS_PostPulseDelay,
+	SS_SaveResult,
 
 	SS_ST_StartPrepare = 10,
 	SS_ST_StartPulse,
