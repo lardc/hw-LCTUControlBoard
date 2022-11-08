@@ -189,112 +189,115 @@ void CONTROL_LogicProcess()
 {
 	Int16U PAU_State;
 
-	switch(CONTROL_SubState)
+	if(CONTROL_State == DS_InProcess)
 	{
-		case SS_PowerSupply:
-			LL_PowerSupply(true);
+		switch(CONTROL_SubState)
+		{
+			case SS_PowerSupply:
+				LL_PowerSupply(true);
 
-			if(CONTROL_Delay(DataTable[REG_PS_FIRST_START_TIME]))
-				CONTROL_SetDeviceState(DS_InProcess, SS_StartSelfTest);
-			break;
+				if(CONTROL_Delay(DataTable[REG_PS_FIRST_START_TIME]))
+					CONTROL_SetDeviceState(DS_InProcess, SS_StartSelfTest);
+				break;
 
-		case SS_StartSelfTest:
-			if(DataTable[REG_SELF_TEST_ACTIVE])
-			{
-				CONTROL_Commutation(TT_SelfTest, true);
-				DELAY_MS(COMMUTATION_DELAY);
-
-				CONTROL_SetDeviceState(DS_InProcess, SS_CheckPAU);
-			}
-			else
-				CONTROL_SetDeviceState(DS_InProcess, SS_CheckPAU);
-			break;
-
-		case SS_CheckPAU:
-			// Обновление состояния PAU
-			if(!PAU_UpdateState(&PAU_State))
-				CONTROL_SwitchToFault(DF_INTERFACE);
-			else
-			{
-				switch(PAU_State)
+			case SS_StartSelfTest:
+				if(DataTable[REG_SELF_TEST_ACTIVE])
 				{
-					case PS_Ready:
-						CONTROL_SetDeviceState(DS_Ready, SS_None);
-						break;
+					CONTROL_Commutation(TT_SelfTest, true);
+					DELAY_MS(COMMUTATION_DELAY);
 
-					case PS_Fault:
-						CONTROL_SwitchToFault(DF_PAU);
-						break;
-
-					default:
-						if(DataTable[REG_PAU_EMULATED])
-							CONTROL_SetDeviceState(DS_Ready, SS_None);
-						else
-							CONTROL_SwitchToFault(DF_PAU_ABNORMAL_STATE);
-						break;
-				}
-			}
-			break;
-
-		case SS_IdleTimeCheck:
-			if(CONTROL_TimeCounter > CONTROL_PulseToPulseTime)
-				CONTROL_SetDeviceSubState(SS_PAUConfig);
-			break;
-
-		case SS_PAUConfig:
-			if(LOGIC_PAUConfigProcess())
-				CONTROL_SetDeviceSubState(SS_CapChargeStop);
-			break;
-
-		case SS_CapChargeStop:
-			LL_PowerSupply(false);
-
-			if(CONTROL_Delay(DataTable[REG_PS_PREPARE_TIME]))
-				CONTROL_SetDeviceSubState(SS_CommutationEnable);
-			break;
-
-		case SS_CommutationEnable:
-			CONTROL_Commutation(TT_DUT, true);
-
-			if(CONTROL_Delay(COMMUTATION_DELAY))
-				CONTROL_SetDeviceSubState(SS_StartPulse);
-			break;
-
-		case SS_StartPulse:
-			LOGIC_ResetOutputRegisters();
-			LOGIC_StartPrepare();
-			CONTROL_StartProcess();
-			CONTROL_SetDeviceSubState(SS_Pulse);
-			break;
-
-		case SS_PostPulseDelay:
-			IsImpulse = false;
-
-			DELAY_US(POST_PULSE_DELAY);
-			CONTROL_SetDeviceSubState(SS_CommutationDisable);
-			break;
-
-		case SS_CommutationDisable:
-			CONTROL_Commutation(TT_DUT, false);
-
-			if(CONTROL_Delay(COMMUTATION_DELAY))
-			{
-				if(CONTROL_State != DS_Fault)
-				{
-					LL_PowerSupply(true);
-					CONTROL_SetDeviceSubState(SS_SaveResult);
+					CONTROL_SetDeviceState(DS_SelfTest, SS_ST_StartPrepare);
 				}
 				else
-					CONTROL_SetDeviceSubState(SS_None);
-			}
-			break;
+					CONTROL_SetDeviceState(DS_InProcess, SS_CheckPAU);
+				break;
 
-		case SS_SaveResult:
-			CONTROL_SaveTestResult();
-			break;
+			case SS_CheckPAU:
+				// Обновление состояния PAU
+				if(!PAU_UpdateState(&PAU_State))
+					CONTROL_SwitchToFault(DF_INTERFACE);
+				else
+				{
+					switch(PAU_State)
+					{
+						case PS_Ready:
+							CONTROL_SetDeviceState(DS_Ready, SS_None);
+							break;
 
-		default:
-			break;
+						case PS_Fault:
+							CONTROL_SwitchToFault(DF_PAU);
+							break;
+
+						default:
+							if(DataTable[REG_PAU_EMULATED])
+								CONTROL_SetDeviceState(DS_Ready, SS_None);
+							else
+								CONTROL_SwitchToFault(DF_PAU_ABNORMAL_STATE);
+							break;
+					}
+				}
+				break;
+
+			case SS_IdleTimeCheck:
+				if(CONTROL_TimeCounter > CONTROL_PulseToPulseTime)
+					CONTROL_SetDeviceSubState(SS_PAUConfig);
+				break;
+
+			case SS_PAUConfig:
+				if(LOGIC_PAUConfigProcess())
+					CONTROL_SetDeviceSubState(SS_CapChargeStop);
+				break;
+
+			case SS_CapChargeStop:
+				LL_PowerSupply(false);
+
+				if(CONTROL_Delay(DataTable[REG_PS_PREPARE_TIME]))
+					CONTROL_SetDeviceSubState(SS_CommutationEnable);
+				break;
+
+			case SS_CommutationEnable:
+				CONTROL_Commutation(TT_DUT, true);
+
+				if(CONTROL_Delay(COMMUTATION_DELAY))
+					CONTROL_SetDeviceSubState(SS_StartPulse);
+				break;
+
+			case SS_StartPulse:
+				LOGIC_ResetOutputRegisters();
+				LOGIC_StartPrepare();
+				CONTROL_StartProcess();
+				CONTROL_SetDeviceSubState(SS_Pulse);
+				break;
+
+			case SS_PostPulseDelay:
+				IsImpulse = false;
+
+				DELAY_US(POST_PULSE_DELAY);
+				CONTROL_SetDeviceSubState(SS_CommutationDisable);
+				break;
+
+			case SS_CommutationDisable:
+				CONTROL_Commutation(TT_DUT, false);
+
+				if(CONTROL_Delay(COMMUTATION_DELAY))
+				{
+					if(CONTROL_State != DS_Fault)
+					{
+						LL_PowerSupply(true);
+						CONTROL_SetDeviceSubState(SS_SaveResult);
+					}
+					else
+						CONTROL_SetDeviceSubState(SS_None);
+				}
+				break;
+
+			case SS_SaveResult:
+				CONTROL_SaveTestResult();
+				break;
+
+			default:
+				break;
+		}
 	}
 
 	if(CONTROL_State == DS_SelfTest)
