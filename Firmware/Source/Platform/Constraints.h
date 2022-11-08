@@ -8,7 +8,7 @@
 
 //Definitions
 //
-#define PULSE_WIDTH_MIN				1			// (мс)
+#define PULSE_WIDTH_MIN				10			// (мс)
 #define PULSE_WIDTH_MAX				100			// (мс)
 #define PULSE_WIDTH_DEF				20			// (мс)
 //
@@ -61,6 +61,7 @@
 //
 #define VOLTAGE_SETPOINT_MIN		200						// В
 #define VOLTAGE_SETPOINT_MAX		LCTU_VOLTAGE_MAX		// В
+#define VOLTAGE_SETPOINT_DEF		500						// В
 //
 #define PS_FIRST_START_TIME_MIN		500						// мс
 #define PS_FIRST_START_TIME_MAX		20000					// мс
@@ -100,6 +101,10 @@
 #define OSC_SYNC_WIDTH_MIN			5						// в тиках
 #define OSC_SYNC_WIDTH_MAX			650						// в тиках
 #define OSC_SYNC_WIDTH_DEF			10						// в тиках
+//
+#define CURRENT_CUT_OFF_MIN			0.001					// мА
+#define CURRENT_CUT_OFF_MAX			30						// мА
+#define CURRENT_CUT_OFF_DEF			30						// мА
 //
 #define PAU_CAN_ID_DEF				101
 
