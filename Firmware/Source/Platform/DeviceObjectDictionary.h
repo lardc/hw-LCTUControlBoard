@@ -106,8 +106,8 @@
 #define REG_RESULT_CURRENT				201	// Измеренный ток утечки (мА)
 
 #define REG_PAU_ERROR_CODE				210	// Ошибка интерфейса PAU: код ошибки
-#define REG_PAU_FUNCTION				212	// Ошибка интерфейса PAU: код функции
-#define REG_PAU_EXT_DATA				213	// Ошибка интерфейса PAU: расширенная информация
+#define REG_PAU_FUNCTION				211	// Ошибка интерфейса PAU: код функции
+#define REG_PAU_EXT_DATA				212	// Ошибка интерфейса PAU: расширенная информация
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID			257	// Device CAN master node ID (if presented)
