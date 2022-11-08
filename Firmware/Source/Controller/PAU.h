@@ -11,6 +11,7 @@
 #define PAU_CHANNEL_IGTU			2
 //
 #define PAU_CONFIG_TIMEOUT			1000
+#define PAU_WAIT_READY_TIMEOUT		1500
 
 // Types
 //

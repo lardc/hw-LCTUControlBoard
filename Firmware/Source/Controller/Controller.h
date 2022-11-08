@@ -21,7 +21,9 @@ typedef enum __DeviceState
 typedef enum __DeviceSubState
 {
 	SS_None = 0,
-	SS_StartProcess,
+	SS_PowerSupply,
+	SS_CheckPAU,
+	SS_StartSelfTest,
 	SS_IdleTimeCheck,
 	SS_CapChargeStart,
 	SS_CapChargeStop,

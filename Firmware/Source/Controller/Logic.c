@@ -303,36 +303,38 @@ bool LOGIC_PAUConfigProcess()
 	// Обновление состояния PAU
 	if(!PAU_UpdateState(&PAU_State))
 		CONTROL_SwitchToFault(DF_INTERFACE);
-
-	switch(PAU_State)
+	else
 	{
-	case PS_Ready:
-		if(!PAU_Configure(PAU_CHANNEL_LCTU, DataTable[REG_CURRENT_CUT_OFF], DataTable[REG_PULSE_WIDTH]))
-			CONTROL_SwitchToFault(DF_INTERFACE);
+		switch(PAU_State)
+		{
+		case PS_Ready:
+			if(!PAU_Configure(PAU_CHANNEL_LCTU, DataTable[REG_CURRENT_CUT_OFF], DataTable[REG_PULSE_WIDTH]))
+				CONTROL_SwitchToFault(DF_INTERFACE);
 
-		Timeout = 0;
-		break;
+			Timeout = 0;
+			break;
 
-	case PS_InProcess:
-		if(!Timeout)
-			Timeout = CONTROL_TimeCounter + PAU_CONFIG_TIMEOUT;
-		else
-			if(CONTROL_TimeCounter >= Timeout)
-				CONTROL_SwitchToFault(DF_PAU_CONFIG_TIMEOUT);
-		break;
+		case PS_InProcess:
+			if(!Timeout)
+				Timeout = CONTROL_TimeCounter + PAU_CONFIG_TIMEOUT;
+			else
+				if(CONTROL_TimeCounter >= Timeout)
+					CONTROL_SwitchToFault(DF_PAU_CONFIG_TIMEOUT);
+			break;
 
-	case PS_ConfigReady:
-		return true;
-		break;
-
-	case PS_Fault:
-		CONTROL_SwitchToFault(DF_PAU);
-		break;
-
-	default:
-		if(DataTable[REG_PAU_EMULATED])
+		case PS_ConfigReady:
 			return true;
-		break;
+			break;
+
+		case PS_Fault:
+			CONTROL_SwitchToFault(DF_PAU);
+			break;
+
+		default:
+			if(DataTable[REG_PAU_EMULATED])
+				return true;
+			break;
+		}
 	}
 
 	return false;

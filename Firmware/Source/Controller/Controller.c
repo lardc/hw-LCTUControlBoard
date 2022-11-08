@@ -32,7 +32,6 @@ typedef void (*FUNC_AsyncDelegate)();
 volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = SS_None;
 static Boolean CycleActive = false;
-Boolean DeviceIsPowered = false;
 //
 volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int64U	CONTROL_PulseToPulseTime = 0;
@@ -108,7 +107,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_None)
 			{
 				LOGIC_ResetOutputRegisters();
-				CONTROL_SetDeviceState(DS_InProcess, SS_StartProcess);
+				CONTROL_SetDeviceState(DS_InProcess, SS_PowerSupply);
 			}
 			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -118,8 +117,6 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Ready)
 			{
 				LL_PowerSupply(false);
-				DeviceIsPowered = false;
-
 				CONTROL_SetDeviceState(DS_None, SS_None);
 			}
 			else if(CONTROL_State != DS_None)
@@ -146,7 +143,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			{
 				LOGIC_ResetOutputRegisters();
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
-				CONTROL_SetDeviceState(DS_InProcess, SS_StartProcess);
+				CONTROL_SetDeviceState(DS_InProcess, SS_PowerSupply);
 			}
 			else
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -190,24 +187,52 @@ void CONTROL_ForceStopProcess()
 
 void CONTROL_LogicProcess()
 {
+	Int16U PAU_State;
+
 	switch(CONTROL_SubState)
 	{
-		case SS_StartProcess:
+		case SS_PowerSupply:
 			LL_PowerSupply(true);
 
-			if(DeviceIsPowered || CONTROL_Delay(DataTable[REG_PS_FIRST_START_TIME]))
+			if(CONTROL_Delay(DataTable[REG_PS_FIRST_START_TIME]))
+				CONTROL_SetDeviceState(DS_InProcess, SS_StartSelfTest);
+			break;
+
+		case SS_StartSelfTest:
+			if(DataTable[REG_SELF_TEST_ACTIVE])
 			{
-				DeviceIsPowered = true;
+				CONTROL_Commutation(TT_SelfTest, true);
+				DELAY_MS(COMMUTATION_DELAY);
 
-				if(DataTable[REG_SELF_TEST_ACTIVE])
+				CONTROL_SetDeviceState(DS_InProcess, SS_CheckPAU);
+			}
+			else
+				CONTROL_SetDeviceState(DS_InProcess, SS_CheckPAU);
+			break;
+
+		case SS_CheckPAU:
+			// Обновление состояния PAU
+			if(!PAU_UpdateState(&PAU_State))
+				CONTROL_SwitchToFault(DF_INTERFACE);
+			else
+			{
+				switch(PAU_State)
 				{
-					CONTROL_Commutation(TT_SelfTest, true);
-					DELAY_MS(COMMUTATION_DELAY);
+					case PS_Ready:
+						CONTROL_SetDeviceState(DS_Ready, SS_None);
+						break;
 
-					CONTROL_SetDeviceState(DS_SelfTest, SS_ST_StartPrepare);
+					case PS_Fault:
+						CONTROL_SwitchToFault(DF_PAU);
+						break;
+
+					default:
+						if(DataTable[REG_PAU_EMULATED])
+							CONTROL_SetDeviceState(DS_Ready, SS_None);
+						else
+							CONTROL_SwitchToFault(DF_PAU_ABNORMAL_STATE);
+						break;
 				}
-				else
-					CONTROL_SetDeviceState(DS_Ready, SS_None);
 			}
 			break;
 
@@ -374,16 +399,45 @@ void CONTROL_Commutation(TestType Type, bool State)
 void CONTROL_SaveTestResult()
 {
 	float Current;
+	Int16U PAU_State;
+	static Int64U Timeout = 0;
 
-	if(!PAU_ReadMeasuredData(&Current))
+	// Обновление состояния PAU
+	if(!PAU_UpdateState(&PAU_State))
 		CONTROL_SwitchToFault(DF_INTERFACE);
 	else
 	{
-		DataTable[REG_RESULT_CURRENT] = Current;
-		DataTable[REG_RESULT_VOLTAGE] = MEASURE_GetAverageVoltage();
-		DataTable[REG_OP_RESULT] = OPRESULT_OK;
+		switch(PAU_State)
+		{
+		case PS_Ready:
+			if(!PAU_ReadMeasuredData(&Current))
+				CONTROL_SwitchToFault(DF_INTERFACE);
+			else
+			{
+				DataTable[REG_RESULT_CURRENT] = Current;
+				DataTable[REG_RESULT_VOLTAGE] = MEASURE_GetAverageVoltage();
+				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
-		CONTROL_SetDeviceState(DS_Ready, SS_None);
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
+			}
+			break;
+
+		case PS_InProcess:
+			if(!Timeout)
+				Timeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
+
+			if(CONTROL_TimeCounter >= Timeout)
+				CONTROL_SwitchToFault(DF_PAU_ABNORMAL_STATE);
+			break;
+
+		case PS_Fault:
+			CONTROL_SwitchToFault(DF_PAU);
+			break;
+
+		default:
+			CONTROL_SwitchToFault(DF_PAU_ABNORMAL_STATE);
+			break;
+		}
 	}
 }
 //-----------------------------------------------
@@ -400,8 +454,6 @@ void CONTROL_SwitchToFault(Int16U Reason)
 
 	CONTROL_SetDeviceState(DS_Fault, SS_PostPulseDelay);
 	DataTable[REG_FAULT_REASON] = Reason;
-
-	DeviceIsPowered = false;
 }
 //------------------------------------------
 

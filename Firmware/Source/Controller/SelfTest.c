@@ -68,7 +68,7 @@ void SELFTEST_Process()
 					DataTable[REG_RESULT_VOLTAGE] = 0;
 					DataTable[REG_RESULT_CURRENT] = 0;
 
-					CONTROL_SetDeviceState(DS_Ready, SS_None);
+					CONTROL_SetDeviceState(DS_InProcess, SS_CheckPAU);
 				}
 			break;
 

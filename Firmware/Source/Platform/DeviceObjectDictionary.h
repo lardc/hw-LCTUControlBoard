@@ -151,6 +151,7 @@
 #define DF_INTERFACE					4
 #define DF_PAU							5
 #define DF_PAU_CONFIG_TIMEOUT			6
+#define DF_PAU_ABNORMAL_STATE			7
 
 // Problem
 #define PROBLEM_NONE					0
