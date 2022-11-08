@@ -160,6 +160,7 @@
 #define WARNING_NONE					0
 #define WARNING_SAFETY					1
 #define WARNING_OUTPUT_SHORT			2
+#define WARNING_PAU						3
 
 //  User Errors
 #define ERR_NONE						0
