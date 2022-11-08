@@ -48,10 +48,13 @@ void SELFTEST_Process()
 		case SS_ST_PulseCheck:
 			IsImpulse = false;
 
-			Current = DataTable[REG_RESULT_VOLTAGE] / ST_LOAD_RESISTANCE;
-			Err = fabsf((Current - DataTable[REG_RESULT_CURRENT]) / DataTable[REG_RESULT_CURRENT] * 100);
+			float MeasuredCurrent = MEASURE_GetAverageCurrent();
+			float MeasuredVoltage = MEASURE_GetAverageVoltage();
 
-			if(Err >= ST_ALOWED_ERROR || !DataTable[REG_RESULT_CURRENT])
+			Current = MeasuredVoltage / ST_LOAD_RESISTANCE;
+			Err = fabsf((Current - MeasuredCurrent) / MeasuredCurrent * 100);
+
+			if(Err >= ST_ALOWED_ERROR || !MeasuredCurrent)
 			{
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
 				CONTROL_SwitchToFault(DF_CURRENT_MEASURING);
@@ -65,9 +68,6 @@ void SELFTEST_Process()
 					LL_SelfTestCommutationControl(false);
 
 					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_OK;
-					DataTable[REG_RESULT_VOLTAGE] = 0;
-					DataTable[REG_RESULT_CURRENT] = 0;
-
 					CONTROL_SetDeviceState(DS_InProcess, SS_CheckPAU);
 				}
 			break;
