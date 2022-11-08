@@ -29,6 +29,7 @@ Int16U PAUSyncDelayCounter = 0;
 Int16U PAUSyncTransmitCounter = 0;
 Int16U PAUSyncReceiveCounter = 0;
 Int16U OSCSyncTimeStart = 0;
+bool PAUSyncGenerateFlag = false;
 
 // Arrays
 float RingBuffer_Voltage[MAF_BUFFER_LENGTH];
@@ -38,7 +39,6 @@ float RingBuffer_Current[MAF_BUFFER_LENGTH];
 void LOGIC_CacheVariables();
 void LOGIC_SaveToRingBuffer(MeasureSample Sample);
 void LOGIC_ClearVariables();
-void LOGIC_PAUSyncProcess();
 
 // Functions
 //
@@ -92,8 +92,13 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 
 		if(!DataTable[REG_PAU_EMULATED])
 		{
-			if(PAUSyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY] && CONTROL_State != DS_SelfTest)
-				LOGIC_PAUSyncProcess(&Result);
+			if(PAUSyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY] && CONTROL_State != DS_SelfTest && !PAUSyncGenerateFlag)
+			{
+				LL_PAU_Shunting(false);
+				LL_PAUSyncFlip();
+
+				PAUSyncGenerateFlag = true;
+			}
 		}
 	}
 
@@ -147,32 +152,6 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 }
 //-----------------------------
 
-void LOGIC_PAUSyncProcess(RegulatorState* State)
-{
-	static Int16U LocalCounter = 0;
-
-	if(*State == RS_InProcess && PAUSyncTransmitCounter < DataTable[REG_PAU_SYNC_CNT])
-	{
-		LL_PAU_Shunting(false);
-
-		if(LocalCounter >= DataTable[REG_PAU_SYNC_STEP])
-		{
-			if(!DataTable[REG_PAU_SYNC_TRACKING] || PAUSyncTransmitCounter <= PAUSyncReceiveCounter)
-			{
-				LL_PAUSyncFlip();
-				PAUSyncTransmitCounter++;
-			}
-			else
-				*State = RS_PAU_Sync;
-
-			LocalCounter = 0;
-		}
-		else
-			LocalCounter++;
-	}
-}
-//-----------------------------
-
 void LOGIC_SaveToRingBuffer(MeasureSample Sample)
 {
 	RingBuffer_Voltage[RingBufferIndex] = Sample.Voltage;
@@ -221,7 +200,7 @@ void LOGIC_ClearVariables()
 	LOGIC_TestTime = 0;
 	PAUSyncDelayCounter = 0;
 	PAUSyncReceiveCounter = 0;
-	PAUSyncTransmitCounter = 0;
+	PAUSyncGenerateFlag = 0;
 }
 //-----------------------------
 
@@ -330,6 +309,8 @@ bool LOGIC_PAUConfigProcess()
 	case PS_Ready:
 		if(!PAU_Configure(PAU_CHANNEL_LCTU, DataTable[REG_CURRENT_CUT_OFF], DataTable[REG_PULSE_WIDTH]))
 			CONTROL_SwitchToFault(DF_INTERFACE);
+
+		Timeout = 0;
 		break;
 
 	case PS_InProcess:
@@ -346,6 +327,11 @@ bool LOGIC_PAUConfigProcess()
 
 	case PS_Fault:
 		CONTROL_SwitchToFault(DF_PAU);
+		break;
+
+	default:
+		if(DataTable[REG_PAU_EMULATED])
+			return true;
 		break;
 	}
 
