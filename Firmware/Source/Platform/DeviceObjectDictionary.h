@@ -20,8 +20,8 @@
 #define ACT_DBG_IND_CTRL				59	// Управление внешней индикацией
 
 
-#define ACT_START_PROCESS				100	// Старт измерения
-#define ACT_STOP_PROCESS				101	// Стоп измерения
+#define ACT_START_TEST					100	// Старт измерения
+#define ACT_STOP_TEST					101	// Стоп измерения
 //
 #define ACT_START_SELF_TEST				105	// Запуск самотестирования
 

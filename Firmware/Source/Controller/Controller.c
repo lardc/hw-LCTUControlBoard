@@ -123,7 +123,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 					*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
-		case ACT_START_PROCESS:
+		case ACT_START_TEST:
 			if (CONTROL_State == DS_Ready)
 				CONTROL_SetDeviceState(DS_InProcess, SS_IdleTimeCheck);
 			else
@@ -133,7 +133,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 					*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
-		case ACT_STOP_PROCESS:
+		case ACT_STOP_TEST:
 			if (CONTROL_State == DS_InProcess)
 				CONTROL_ForceStopProcess();
 			break;
@@ -450,6 +450,9 @@ void CONTROL_SaveTestResult()
 				CONTROL_SwitchToFault(DF_PAU_ABNORMAL_STATE);
 			break;
 		}
+
+		if(PAU_State != PS_InProcess)
+			Timeout = 0;
 	}
 }
 //-----------------------------------------------
