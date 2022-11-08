@@ -75,7 +75,7 @@ float MEASURE_GetAverageVoltage()
 float MEASURE_GetAverageCurrent()
 {
 	float Current = MEASURE_ExtractAveragedDatas(&RingBuffer_Current[1], MAF_BUFFER_LENGTH);
-	return (Current >= LCTU_CURRENT_MIN) ? Current : 0;
+	return (Current >= LCTU_SFTST_CURRENT_MIN) ? Current : 0;
 }
 //-----------------------------
 
