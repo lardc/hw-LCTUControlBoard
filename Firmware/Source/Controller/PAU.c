@@ -13,21 +13,11 @@
 //
 bool PAU_UpdateState(Int16U* Register)
 {
-	Int16U Warning;
-
 	if(DataTable[REG_PAU_EMULATED])
 		return true;
 
 	if(BHL_ReadRegister(DataTable[REG_PAU_CAN_ID], REG_PAU_DEV_STATE, Register))
-	{
-		if(BHL_ReadRegister(DataTable[REG_PAU_CAN_ID], REG_PAU_WARNING, &Warning))
-		{
-			if(Warning)
-				DataTable[REG_WARNING] = WARNING_PAU;
-
-			return true;
-		}
-	}
+		return true;
 
 	return false;
 }
