@@ -135,7 +135,10 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 		case ACT_STOP_TEST:
 			if (CONTROL_State == DS_InProcess)
+			{
 				CONTROL_ForceStopProcess();
+				DataTable[REG_PROBLEM] = PROBLEM_FORCED_STOP;
+			}
 			break;
 
 		case ACT_START_SELF_TEST:
@@ -338,7 +341,7 @@ void CONTROL_HighPriorityProcess()
 		if(LL_SafetyGetState() && DataTable[REG_SAFETY_ACTIVE])
 		{
 			CONTROL_ForceStopProcess();
-			DataTable[REG_WARNING] = WARNING_SAFETY;
+			DataTable[REG_PROBLEM] = PROBLEM_SAFETY;
 
 			return;
 		}
