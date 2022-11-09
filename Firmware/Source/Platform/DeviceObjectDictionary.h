@@ -85,9 +85,9 @@
 #define REG_OSC_SYNC_WIDTH				52	// Длительность импульса синхронизации осциллографа (в тиках регулятора)
 //
 
-#define REG_VOLTAGE_SETPOINT			128	// Уставка по напряжению, В
-#define REG_PULSE_WIDTH					129	// Длительность импульса напряжения, мс
-#define REG_CURRENT_CUT_OFF				130	// Отсечтка по току утечки (мА)
+#define REG_TEST_VOLTAGE				128	// Уставка по напряжению, В
+#define REG_LIMIT_CURRENT				129	// Отсечтка по току утечки (мА)
+#define REG_PULSE_WIDTH					130	// Длительность импульса напряжения, мс
 
 // Несохраняемы регистры чтения-записи
 #define REG_DBG							150	// Отладочный регистр
@@ -147,11 +147,10 @@
 #define DF_NONE							0
 #define DF_FOLLOWING_ERROR				1
 #define DF_CURRENT_MEASURING			2
-#define DF_PAU_SYNC						3
-#define DF_INTERFACE					4
-#define DF_PAU							5
-#define DF_PAU_CONFIG_TIMEOUT			6
-#define DF_PAU_ABNORMAL_STATE			7
+#define DF_INTERFACE					3
+#define DF_PAU							4
+#define DF_PAU_CONFIG_TIMEOUT			5
+#define DF_PAU_ABNORMAL_STATE			6
 
 // Problem
 #define PROBLEM_NONE					0

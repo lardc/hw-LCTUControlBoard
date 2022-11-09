@@ -60,7 +60,7 @@ void LOGIC_HarwareDefaultState()
 
 void LOGIC_CacheVariables()
 {
-	VoltageSetpoint = DataTable[REG_VOLTAGE_SETPOINT];
+	VoltageSetpoint = DataTable[REG_TEST_VOLTAGE];
 	PulsePointsQuantity = DataTable[REG_PULSE_WIDTH] * 1000 / TIMER6_uS;
 	RegulatorPcoef = DataTable[REG_REGULATOR_Kp];
 	RegulatorIcoef = DataTable[REG_REGULATOR_Ki];
@@ -206,7 +206,7 @@ void LOGIC_ClearVariables()
 
 void LOGIC_SetVolatgeRange()
 {
-	if(DataTable[REG_VOLTAGE_SETPOINT] > DataTable[REG_VOLTAGE_RANGE_THRESHOLD])
+	if(DataTable[REG_TEST_VOLTAGE] > DataTable[REG_VOLTAGE_RANGE_THRESHOLD])
 	{
 		LL_VoltageRangeSet(VOLTAGE_RANGE_1);
 		VoltageRange = VOLTAGE_RANGE_1;
@@ -308,7 +308,7 @@ bool LOGIC_PAUConfigProcess()
 		switch(PAU_State)
 		{
 		case PS_Ready:
-			if(!PAU_Configure(PAU_CHANNEL_LCTU, DataTable[REG_CURRENT_CUT_OFF], DataTable[REG_PULSE_WIDTH]))
+			if(!PAU_Configure(PAU_CHANNEL_LCTU, DataTable[REG_LIMIT_CURRENT], DataTable[REG_PULSE_WIDTH]))
 				CONTROL_SwitchToFault(DF_INTERFACE);
 
 			Timeout = 0;

@@ -26,7 +26,7 @@ void SELFTEST_Process()
 	switch(CONTROL_SubState)
 	{
 		case SS_ST_StartPrepare:
-			DataTable[REG_VOLTAGE_SETPOINT] = 0;
+			DataTable[REG_TEST_VOLTAGE] = 0;
 			CONTROL_SetDeviceState(DS_SelfTest, SS_ST_StartPulse);
 			break;
 
@@ -34,10 +34,10 @@ void SELFTEST_Process()
 			LL_PowerSupply(false);
 			DELAY_MS(DataTable[REG_PS_PREPARE_TIME]);
 
-			if(!DataTable[REG_VOLTAGE_SETPOINT])
-				DataTable[REG_VOLTAGE_SETPOINT] = DataTable[REG_VOLTAGE_RANGE_THRESHOLD];
+			if(!DataTable[REG_TEST_VOLTAGE])
+				DataTable[REG_TEST_VOLTAGE] = DataTable[REG_VOLTAGE_RANGE_THRESHOLD];
 			else
-				DataTable[REG_VOLTAGE_SETPOINT] = LCTU_VOLTAGE_MAX;
+				DataTable[REG_TEST_VOLTAGE] = LCTU_VOLTAGE_MAX;
 
 			LOGIC_StartPrepare();
 
@@ -60,7 +60,7 @@ void SELFTEST_Process()
 				CONTROL_SwitchToFault(DF_CURRENT_MEASURING);
 			}
 			else
-				if(DataTable[REG_VOLTAGE_SETPOINT] < LCTU_VOLTAGE_MAX)
+				if(DataTable[REG_TEST_VOLTAGE] < LCTU_VOLTAGE_MAX)
 					CONTROL_SetDeviceState(DS_SelfTest, SS_ST_WaitPause);
 				else
 				{

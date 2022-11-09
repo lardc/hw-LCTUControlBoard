@@ -137,8 +137,8 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 126
 		{0, 0, 0},																	// 127
 		{VOLTAGE_SETPOINT_MIN, VOLTAGE_SETPOINT_MAX, VOLTAGE_SETPOINT_DEF},			// 128
-		{PULSE_WIDTH_MIN, PULSE_WIDTH_MAX, PULSE_WIDTH_DEF},						// 129
-		{CURRENT_CUT_OFF_MIN, CURRENT_CUT_OFF_MAX, CURRENT_CUT_OFF_DEF},			// 130
+		{CURRENT_CUT_OFF_MIN, CURRENT_CUT_OFF_MAX, CURRENT_CUT_OFF_DEF},			// 129
+		{PULSE_WIDTH_MIN, PULSE_WIDTH_MAX, PULSE_WIDTH_DEF},						// 130
 		{0, 0, 0},																	// 131
 		{0, 0, 0},																	// 132
 		{0, 0, 0},																	// 133
