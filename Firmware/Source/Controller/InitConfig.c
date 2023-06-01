@@ -35,7 +35,6 @@ void INITCFG_ConfigIO()
 
 	// Входы
 	GPIO_InitInput(GPIO_SAFETY, Pull_Up);
-	GPIO_InitInput(GPIO_PAU_SI, NoPull);
 
 	// Начальная установка состояний выводов
 	GPIO_SetState(GPIO_OPAMP_SYNC, true);

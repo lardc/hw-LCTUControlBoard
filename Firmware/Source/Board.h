@@ -27,9 +27,8 @@ GPIO_PortPinSettingMacro GPIO_PAU_SHUNT			= {GPIOA, Pin_3};//
 GPIO_PortPinSettingMacro GPIO_STST				= {GPIOA, Pin_4};//
 GPIO_PortPinSettingMacro GPIO_COMM				= {GPIOA, Pin_5};//
 GPIO_PortPinSettingMacro GPIO_IND_CTRL			= {GPIOA, Pin_7};//
-GPIO_PortPinSettingMacro GPIO_FAN_CTRL			= {GPIOA, Pin_15};//
+GPIO_PortPinSettingMacro GPIO_FAN_CTRL			= {GPIOA, Pin_6};//
 GPIO_PortPinSettingMacro GPIO_PAU_SO			= {GPIOB, Pin_13};//
-GPIO_PortPinSettingMacro GPIO_PAU_SI			= {GPIOA, Pin_6};//
 
 // Определения для входных портов
 GPIO_PortPinSettingMacro GPIO_SAFETY			= {GPIOB, Pin_14};
