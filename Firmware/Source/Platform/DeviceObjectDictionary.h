@@ -73,16 +73,11 @@
 #define REG_FAN_CTRL					40	// Управление вентилятором
 #define REG_FAN_OPERATE_PERIOD			41	// Период работы вентилятора (с)
 #define REG_FAN_OPERATE_TIME			42	// Время работы вентилятора (с)
-#define REG_PAU_SNC_DELAY				43	// Задержка синхронизации PAU с момента выхода на полку импульса (в тиках таймера регулятора)
+#define REG_SNC_DELAY					43	// Задержка синхронизации для PAU и осц. с момента выхода на полку импульса (в тиках таймера регулятора)
 #define REG_PAU_EMULATED				44	// Эмуляция работы PAU
 #define REG_LAMP_CTRL					45	// Управление внешним индикатором
 #define REG_SELF_TEST_ACTIVE			46	// Активация самотестирования при запуске блока
 #define REG_SAFETY_ACTIVE				47	// Активация системы безопасности
-#define REG_PAU_SYNC_STEP				48	// Период импульсов синхронизации (кратно периоду регулятора)
-#define REG_PAU_SYNC_CNT				49	// Количество импульсов синхронизации
-#define REG_PAU_SYNC_WIDTH				50	// Длительность импульса синхронизации (мкс)
-#define REG_PAU_SYNC_TRACKING			51	// Отслеживание поступления испульсов синхронизации от PAU
-#define REG_OSC_SYNC_WIDTH				52	// Длительность импульса синхронизации осциллографа (в тиках регулятора)
 //
 
 #define REG_TEST_VOLTAGE				128	// Уставка по напряжению, В

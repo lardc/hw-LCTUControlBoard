@@ -10,6 +10,9 @@
 #include "Controller.h"
 #include "PAU.h"
 
+// Definitions
+//
+#define PAU_PULSE_WIDTH_SET_CORR		0.95
 
 // Variables
 float VoltageTarget, VoltageSetpoint, RegulatorPcoef, RegulatorIcoef, VoltageThreshold;
@@ -28,7 +31,6 @@ Int16U FollowingErrorCounterMax = 0;
 Int16U PAUSyncDelayCounter = 0;
 Int16U PAUSyncTransmitCounter = 0;
 Int16U PAUSyncReceiveCounter = 0;
-Int16U OSCSyncTimeStart = 0;
 bool PAUSyncGenerateFlag = false;
 
 // Arrays
@@ -67,7 +69,6 @@ void LOGIC_CacheVariables()
 	dV = VoltageSetpoint / DataTable[REG_PULSE_FRONT_WIDTH] * TIMER6_uS / 1000;
 	RegulatorAlowedError = DataTable[REG_REGULATOR_ALOWED_ERR];
 	FollowingErrorCounterMax = DataTable[REG_FOLLOWING_ERR_CNT];
-	OSCSyncTimeStart = (PulsePointsQuantity > DataTable[REG_OSC_SYNC_WIDTH]) ? PulsePointsQuantity - DataTable[REG_OSC_SYNC_WIDTH] : 0;
 
 	LOGIC_ClearVariables();
 }
@@ -76,27 +77,28 @@ void LOGIC_CacheVariables()
 RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 {
 	float RegulatorError, Qp, RegulatorOut;
-	static Int16U PAUSyncDelayCounter = 0;
+	static Int16U SyncDelayCounter = 0;
 	RegulatorState Result = RS_InProcess;
 
 	// Формирование линейно нарастающего фронта импульса напряжения
 	if(VoltageTarget < VoltageSetpoint)
 	{
-		PAUSyncDelayCounter = 0;
+		SyncDelayCounter = 0;
 		VoltageTarget += dV;
 	}
 	else
 	{
 		VoltageTarget = VoltageSetpoint;
-		PAUSyncDelayCounter++;
+		SyncDelayCounter++;
 
-		if(!DataTable[REG_PAU_EMULATED])
+		if(SyncDelayCounter >= DataTable[REG_SNC_DELAY] && CONTROL_State != DS_SelfTest)
 		{
-			if(PAUSyncDelayCounter >= DataTable[REG_PAU_SNC_DELAY] && CONTROL_State != DS_SelfTest && !PAUSyncGenerateFlag)
+			LL_OscSyncSetState(true);
+
+			if(!DataTable[REG_PAU_EMULATED] && !PAUSyncGenerateFlag)
 			{
 				LL_PAU_Shunting(false);
 				LL_PAUSyncFlip();
-
 				PAUSyncGenerateFlag = true;
 			}
 		}
@@ -137,9 +139,6 @@ RegulatorState LOGIC_RegulatorCycle(MeasureSample Sample)
 	LOGIC_LoggingProcess(Sample, RegulatorError);
 
 	RegulatorPulseCounter++;
-
-	if(RegulatorPulseCounter >= OSCSyncTimeStart)
-		LL_OscSyncSetState(true);
 
 	if (RegulatorPulseCounter >= PulsePointsQuantity && Result == RS_InProcess)
 	{
@@ -224,7 +223,7 @@ void LOGIC_HandleFan(bool IsImpulse)
 	static uint32_t IncrementCounter = 0;
 	static uint64_t FanOnTimeout = 0;
 
-	if(DataTable[REG_FAN_CTRL])
+	if(DataTable[REG_FAN_CTRL] && CONTROL_State != DS_None)
 	{
 		// Увеличение счётчика в простое
 		if (!IsImpulse)
@@ -252,7 +251,7 @@ void CONTROL_HandleExternalLamp(bool IsImpulse)
 {
 	static Int64U ExternalLampCounter = 0;
 
-	if(DataTable[REG_LAMP_CTRL])
+	if(DataTable[REG_LAMP_CTRL] && CONTROL_State != DS_None)
 	{
 		if(CONTROL_State == DS_Fault)
 		{
@@ -299,6 +298,7 @@ bool LOGIC_PAUConfigProcess()
 {
 	Int16U PAU_State;
 	static Int64U Timeout = 0;
+	float PulseWidth;
 
 	// Обновление состояния PAU
 	if(!PAU_UpdateState(&PAU_State))
@@ -308,7 +308,10 @@ bool LOGIC_PAUConfigProcess()
 		switch(PAU_State)
 		{
 		case PS_Ready:
-			if(!PAU_Configure(PAU_CHANNEL_LCTU, DataTable[REG_LIMIT_CURRENT], DataTable[REG_PULSE_WIDTH]))
+			PulseWidth = (DataTable[REG_PULSE_WIDTH] - DataTable[REG_PULSE_FRONT_WIDTH] -
+							DataTable[REG_SNC_DELAY] * TIMER6_uS / 1000) * PAU_PULSE_WIDTH_SET_CORR;
+
+			if(!PAU_Configure(PAU_CHANNEL_LCTU, DataTable[REG_LIMIT_CURRENT], PulseWidth))
 				CONTROL_SwitchToFault(DF_INTERFACE);
 
 			Timeout = 0;

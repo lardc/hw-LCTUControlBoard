@@ -51,16 +51,16 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{NO, YES, YES},																// 40
 		{FAN_PERIOD_MIN, FAN_PERIOD_MAX, FAN_PERIOD_DEF},							// 41
 		{FAN_TIME_MIN, FAN_TIME_MAX, FAN_TIME_DEF},									// 42
-		{PAU_DELAY_SYNC_MIN, PAU_DELAY_SYNC_MAX, PAU_DELAY_SYNC_DEF},				// 43
+		{DELAY_SYNC_MIN, DELAY_SYNC_MAX, DELAY_SYNC_DEF},							// 43
 		{NO, YES, YES},																// 44
 		{NO, YES, YES},																// 45
 		{NO, YES, YES},																// 46
 		{NO, YES, YES},																// 47
-		{0, PAU_SYNC_STEP_MAX, PAU_SYNC_STEP_DEF},									// 48
-		{PAU_SYNC_CNT_MIN, PAU_SYNC_CNT_MAX, PAU_SYNC_CNT_DEF},						// 49
-		{PAU_SYNC_WIDTH_MIN, PAU_SYNC_WIDTH_MAX, PAU_SYNC_WIDTH_DEF},				// 50
-		{NO, YES, YES},																// 51
-		{OSC_SYNC_WIDTH_MIN, OSC_SYNC_WIDTH_MAX, OSC_SYNC_WIDTH_DEF},				// 52
+		{0, 0, 0},																	// 48
+		{0, 0, 0},																	// 49
+		{0, 0, 0},																	// 50
+		{0, 0, 0},																	// 51
+		{0, 0, 0},																	// 52
 		{0, 0, 0},																	// 53
 		{0, 0, 0},																	// 54
 		{0, 0, 0},																	// 55

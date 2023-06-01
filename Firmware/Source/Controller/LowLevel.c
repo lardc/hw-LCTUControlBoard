@@ -41,7 +41,7 @@ void LL_PAUSyncSetState(bool State)
 void LL_PAUSyncFlip()
 {
 	LL_PAUSyncSetState(true);
-	DELAY_US(DataTable[REG_PAU_SYNC_WIDTH] - PAU_SYNC_WIDTH_CORR);
+	DELAY_US(10);
 	LL_PAUSyncSetState(false);
 }
 

@@ -21,7 +21,6 @@
 #define POST_PULSE_DELAY						500		// мкс
 #define EXT_LAMP_ON_STATE_TIME					500		// мс
 #define LCTU_VOLTAGE_MAX						3300	// В
-#define PAU_SYNC_WIDTH_CORR						2		// мкс
 #define LCTU_SFTST_CURRENT_MIN					1		// мА
 #define LCTU_LEAKAGE_CURRENT_MIN				0.001	// мА
 #define LCTU_LEAKAGE_CURRENT_MAX				30		// мА

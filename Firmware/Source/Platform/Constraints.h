@@ -83,24 +83,9 @@
 #define FAN_TIME_MAX				200						// c
 #define FAN_TIME_DEF				40						// c
 //
-#define PAU_DELAY_SYNC_MIN			0						// в тиках
-#define PAU_DELAY_SYNC_MAX			50						// в тиках
-#define PAU_DELAY_SYNC_DEF			10						// в тиках
-//
-#define PAU_SYNC_STEP_MAX			50						// в тиках
-#define PAU_SYNC_STEP_DEF			0						// в тиках
-//
-#define PAU_SYNC_CNT_MIN			1						//
-#define PAU_SYNC_CNT_MAX			100						//
-#define PAU_SYNC_CNT_DEF			10						//
-//
-#define PAU_SYNC_WIDTH_MIN			3						// мкс
-#define PAU_SYNC_WIDTH_MAX			10						// мкс
-#define PAU_SYNC_WIDTH_DEF			5						// мкс
-//
-#define OSC_SYNC_WIDTH_MIN			5						// в тиках
-#define OSC_SYNC_WIDTH_MAX			650						// в тиках
-#define OSC_SYNC_WIDTH_DEF			10						// в тиках
+#define DELAY_SYNC_MIN				0						// в тиках
+#define DELAY_SYNC_MAX				50						// в тиках
+#define DELAY_SYNC_DEF				10						// в тиках
 //
 #define CURRENT_CUT_OFF_MIN			0.001					// мА
 #define CURRENT_CUT_OFF_MAX			30						// мА
