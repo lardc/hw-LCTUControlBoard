@@ -32,6 +32,7 @@ typedef enum __DeviceSubState
 	SS_CommutationDisable,
 	SS_StartPulse,
 	SS_Pulse,
+	SS_PostPulseDelayInit,
 	SS_PostPulseDelay,
 	SS_SaveResult,
 

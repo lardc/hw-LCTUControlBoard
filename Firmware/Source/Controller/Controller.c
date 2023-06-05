@@ -35,11 +35,14 @@ static Boolean CycleActive = false;
 //
 volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int64U	CONTROL_PulseToPulseTime = 0;
+volatile Int64U	CONTROL_PowerOnCounter = 0;
+volatile Int64U	CONTROL_Timeout = 0;
 volatile Int16U CONTROL_ValuesCounter = 0;
 volatile float CONTROL_ValuesVoltage[VALUES_x_SIZE];
 volatile float CONTROL_ValuesCurrent[VALUES_x_SIZE];
 volatile float CONTROL_RegulatorErr[VALUES_x_SIZE];
 volatile Int16U CONTROL_FloatEP_Counter = 0;
+volatile Boolean CONTROL_PowerOnState = false;
 //
 
 // Forward functions
@@ -50,7 +53,6 @@ void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
 void CONTROL_StopProcess();
 void CONTROL_SaveTestResult();
-bool CONTROL_Delay(Int16U Time);
 void CONTROL_SelfTest();
 void CONTROL_Commutation(TestType Type, bool State);
 
@@ -105,13 +107,16 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	{
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
+			{
+				CONTROL_Timeout = CONTROL_TimeCounter + DataTable[REG_PS_FIRST_START_TIME];
 				CONTROL_SetDeviceState(DS_InProcess, SS_PowerSupply);
+			}
 			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		case ACT_DISABLE_POWER:
-			if(CONTROL_State == DS_Ready)
+			if(CONTROL_State == DS_Ready || (CONTROL_State == DS_InProcess && CONTROL_SubState == SS_PowerSupply))
 			{
 				LL_PowerSupply(false);
 				CONTROL_SetDeviceState(DS_None, SS_None);
@@ -143,7 +148,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			{
 				LOGIC_ResetOutputRegisters();
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
-				CONTROL_SetDeviceState(DS_InProcess, SS_PowerSupply);
+				CONTROL_SetDeviceState(DS_InProcess, SS_StartSelfTest);
 			}
 			else
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -181,7 +186,7 @@ void CONTROL_ForceStopProcess()
 
 	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 
-	CONTROL_SetDeviceSubState(SS_PostPulseDelay);
+	CONTROL_SetDeviceSubState(SS_PostPulseDelayInit);
 }
 //-----------------------------------------------
 
@@ -194,10 +199,29 @@ void CONTROL_LogicProcess()
 		switch(CONTROL_SubState)
 		{
 			case SS_PowerSupply:
-				LL_PowerSupply(true);
-
-				if(CONTROL_Delay(DataTable[REG_PS_FIRST_START_TIME]))
+				if(CONTROL_TimeCounter >= CONTROL_Timeout)
+				{
+					LL_PowerSupply(true);
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
+				}
+				else
+				{
+					if(CONTROL_TimeCounter > CONTROL_PowerOnCounter)
+					{
+						if(CONTROL_PowerOnState)
+						{
+							CONTROL_PowerOnCounter = CONTROL_TimeCounter + DataTable[REG_PWRON_PERIOD] - DataTable[REG_PWRON_TIME];
+							CONTROL_PowerOnState = false;
+						}
+						else
+						{
+							CONTROL_PowerOnCounter = CONTROL_TimeCounter + DataTable[REG_PWRON_TIME];
+							CONTROL_PowerOnState = true;
+						}
+					}
+
+					LL_PowerSupply(CONTROL_PowerOnState);
+				}
 				break;
 
 			case SS_StartSelfTest:
@@ -245,20 +269,26 @@ void CONTROL_LogicProcess()
 
 			case SS_PAUConfig:
 				if(LOGIC_PAUConfigProcess())
+				{
+					CONTROL_Timeout = CONTROL_TimeCounter + DataTable[REG_PS_PREPARE_TIME];
 					CONTROL_SetDeviceSubState(SS_CapChargeStop);
+				}
 				break;
 
 			case SS_CapChargeStop:
 				LL_PowerSupply(false);
 
-				if(CONTROL_Delay(DataTable[REG_PS_PREPARE_TIME]))
+				if(CONTROL_TimeCounter >= CONTROL_Timeout)
+				{
+					CONTROL_Timeout = CONTROL_TimeCounter + COMMUTATION_DELAY;
 					CONTROL_SetDeviceSubState(SS_CommutationEnable);
+				}
 				break;
 
 			case SS_CommutationEnable:
 				CONTROL_Commutation(TT_DUT, true);
 
-				if(CONTROL_Delay(COMMUTATION_DELAY))
+				if(CONTROL_TimeCounter >= CONTROL_Timeout)
 					CONTROL_SetDeviceSubState(SS_StartPulse);
 				break;
 
@@ -269,17 +299,25 @@ void CONTROL_LogicProcess()
 				CONTROL_SetDeviceSubState(SS_Pulse);
 				break;
 
+			case SS_PostPulseDelayInit:
+				CONTROL_Timeout = CONTROL_TimeCounter + POST_PULSE_DELAY;
+				CONTROL_SetDeviceSubState(SS_PostPulseDelay);
+				break;
+
 			case SS_PostPulseDelay:
 				IsImpulse = false;
 
-				DELAY_US(POST_PULSE_DELAY);
-				CONTROL_SetDeviceSubState(SS_CommutationDisable);
+				if(CONTROL_TimeCounter >= CONTROL_Timeout)
+				{
+					CONTROL_Timeout = CONTROL_TimeCounter + COMMUTATION_DELAY;
+					CONTROL_SetDeviceSubState(SS_CommutationDisable);
+				}
 				break;
 
 			case SS_CommutationDisable:
 				CONTROL_Commutation(TT_DUT, false);
 
-				if(CONTROL_Delay(COMMUTATION_DELAY))
+				if(CONTROL_TimeCounter >= CONTROL_Timeout)
 				{
 					if(CONTROL_State != DS_Fault)
 					{
@@ -302,25 +340,6 @@ void CONTROL_LogicProcess()
 
 	if(CONTROL_State == DS_SelfTest)
 		SELFTEST_Process();
-}
-//-----------------------------------------------
-
-bool CONTROL_Delay(Int16U Time)
-{
-	static Int64U CONTROL_Delay = 0;
-
-	if(!CONTROL_Delay)
-		CONTROL_Delay = CONTROL_TimeCounter + Time;
-	else
-	{
-		if(CONTROL_TimeCounter >= CONTROL_Delay)
-		{
-			CONTROL_Delay = 0;
-			return true;
-		}
-	}
-
-	return false;
 }
 //-----------------------------------------------
 
@@ -379,7 +398,7 @@ void CONTROL_StopProcess()
 	LOGIC_HarwareDefaultState();
 
 	if(CONTROL_State == DS_InProcess)
-		CONTROL_SetDeviceSubState(SS_PostPulseDelay);
+		CONTROL_SetDeviceSubState(SS_PostPulseDelayInit);
 	else
 		CONTROL_SetDeviceState(DS_SelfTest, SS_ST_PulseCheck);
 }
@@ -459,7 +478,7 @@ void CONTROL_SwitchToFault(Int16U Reason)
 		DataTable[REG_PAU_EXT_DATA] = Error.ExtData;
 	}
 
-	CONTROL_SetDeviceState(DS_Fault, SS_PostPulseDelay);
+	CONTROL_SetDeviceState(DS_Fault, SS_PostPulseDelayInit);
 	DataTable[REG_FAULT_REASON] = Reason;
 }
 //------------------------------------------

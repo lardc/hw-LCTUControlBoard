@@ -78,6 +78,8 @@
 #define REG_LAMP_CTRL					45	// Управление внешним индикатором
 #define REG_SELF_TEST_ACTIVE			46	// Активация самотестирования при запуске блока
 #define REG_SAFETY_ACTIVE				47	// Активация системы безопасности
+#define REG_PWRON_PERIOD				48	// Период ШИМ управления LLCPsBoard при первом старте (мс)
+#define REG_PWRON_TIME					49	// Длительность импульса ШИМ управления LLCPsBoard при первом старте (мс)
 //
 
 #define REG_TEST_VOLTAGE				128	// Уставка по напряжению, В
