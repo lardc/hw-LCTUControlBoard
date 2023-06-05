@@ -28,9 +28,6 @@ volatile Int64U LOGIC_TestTime = 0;
 volatile Int16U RingBufferIndex = 0;
 Int16U FollowingErrorCounter = 0;
 Int16U FollowingErrorCounterMax = 0;
-Int16U PAUSyncDelayCounter = 0;
-Int16U PAUSyncTransmitCounter = 0;
-Int16U PAUSyncReceiveCounter = 0;
 bool PAUSyncGenerateFlag = false;
 
 // Arrays
@@ -197,8 +194,6 @@ void LOGIC_ClearVariables()
 	VoltageTarget = 0;
 	FollowingErrorCounter = 0;
 	LOGIC_TestTime = 0;
-	PAUSyncDelayCounter = 0;
-	PAUSyncReceiveCounter = 0;
 	PAUSyncGenerateFlag = 0;
 }
 //-----------------------------

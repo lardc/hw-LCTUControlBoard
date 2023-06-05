@@ -44,6 +44,7 @@ void LL_PAUSyncFlip()
 	DELAY_US(10);
 	LL_PAUSyncSetState(false);
 }
+//-----------------------------
 
 void LL_VoltageRangeSet(bool Range)
 {

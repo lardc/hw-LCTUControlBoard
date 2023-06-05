@@ -63,10 +63,3 @@ void TIM7_IRQHandler()
 	}
 }
 //-----------------------------------------
-
-void EXTI9_5_IRQHandler()
-{
-	PAUSyncReceiveCounter++;
-	EXTI_FlagReset(EXTI_6);
-}
-//-----------------------------------------
