@@ -10,6 +10,7 @@
 #include "DataTable.h"
 #include "Delay.h"
 #include "LowLevel.h"
+#include "Constraints.h"
 
 // Definitions
 //
@@ -30,6 +31,7 @@ void SELFTEST_Process()
 	{
 		case SS_ST_StartPrepare:
 			DataTable[REG_TEST_VOLTAGE] = 0;
+			DataTable[REG_PULSE_WIDTH] = PULSE_WIDTH_DEF;
 			Timeout = CONTROL_TimeCounter + DataTable[REG_PS_PREPARE_TIME];
 			CONTROL_SetDeviceState(DS_SelfTest, SS_ST_StartPulse);
 			break;
