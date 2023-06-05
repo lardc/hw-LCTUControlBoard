@@ -105,10 +105,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	{
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
-			{
-				LOGIC_ResetOutputRegisters();
 				CONTROL_SetDeviceState(DS_InProcess, SS_PowerSupply);
-			}
 			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
@@ -142,7 +139,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 
 		case ACT_START_SELF_TEST:
-			if(CONTROL_State == DS_None || CONTROL_State == DS_Ready)
+			if(CONTROL_State == DS_Ready)
 			{
 				LOGIC_ResetOutputRegisters();
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
@@ -200,7 +197,7 @@ void CONTROL_LogicProcess()
 				LL_PowerSupply(true);
 
 				if(CONTROL_Delay(DataTable[REG_PS_FIRST_START_TIME]))
-					CONTROL_SetDeviceState(DS_InProcess, SS_StartSelfTest);
+					CONTROL_SetDeviceState(DS_Ready, SS_None);
 				break;
 
 			case SS_StartSelfTest:
