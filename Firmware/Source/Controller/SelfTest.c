@@ -17,6 +17,9 @@
 #define ST_LOAD_RESISTANCE			105		// êÎì
 #define ST_ALOWED_ERROR				10		// %
 
+// Variables
+volatile Int64U Timeout = 0;
+
 // Functions
 //
 void SELFTEST_Process()
@@ -27,22 +30,25 @@ void SELFTEST_Process()
 	{
 		case SS_ST_StartPrepare:
 			DataTable[REG_TEST_VOLTAGE] = 0;
+			Timeout = CONTROL_TimeCounter + DataTable[REG_PS_PREPARE_TIME];
 			CONTROL_SetDeviceState(DS_SelfTest, SS_ST_StartPulse);
 			break;
 
 		case SS_ST_StartPulse:
 			LL_PowerSupply(false);
-			DELAY_MS(DataTable[REG_PS_PREPARE_TIME]);
 
-			if(!DataTable[REG_TEST_VOLTAGE])
-				DataTable[REG_TEST_VOLTAGE] = DataTable[REG_VOLTAGE_RANGE_THRESHOLD];
-			else
-				DataTable[REG_TEST_VOLTAGE] = LCTU_VOLTAGE_MAX;
+			if(CONTROL_TimeCounter >= Timeout)
+			{
+				if(!DataTable[REG_TEST_VOLTAGE])
+					DataTable[REG_TEST_VOLTAGE] = DataTable[REG_VOLTAGE_RANGE_THRESHOLD];
+				else
+					DataTable[REG_TEST_VOLTAGE] = LCTU_VOLTAGE_MAX;
 
-			LOGIC_StartPrepare();
+				LOGIC_StartPrepare();
 
-			CONTROL_SetDeviceState(DS_SelfTest, SS_ST_Pulse);
-			CONTROL_StartProcess();
+				CONTROL_SetDeviceState(DS_SelfTest, SS_ST_Pulse);
+				CONTROL_StartProcess();
+			}
 			break;
 
 		case SS_ST_PulseCheck:
@@ -75,7 +81,10 @@ void SELFTEST_Process()
 		case SS_ST_WaitPause:
 			LL_PowerSupply(true);
 			if(CONTROL_TimeCounter > CONTROL_PulseToPulseTime)
+			{
+				Timeout = CONTROL_TimeCounter + DataTable[REG_PS_PREPARE_TIME];
 				CONTROL_SetDeviceState(DS_SelfTest, SS_ST_StartPulse);
+			}
 
 		default:
 			break;

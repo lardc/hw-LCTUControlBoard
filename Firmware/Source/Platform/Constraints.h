@@ -92,6 +92,14 @@
 #define CURRENT_CUT_OFF_DEF			30						// мА
 //
 #define PAU_CAN_ID_DEF				101
+//
+#define PWRON_PERIOD_MIN			20						// мс
+#define PWRON_PERIOD_MAX			100						// мс
+#define PWRON_PERIOD_DEF			50						// мс
+
+#define PWRON_TIME_MIN				5						// мс
+#define PWRON_TIME_MAX				20						// мс
+#define PWRON_TIME_DEF				10						// мс
 
 // Types
 typedef struct __TableItemConstraint

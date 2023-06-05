@@ -14,7 +14,7 @@
 void DBGACT_GenerateOscSync()
 {
 	LL_OscSyncSetState(true);
-	DELAY_MS(100);
+	DELAY_MS(10);
 	LL_OscSyncSetState(false);
 }
 //-----------------------------
@@ -22,7 +22,7 @@ void DBGACT_GenerateOscSync()
 void DBGACT_GeneratePAUSync()
 {
 	LL_PAUSyncSetState(true);
-	DELAY_MS(100);
+	DELAY_MS(10);
 	LL_PAUSyncSetState(false);
 }
 //-----------------------------

@@ -56,8 +56,8 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{NO, YES, YES},																// 45
 		{NO, YES, YES},																// 46
 		{NO, YES, YES},																// 47
-		{0, 0, 0},																	// 48
-		{0, 0, 0},																	// 49
+		{PWRON_PERIOD_MIN, PWRON_PERIOD_MAX, PWRON_PERIOD_DEF},						// 48
+		{PWRON_TIME_MIN, PWRON_TIME_MAX, PWRON_TIME_DEF},							// 49
 		{0, 0, 0},																	// 50
 		{0, 0, 0},																	// 51
 		{0, 0, 0},																	// 52
