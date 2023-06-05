@@ -153,10 +153,10 @@
 #define PROBLEM_NONE					0
 #define PROBLEM_FORCED_STOP				1
 #define PROBLEM_SAFETY					2
+#define PROBLEM_OUTPUT_SHORT			3
 
 //  Warning
 #define WARNING_NONE					0
-#define WARNING_OUTPUT_SHORT			1
 
 //  User Errors
 #define ERR_NONE						0

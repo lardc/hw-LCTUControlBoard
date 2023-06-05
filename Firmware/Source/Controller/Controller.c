@@ -358,13 +358,12 @@ void CONTROL_HighPriorityProcess()
 		{
 			CONTROL_ForceStopProcess();
 			DataTable[REG_PROBLEM] = PROBLEM_SAFETY;
-
 			return;
 		}
 		else if(RegulatorResult == RS_FollowingError)
 		{
 			if(Sample.Current >= DISOPAMP_CURRENT_MAX)
-				DataTable[REG_WARNING] = WARNING_OUTPUT_SHORT;
+				DataTable[REG_PROBLEM] = PROBLEM_OUTPUT_SHORT;
 			else
 			{
 				LOGIC_StopProcess();
