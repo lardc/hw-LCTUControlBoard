@@ -28,7 +28,7 @@ typedef enum __PAUState
 // Functions
 //
 bool PAU_UpdateState(Int16U* Register);
-bool PAU_Configure(Int16U Channel, float Range, float Time);
+bool PAU_Configure(Int16U Channel, float Range);
 bool PAU_ClearFault();
 bool PAU_ClearWarning();
 bool PAU_ReadMeasuredData(float* Data);
