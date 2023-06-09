@@ -29,13 +29,12 @@ void INITCFG_ConfigIO()
 	GPIO_InitPushPullOutput(GPIO_PAU_SHUNT);
 	GPIO_InitPushPullOutput(GPIO_STST);
 	GPIO_InitPushPullOutput(GPIO_COMM);
-	GPIO_InitPushPullOutput(GPIO_FAN_CTRL);
 	GPIO_InitPushPullOutput(GPIO_IND_CTRL);
-	GPIO_InitPushPullOutput(GPIO_PAU_SYNC);
+	GPIO_InitPushPullOutput(GPIO_PAU_SO);
+	GPIO_InitPushPullOutput(GPIO_FAN_CTRL);
 
 	// Входы
-	GPIO_InitInput(GPIO_OSC_SYNC_CHK, NoPull);
-	GPIO_InitInput(GPIO_PAU_SYNC_CHK, NoPull);
+	GPIO_InitInput(GPIO_SAFETY, Pull_Up);
 
 	// Начальная установка состояний выводов
 	GPIO_SetState(GPIO_OPAMP_SYNC, true);
@@ -60,6 +59,16 @@ void INITCFG_ConfigUART()
 }
 //------------------------------------------------
 
+void INITCFG_ConfigCAN()
+{
+	RCC_CAN_Clk_EN(CAN_1_ClkEN);
+	NCAN_Init(SYSCLK, CAN_BAUDRATE, false);
+	NCAN_FIFOInterrupt(true);
+	NCAN_FilterInit(0, CAN_SLAVE_FILTER_ID, CAN_SLAVE_NID_MASK);
+	NCAN_FilterInit(1, CAN_MASTER_FILTER_ID, CAN_MASTER_NID_MASK);
+}
+//------------------------------------
+
 void INITCFG_ConfigTimer7()
 {
 	TIM_Clock_En(TIM_7);
@@ -74,6 +83,7 @@ void INITCFG_ConfigTimer6()
 	TIM_Clock_En(TIM_6);
 	TIM_Config(TIM6, SYSCLK, TIMER6_uS);
 	TIM_Interupt(TIM6, 1, true);
+	NVIC_SetPriority(TIM6_DAC_IRQn, 18);
 }
 //------------------------------------------------
 

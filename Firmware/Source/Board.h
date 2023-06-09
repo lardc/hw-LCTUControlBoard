@@ -26,13 +26,12 @@ GPIO_PortPinSettingMacro GPIO_U_RANGE			= {GPIOA, Pin_2};//
 GPIO_PortPinSettingMacro GPIO_PAU_SHUNT			= {GPIOA, Pin_3};//
 GPIO_PortPinSettingMacro GPIO_STST				= {GPIOA, Pin_4};//
 GPIO_PortPinSettingMacro GPIO_COMM				= {GPIOA, Pin_5};//
+GPIO_PortPinSettingMacro GPIO_IND_CTRL			= {GPIOA, Pin_7};//
 GPIO_PortPinSettingMacro GPIO_FAN_CTRL			= {GPIOA, Pin_6};//
-GPIO_PortPinSettingMacro GPIO_IND_CTRL			= {GPIOA, Pin_7};
-GPIO_PortPinSettingMacro GPIO_PAU_SYNC			= {GPIOB, Pin_13};//
+GPIO_PortPinSettingMacro GPIO_PAU_SO			= {GPIOB, Pin_13};//
 
 // Определения для входных портов
-GPIO_PortPinSettingMacro GPIO_OSC_SYNC_CHK		= {GPIOA, Pin_8};
-GPIO_PortPinSettingMacro GPIO_PAU_SYNC_CHK		= {GPIOB, Pin_14};
+GPIO_PortPinSettingMacro GPIO_SAFETY			= {GPIOB, Pin_14};
 
 
 // Определения для портов альтернативных функций

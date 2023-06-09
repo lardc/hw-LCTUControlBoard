@@ -14,7 +14,7 @@
 void DBGACT_GenerateOscSync()
 {
 	LL_OscSyncSetState(true);
-	CONTROL_DelayMs(100);
+	DELAY_MS(10);
 	LL_OscSyncSetState(false);
 }
 //-----------------------------
@@ -22,14 +22,14 @@ void DBGACT_GenerateOscSync()
 void DBGACT_GeneratePAUSync()
 {
 	LL_PAUSyncSetState(true);
-	CONTROL_DelayMs(100);
+	DELAY_MS(10);
 	LL_PAUSyncSetState(false);
 }
 //-----------------------------
 
 void DBGACT_OpAmpSetVoltage(uint16_t Data)
 {
-	LL_WriteDACx(Data | DAC_CHANNEL_B);
+	LL_WriteDACx(Data);
 }
 //-----------------------------
 
