@@ -123,7 +123,7 @@
 // Регистры PAU
 #define REG_PAU_CHANNEL					128	// Выбор канала измерения PAU
 #define REG_PAU_RANGE					129	// Диапазон измерения тока (мА)
-#define REG_PAU_MEASUREMENT_TIME		130	// Время измерения (мс)
+#define REG_SAMPLES_NUMBER				130	// Количество точек измерения
 //
 #define REG_PAU_RESULT_CURRENT			200	// Измеренное значение тока
 //

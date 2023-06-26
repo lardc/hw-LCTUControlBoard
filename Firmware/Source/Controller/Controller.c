@@ -82,11 +82,11 @@ void CONTROL_Init()
 
 void CONTROL_ResetToDefaultState()
 {
+	CONTROL_SetDeviceState(DS_None, SS_None);
+
 	LOGIC_ResetOutputRegisters();
 	DISOPAMP_SetVoltage(0);
 	LOGIC_HarwareDefaultState();
-
-	CONTROL_SetDeviceState(DS_None, SS_None);
 }
 //------------------------------------------
 
@@ -155,14 +155,8 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 
 		case ACT_CLR_FAULT:
-			if (CONTROL_State == DS_Fault)
-			{
-				if(PAU_ClearFault())
-				{
-					CONTROL_SetDeviceState(DS_None, SS_None);
-					DataTable[REG_FAULT_REASON] = DF_NONE;
-				}
-			}
+			if(PAU_ClearFault() && CONTROL_State == DS_Fault)
+				CONTROL_ResetToDefaultState();
 			break;
 
 		case ACT_CLR_WARNING:
@@ -330,7 +324,10 @@ void CONTROL_LogicProcess()
 				break;
 
 			case SS_SaveResult:
-				CONTROL_SaveTestResult();
+				if(!DataTable[REG_PROBLEM])
+					CONTROL_SaveTestResult();
+				else
+					CONTROL_SetDeviceState(DS_Ready, SS_None);
 				break;
 
 			default:

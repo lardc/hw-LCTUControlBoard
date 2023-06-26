@@ -10,9 +10,6 @@
 #include "Controller.h"
 #include "PAU.h"
 
-// Definitions
-//
-#define PAU_PULSE_WIDTH_SET_CORR		0.95
 
 // Variables
 float VoltageTarget, VoltageSetpoint, RegulatorPcoef, RegulatorIcoef, VoltageThreshold;
@@ -293,7 +290,6 @@ bool LOGIC_PAUConfigProcess()
 {
 	Int16U PAU_State;
 	static Int64U Timeout = 0;
-	float PulseWidth;
 
 	// Обновление состояния PAU
 	if(!PAU_UpdateState(&PAU_State))
@@ -303,21 +299,15 @@ bool LOGIC_PAUConfigProcess()
 		switch(PAU_State)
 		{
 		case PS_Ready:
-			PulseWidth = (DataTable[REG_PULSE_WIDTH] - DataTable[REG_PULSE_FRONT_WIDTH] -
-							DataTable[REG_SNC_DELAY] * TIMER6_uS / 1000) * PAU_PULSE_WIDTH_SET_CORR;
-
-			if(!PAU_Configure(PAU_CHANNEL_LCTU, DataTable[REG_LIMIT_CURRENT], PulseWidth))
+			if(!PAU_Configure(PAU_CHANNEL_LCTU, DataTable[REG_LIMIT_CURRENT]))
 				CONTROL_SwitchToFault(DF_INTERFACE);
 
-			Timeout = 0;
+			Timeout = CONTROL_TimeCounter + PAU_CONFIG_TIMEOUT;
 			break;
 
 		case PS_InProcess:
-			if(!Timeout)
-				Timeout = CONTROL_TimeCounter + PAU_CONFIG_TIMEOUT;
-			else
-				if(CONTROL_TimeCounter >= Timeout)
-					CONTROL_SwitchToFault(DF_PAU_CONFIG_TIMEOUT);
+			if(CONTROL_TimeCounter >= Timeout)
+				CONTROL_SwitchToFault(DF_PAU_CONFIG_TIMEOUT);
 			break;
 
 		case PS_ConfigReady:

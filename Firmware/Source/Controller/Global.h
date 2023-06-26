@@ -4,7 +4,7 @@
 // Definitions
 // 
 #define	SCCI_TIMEOUT_TICKS						1000	// Таймаут интерфейса SCCI (в мс)
-#define	BCCIM_TIMEOUT_TICKS						50				// Таймаут протоколоа мастер BCCI (в мс)
+#define	BCCIM_TIMEOUT_TICKS						200		// Таймаут протоколоа мастер BCCI (в мс)
 #define EP_WRITE_COUNT							0		// Количество массивов для записи
 #define EP_COUNT								3		// Количество массивов для чтения
 #define FEP_COUNT								3		// Количество массивов для чтения типа float
@@ -17,7 +17,7 @@
 #define DSIOPAMP_STACK_VOLTAGE_MAX				(DISOPAMP_CELL_VOLATGE_MAX * DISOPAMP_TOTAL_CELL)
 #define DISOPAMP_CURRENT_MAX					30		// мА
 //
-#define COMMUTATION_DELAY						7		// мс
+#define COMMUTATION_DELAY						30		// мс
 #define POST_PULSE_DELAY						500		// мкс
 #define EXT_LAMP_ON_STATE_TIME					500		// мс
 #define LCTU_VOLTAGE_MAX						3300	// В
