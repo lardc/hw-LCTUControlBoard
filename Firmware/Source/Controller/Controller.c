@@ -195,11 +195,14 @@ void CONTROL_LogicProcess()
 			case SS_PowerSupply:
 				if(CONTROL_TimeCounter >= CONTROL_Timeout)
 				{
+					LL_ExtIndicationControl(false);
 					LL_PowerSupply(true);
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
 				}
 				else
 				{
+					LL_ExtIndicationControl(true);
+
 					if(CONTROL_TimeCounter > CONTROL_PowerOnCounter)
 					{
 						if(CONTROL_PowerOnState)
