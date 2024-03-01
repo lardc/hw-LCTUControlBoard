@@ -362,6 +362,8 @@ void CONTROL_HighPriorityProcess()
 		}
 		else if(RegulatorResult == RS_FollowingError)
 		{
+			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+
 			if(Sample.Current >= DISOPAMP_CURRENT_MAX)
 				DataTable[REG_PROBLEM] = PROBLEM_OUTPUT_SHORT;
 			else
