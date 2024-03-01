@@ -127,7 +127,10 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 		case ACT_START_TEST:
 			if (CONTROL_State == DS_Ready)
+			{
+				LOGIC_ResetOutputRegisters();
 				CONTROL_SetDeviceState(DS_InProcess, SS_IdleTimeCheck);
+			}
 			else
 				if (CONTROL_State == DS_InProcess)
 					*pUserError = ERR_OPERATION_BLOCKED;
@@ -290,7 +293,6 @@ void CONTROL_LogicProcess()
 				break;
 
 			case SS_StartPulse:
-				LOGIC_ResetOutputRegisters();
 				LOGIC_StartPrepare();
 				CONTROL_StartProcess();
 				CONTROL_SetDeviceSubState(SS_Pulse);
