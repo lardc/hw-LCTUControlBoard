@@ -52,6 +52,7 @@
 									<listOptionValue builtIn="false" value="../../../hw-STM32-libs/System/Core"/>
 									<listOptionValue builtIn="false" value="../../../hw-STM32-libs/Library"/>
 									<listOptionValue builtIn="false" value="../../../hw-STM32-libs/Interface"/>
+									<listOptionValue builtIn="false" value="../../../hw-STM32-libs/Firmware"/>
 									<listOptionValue builtIn="false" value="../Source"/>
 									<listOptionValue builtIn="false" value="../Source/Platform"/>
 									<listOptionValue builtIn="false" value="../Source/Controller"/>
