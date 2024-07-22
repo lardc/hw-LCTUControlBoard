@@ -11,6 +11,9 @@
 #include "DeviceObjectDictionary.h"
 #include "DeviceProfile.h"
 
+// Definitions
+#define USE_FLOAT_DT
+
 // Constants
 //
 #define DATA_TABLE_SIZE			300
@@ -51,7 +54,7 @@ typedef struct __EPROMServiceConfig
 
 // Variables
 //
-extern volatile Int16U DataTable[DATA_TABLE_SIZE];
+extern volatile float DataTable[];
 
 // Functions
 //

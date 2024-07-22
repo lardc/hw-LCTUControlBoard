@@ -5,6 +5,8 @@
 #include "DiscreteOpAmp.h"
 #include "Global.h"
 #include "LowLevel.h"
+#include "Logic.h"
+
 
 // Variables
 Int16U MEASURE_ADC_CurrentRaw[ADC_DMA_BUFF_SIZE];
@@ -12,19 +14,22 @@ Int16U MEASURE_ADC_VoltageRaw[ADC_DMA_BUFF_SIZE];
 
 // Functions prototypes
 Int16U MEASURE_DMAExtractX(Int16U* InputArray, Int16U ArraySize);
-Int16U MEASURE_DMAExtractVoltage();
+Int16U MEASURE_DMAExtract(Int16U* InputArray);
 void MEASURE_StartNewSampling();
+float MEASURE_ExtractAveragedDatas(float* Buffer, Int16U BufferLength);
+float MEASURE_GetLastSampledData(float* InputBuffer);
 
 // Functions
 //
-float MEASURE_SampleVoltage()
+MeasureSample MEASURE_Sample()
 {
-	float Voltage;
+	MeasureSample Sample;
 
-	Voltage = CU_ADCtoV(MEASURE_DMAExtractVoltage());
+	Sample.Voltage = CU_ADCtoV(MEASURE_DMAExtract(&MEASURE_ADC_VoltageRaw[1]));
+	Sample.Current = CU_ADCtoI(MEASURE_DMAExtract(&MEASURE_ADC_CurrentRaw[1]));
 	MEASURE_StartNewSampling();
 
-	return Voltage;
+	return Sample;
 }
 //-----------------------------------------------
 
@@ -39,9 +44,9 @@ Int16U MEASURE_DMAExtractX(Int16U* InputArray, Int16U ArraySize)
 }
 //-----------------------------------------------
 
-Int16U MEASURE_DMAExtractVoltage()
+Int16U MEASURE_DMAExtract(Int16U* InputArray)
 {
-	return MEASURE_DMAExtractX(&MEASURE_ADC_VoltageRaw[1], ADC_DMA_BUFF_SIZE - 1);
+	return MEASURE_DMAExtractX(InputArray, ADC_DMA_BUFF_SIZE - 1);
 }
 //-----------------------------------------------
 
@@ -55,8 +60,51 @@ void MEASURE_DMABuffersClear()
 void MEASURE_StartNewSampling()
 {
 	DMA_TransferCompleteReset(DMA1, DMA_TRANSFER_COMPLETE);
+	DMA_TransferCompleteReset(DMA2, DMA_TRANSFER_COMPLETE);
 	ADC_SamplingStart(ADC1);
+	ADC_SamplingStart(ADC3);
 }
 //-----------------------------------------------
+
+float MEASURE_GetAverageVoltage()
+{
+	return MEASURE_ExtractAveragedDatas(&RingBuffer_Voltage[0], MAF_BUFFER_LENGTH);
+}
+//-----------------------------
+
+float MEASURE_GetAverageCurrent()
+{
+	float Current = MEASURE_ExtractAveragedDatas(&RingBuffer_Current[1], MAF_BUFFER_LENGTH);
+	return (Current >= LCTU_SFTST_CURRENT_MIN) ? Current : 0;
+}
+//-----------------------------
+
+float MEASURE_GetLastSampledVoltage()
+{
+	return MEASURE_GetLastSampledData(&RingBuffer_Voltage[0]);
+}
+//-----------------------------
+
+float MEASURE_GetLastSampledData(float* InputBuffer)
+{
+	Int16U Index;
+
+	Index = RingBufferIndex - 1;
+	Index &= MAF_BUFFER_INDEX_MASK;
+
+	return *(InputBuffer + Index);
+}
+//-----------------------------
+
+float MEASURE_ExtractAveragedDatas(float* Buffer, Int16U BufferLength)
+{
+	float Temp = 0;
+
+	for(int i = 0; i < BufferLength; i++)
+		Temp += *(Buffer + i) / BufferLength;
+
+	return Temp;
+}
+//-----------------------------
 
 

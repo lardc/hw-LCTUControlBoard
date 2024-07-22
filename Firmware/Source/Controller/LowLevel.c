@@ -4,6 +4,7 @@
 #include "Board.h"
 #include "Delay.h"
 #include "Global.h"
+#include "DataTable.h"
 
 // Functions
 //
@@ -19,6 +20,12 @@ void LL_PowerSupply(bool State)
 }
 //-----------------------------
 
+bool LL_SafetyGetState()
+{
+	return GPIO_GetState(GPIO_SAFETY);
+}
+//-----------------------------
+
 void LL_OscSyncSetState(bool State)
 {
 	GPIO_SetState(GPIO_OSC_SYNC, State);
@@ -27,19 +34,15 @@ void LL_OscSyncSetState(bool State)
 
 void LL_PAUSyncSetState(bool State)
 {
-	GPIO_SetState(GPIO_PAU_SYNC, State);
+	GPIO_SetState(GPIO_PAU_SO, State);
 }
 //-----------------------------
 
-bool LL_OscSyncGetState()
+void LL_PAUSyncFlip()
 {
-	return GPIO_GetState(GPIO_OSC_SYNC_CHK);
-}
-//-----------------------------
-
-bool LL_PAUSyncGetState()
-{
-	return GPIO_GetState(GPIO_PAU_SYNC_CHK);
+	LL_PAUSyncSetState(true);
+	DELAY_US(10);
+	LL_PAUSyncSetState(false);
 }
 //-----------------------------
 
@@ -51,7 +54,7 @@ void LL_VoltageRangeSet(bool Range)
 
 void LL_PAU_Shunting(bool State)
 {
-	GPIO_SetState(GPIO_PAU_SHUNT, State);
+	GPIO_SetState(GPIO_PAU_SHUNT, !State);
 }
 //-----------------------------
 
@@ -59,8 +62,6 @@ void LL_SelfTestCommutationControl(bool State)
 {
 	GPIO_SetState(GPIO_COMM, false);
 	GPIO_SetState(GPIO_STST, State);
-
-	DELAY_MS(COMMUTATION_DELAY);
 }
 //-----------------------------
 
@@ -68,8 +69,6 @@ void LL_OutputCommutationControl(bool State)
 {
 	GPIO_SetState(GPIO_STST, false);
 	GPIO_SetState(GPIO_COMM, State);
-
-	DELAY_MS(COMMUTATION_DELAY);
 }
 //-----------------------------
 
@@ -82,6 +81,12 @@ void LL_FanControl(bool State)
 void LL_ExtIndicationControl(bool State)
 {
 	GPIO_SetState(GPIO_IND_CTRL, State);
+}
+//-----------------------------
+
+void LL_ToggleExtIndication()
+{
+	GPIO_Toggle(GPIO_IND_CTRL);
 }
 //-----------------------------
 

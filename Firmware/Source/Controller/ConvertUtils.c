@@ -28,6 +28,7 @@ typedef struct __MeasurementConvertParams
 // Variables
 DisOpAmpConvertParams DisOpAmpVParams;
 MeasurementConvertParams MeasureVParams;
+MeasurementConvertParams MeasureIParams;
 //
 
 // Functions prototypes
@@ -78,17 +79,40 @@ float CU_ADCtoV(Int16U Data)
 }
 //-----------------------------
 
-void CU_LoadConvertParams()
+float CU_ADCtoI(Int16U Data)
+{
+	return CU_ADCtoX(Data, &MeasureIParams);
+}
+//-----------------------------
+
+void CU_LoadConvertParams(bool VoltageRange)
 {
 	// Параметры преобразования напряжения
-	DisOpAmpVParams.K = (float)DataTable[REG_DAC_V_K] / 1000;
-	DisOpAmpVParams.B = (Int16S)DataTable[REG_DAC_V_B];
+	DisOpAmpVParams.K = DataTable[REG_DAC_V_K];
+	DisOpAmpVParams.B = DataTable[REG_DAC_V_B];
 
-	MeasureVParams.P2 = (float)(Int16S)DataTable[REG_ADC_V_P2] / 1e6;
-	MeasureVParams.P1 = (float)DataTable[REG_ADC_V_P1] / 1000;
-	MeasureVParams.P0 = (float)((Int16S)DataTable[REG_ADC_V_P0]) / 10;
-	MeasureVParams.K = (float)DataTable[REG_ADC_V_K] / 1000;
-	MeasureVParams.B = (Int16S)DataTable[REG_ADC_V_B] / 10;
+	if(VoltageRange == VOLTAGE_RANGE_0)
+	{
+		MeasureVParams.P2 = DataTable[REG_ADC_V_R0_P2];
+		MeasureVParams.P1 = DataTable[REG_ADC_V_R0_P1];
+		MeasureVParams.P0 = DataTable[REG_ADC_V_R0_P0];
+		MeasureVParams.K = DataTable[REG_ADC_V_R0_K];
+		MeasureVParams.B = DataTable[REG_ADC_V_R0_B];
+	}
+	else
+	{
+		MeasureVParams.P2 = DataTable[REG_ADC_V_R1_P2];
+		MeasureVParams.P1 = DataTable[REG_ADC_V_R1_P1];
+		MeasureVParams.P0 = DataTable[REG_ADC_V_R1_P0];
+		MeasureVParams.K = DataTable[REG_ADC_V_R1_K];
+		MeasureVParams.B = DataTable[REG_ADC_V_R1_B];
+	}
+
+	MeasureIParams.P2 = DataTable[REG_ADC_I_P2];
+	MeasureIParams.P1 = DataTable[REG_ADC_I_P1];
+	MeasureIParams.P0 = DataTable[REG_ADC_I_P0];
+	MeasureIParams.K = DataTable[REG_ADC_I_K];
+	MeasureIParams.B = DataTable[REG_ADC_I_B];
 }
 //-----------------------------
 

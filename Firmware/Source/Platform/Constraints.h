@@ -8,17 +8,17 @@
 
 //Definitions
 //
-#define PULSE_WIDTH_MIN				1			// (мс)
+#define PULSE_WIDTH_MIN				50			// (мс)
 #define PULSE_WIDTH_MAX				100			// (мс)
-#define PULSE_WIDTH_DEF				20			// (мс)
+#define PULSE_WIDTH_DEF				100			// (мс)
 //
 #define FRONT_WIDTH_MIN				1			// (мс)
 #define FRONT_WIDTH_MAX				10			// (мс)
 #define FRONT_WIDTH_DEF				5			// (мс)
 //
-#define ALOWED_ERROR_MIN			0			// (% * 10)
-#define ALOWED_ERROR_MAX			1000		// (% * 10)
-#define ALOWED_ERROR_DEF			30			// (% * 10)
+#define ALOWED_ERROR_MIN			0			// (%)
+#define ALOWED_ERROR_MAX			1000		// (%)
+#define ALOWED_ERROR_DEF			30			// (%)
 //
 #define FOLLOWING_ERR_CNT_MIN		0
 #define FOLLOWING_ERR_CNT_MAX		1000
@@ -28,23 +28,23 @@
 #define AFTER_PULSE_PAUSE_MAX		5000		// (мс)
 #define AFTER_PULSE_PAUSE_DEF		2000		// (мс)
 //
-#define COEF_K_MIN					1
-#define COEF_K_MAX					INT16U_MAX
-#define COEF_K_DEF					1000
+#define COEF_K_MIN					-INT16S_MAX
+#define COEF_K_MAX					INT16S_MAX
+#define COEF_K_DEF					1
 //
-#define OFFSET_MIN					0
-#define OFFSET_MAX					INT16U_MAX
+#define OFFSET_MIN					-INT16S_MAX
+#define OFFSET_MAX					INT16S_MAX
 #define OFFSET_DEF					0
 //
-#define COEF_P2_MIN					0
-#define COEF_P2_MAX					INT16U_MAX
+#define COEF_P2_MIN					-INT16S_MAX
+#define COEF_P2_MAX					INT16S_MAX
 #define COEF_P2_DEF					0
 //
-#define COEF_P1_MIN					0
-#define COEF_P1_MAX					INT16U_MAX
-#define COEF_P1_DEF					1000
+#define COEF_P1_MIN					-INT16S_MAX
+#define COEF_P1_MAX					INT16S_MAX
+#define COEF_P1_DEF					1
 //
-#define COEF_P0_MIN					0
+#define COEF_P0_MIN					-INT16S_MAX
 #define COEF_P0_MAX					INT16U_MAX
 #define COEF_P0_DEF					0
 //
@@ -56,26 +56,60 @@
 #define REGULATOR_KI_MAX			INT16U_MAX
 #define REGULATOR_KI_DEF			0
 //
-#define NO		0
-#define YES		1
+#define NO							0
+#define YES							1
 //
-#define PS_ACTIVITY_TIME_MIN		100			// мс
-#define PS_ACTIVITY_TIME_MAX		10000		// мс
-#define PS_ACTIVITY_TIME_DEF		1500		// мс
+#define VOLTAGE_SETPOINT_MIN		200						// В
+#define VOLTAGE_SETPOINT_MAX		LCTU_VOLTAGE_MAX		// В
+#define VOLTAGE_SETPOINT_DEF		500						// В
 //
-#define VOLTAGE_SETPOINT_MIN		100			// В
-#define VOLTAGE_SETPOINT_MAX		1500		// В
+#define PS_FIRST_START_TIME_MIN		500						// мс
+#define PS_FIRST_START_TIME_MAX		20000					// мс
+#define PS_FIRST_START_TIME_DEF		10000					// мс
+
+#define PS_PREPARE_TIME_MIN			10						// мс
+#define PS_PREPARE_TIME_MAX			500						// мс
+#define PS_PREPARE_TIME_DEF			50						// мс
+//
+#define VOLTAGE_THRESHOLD_MIN		VOLTAGE_SETPOINT_MIN	// В
+#define VOLTAGE_THRESHOLD_MAX		LCTU_VOLTAGE_MAX		// В
+#define VOLTAGE_THRESHOLD_DEF		1300					// В
+//
+#define FAN_PERIOD_MIN				60						// c
+#define FAN_PERIOD_MAX				300						// c
+#define FAN_PERIOD_DEF				60						// c
+
+#define FAN_TIME_MIN				10						// c
+#define FAN_TIME_MAX				200						// c
+#define FAN_TIME_DEF				40						// c
+//
+#define DELAY_SYNC_MIN				0						// в тиках
+#define DELAY_SYNC_MAX				50						// в тиках
+#define DELAY_SYNC_DEF				10						// в тиках
+//
+#define CURRENT_CUT_OFF_MIN			0.001					// мА
+#define CURRENT_CUT_OFF_MAX			30						// мА
+#define CURRENT_CUT_OFF_DEF			30						// мА
+//
+#define PAU_CAN_ID_DEF				101
+//
+#define PWRON_PERIOD_MIN			20						// мс
+#define PWRON_PERIOD_MAX			100						// мс
+#define PWRON_PERIOD_DEF			50						// мс
+
+#define PWRON_TIME_MIN				5						// мс
+#define PWRON_TIME_MAX				20						// мс
+#define PWRON_TIME_DEF				10						// мс
 
 // Types
 typedef struct __TableItemConstraint
 {
-	Int16U Min;
-	Int16U Max;
-	Int16U Default;
+	float Min;
+	float Max;
+	float Default;
 } TableItemConstraint;
 
 // Variables
-extern const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE];
-extern const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START];
+extern const TableItemConstraint Constraint[];
 
 #endif // __CONSTRAINTS_H

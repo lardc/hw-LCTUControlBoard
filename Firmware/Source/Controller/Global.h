@@ -4,20 +4,32 @@
 // Definitions
 // 
 #define	SCCI_TIMEOUT_TICKS						1000	// Таймаут интерфейса SCCI (в мс)
+#define	BCCIM_TIMEOUT_TICKS						200		// Таймаут протоколоа мастер BCCI (в мс)
 #define EP_WRITE_COUNT							0		// Количество массивов для записи
 #define EP_COUNT								3		// Количество массивов для чтения
+#define FEP_COUNT								3		// Количество массивов для чтения типа float
 #define VALUES_x_SIZE							300		// Размер массивов
 #define ENABLE_LOCKING							FALSE	// Защита NV регистров паролем
 
 // Параметры DiscreteOpAmp
-#define DISOPAMP_CELL_VOLATGE_MAX				490		// V
-#define DISOPAMP_TOTAL_CELL						3
+#define DISOPAMP_CELL_VOLATGE_MAX				520		// V
+#define DISOPAMP_TOTAL_CELL						7
 #define DSIOPAMP_STACK_VOLTAGE_MAX				(DISOPAMP_CELL_VOLATGE_MAX * DISOPAMP_TOTAL_CELL)
-
+#define DISOPAMP_CURRENT_MAX					30		// мА
 //
-#define COMMUTATION_DELAY						100		// мс
+#define COMMUTATION_DELAY						30		// мс
+#define POST_PULSE_DELAY						500		// мкс
+#define EXT_LAMP_ON_STATE_TIME					500		// мс
+#define LCTU_VOLTAGE_MAX						3300	// В
+#define LCTU_SFTST_CURRENT_MIN					1		// мА
+#define LCTU_LEAKAGE_CURRENT_MIN				0.001	// мА
+#define LCTU_LEAKAGE_CURRENT_MAX				30		// мА
+//
+#define VOLTAGE_RANGE_0							0
+#define VOLTAGE_RANGE_1							1
 
 // Временные параметры
 #define TIME_LED_BLINK							500		// Мигание светодиодом (в мс)
+#define TIME_FAULT_LED_BLINK					250		// Мигание светодиодом в состоянии Fault
 
 #endif //  __GLOBAL_H
