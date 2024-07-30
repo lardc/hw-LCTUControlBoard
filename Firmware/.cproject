@@ -18,7 +18,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="elf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="com.atollic.truestudio.configuration.release.747096506" name="Release" parent="com.atollic.truestudio.configuration.release" prebuildStep="..\gen_git_info.bat &amp; ..\copy_git_info.bat">
+				<configuration artifactExtension="elf" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="com.atollic.truestudio.configuration.release.747096506" name="Release" parent="com.atollic.truestudio.configuration.release" prebuildStep="..\gen_git_info.bat &amp; ..\copy_git_info.bat" postbuildStep="..\gen_fw_name.bat">
 					<folderInfo id="com.atollic.truestudio.configuration.release.747096506." name="/" resourcePath="">
 						<toolChain id="com.atollic.truestudio.exe.release.toolchain.630410713" name="Atollic ARM Tools" superClass="com.atollic.truestudio.exe.release.toolchain">
 							<option id="com.atollic.truestudio.general.runtimelib.1182456240" name="Runtime Library" superClass="com.atollic.truestudio.general.runtimelib" useByScannerDiscovery="false" value="com.atollic.truestudio.ld.general.clib.small" valueType="enumerated"/>
