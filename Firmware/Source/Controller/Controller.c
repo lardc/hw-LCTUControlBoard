@@ -55,6 +55,7 @@ void CONTROL_StopProcess();
 void CONTROL_SaveTestResult();
 void CONTROL_SelfTest();
 void CONTROL_Commutation(TestType Type, bool State);
+bool CONTROL_IsSafetyEvent();
 
 // Functions
 //
@@ -129,7 +130,14 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if (CONTROL_State == DS_Ready)
 			{
 				LOGIC_ResetOutputRegisters();
-				CONTROL_SetDeviceState(DS_InProcess, SS_IdleTimeCheck);
+				// Проверка безопасности до запуска
+				if(CONTROL_IsSafetyEvent())
+				{
+					DataTable[REG_PROBLEM] = PROBLEM_SAFETY;
+					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+				}
+				else
+					CONTROL_SetDeviceState(DS_InProcess, SS_IdleTimeCheck);
 			}
 			else
 				if (CONTROL_State == DS_InProcess)
@@ -140,10 +148,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 		case ACT_STOP_TEST:
 			if (CONTROL_State == DS_InProcess)
-			{
-				CONTROL_ForceStopProcess();
-				DataTable[REG_PROBLEM] = PROBLEM_FORCED_STOP;
-			}
+				CONTROL_ForceStopProcess(PROBLEM_FORCED_STOP);
 			break;
 
 		case ACT_START_SELF_TEST:
@@ -175,12 +180,12 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 }
 //-----------------------------------------------
 
-void CONTROL_ForceStopProcess()
+void CONTROL_ForceStopProcess(Int16U Problem)
 {
 	LOGIC_StopProcess();
-	LOGIC_ResetOutputRegisters();
 	LOGIC_HarwareDefaultState();
 
+	DataTable[REG_PROBLEM] = Problem;
 	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 
 	CONTROL_SetDeviceSubState(SS_PostPulseDelayInit);
@@ -345,6 +350,12 @@ void CONTROL_LogicProcess()
 }
 //-----------------------------------------------
 
+bool CONTROL_IsSafetyEvent()
+{
+	return LL_SafetyGetState() && DataTable[REG_SAFETY_ACTIVE];
+}
+//-----------------------------------------------
+
 void CONTROL_HighPriorityProcess()
 {
 	MeasureSample Sample;
@@ -356,10 +367,9 @@ void CONTROL_HighPriorityProcess()
 
 		RegulatorResult = LOGIC_RegulatorCycle(Sample);
 
-		if(LL_SafetyGetState() && DataTable[REG_SAFETY_ACTIVE])
+		if(CONTROL_IsSafetyEvent())
 		{
-			CONTROL_ForceStopProcess();
-			DataTable[REG_PROBLEM] = PROBLEM_SAFETY;
+			CONTROL_ForceStopProcess(PROBLEM_SAFETY);
 			return;
 		}
 		else if(RegulatorResult == RS_FollowingError)
