@@ -366,7 +366,7 @@ void CONTROL_HighPriorityProcess()
 		{
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 
-			if(Sample.Current >= DISOPAMP_CURRENT_MAX)
+			if(Sample.Current >= LCTU_FE_CURRENT)
 				DataTable[REG_PROBLEM] = PROBLEM_OUTPUT_SHORT;
 			else
 			{

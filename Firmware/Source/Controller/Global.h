@@ -15,7 +15,6 @@
 #define DISOPAMP_CELL_VOLATGE_MAX				520		// V
 #define DISOPAMP_TOTAL_CELL						7
 #define DSIOPAMP_STACK_VOLTAGE_MAX				(DISOPAMP_CELL_VOLATGE_MAX * DISOPAMP_TOTAL_CELL)
-#define DISOPAMP_CURRENT_MAX					30		// мА
 //
 #define COMMUTATION_DELAY						30		// мс
 #define POST_PULSE_DELAY						500		// мкс
@@ -24,6 +23,7 @@
 #define LCTU_SFTST_CURRENT_MIN					1		// мА
 #define LCTU_LEAKAGE_CURRENT_MIN				0.001	// мА
 #define LCTU_LEAKAGE_CURRENT_MAX				30		// мА
+#define LCTU_FE_CURRENT							1		// мА
 //
 #define VOLTAGE_RANGE_0							0
 #define VOLTAGE_RANGE_1							1
