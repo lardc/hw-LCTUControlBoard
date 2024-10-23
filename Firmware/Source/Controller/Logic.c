@@ -267,6 +267,11 @@ void CONTROL_HandleExternalLamp(bool IsImpulse)
 				}
 			}
 	}
+	else
+	{
+		if(DataTable[REG_LAMP_CTRL] && CONTROL_State == DS_None)
+			LL_ExtIndicationControl(false);
+	}
 }
 //-----------------------------------------------
 
