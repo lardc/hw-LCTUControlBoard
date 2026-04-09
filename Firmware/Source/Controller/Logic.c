@@ -320,7 +320,7 @@ bool LOGIC_PAUConfigProcess()
 			break;
 
 		case PS_Fault:
-			CONTROL_SwitchToFault(DF_PAU);
+			CONTROL_SwitchToFault(DF_PAU_CONFIG_FAULT);
 			break;
 
 		default:

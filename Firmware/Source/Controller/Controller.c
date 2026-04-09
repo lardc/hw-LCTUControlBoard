@@ -254,7 +254,7 @@ void CONTROL_LogicProcess()
 							break;
 
 						case PS_Fault:
-							CONTROL_SwitchToFault(DF_PAU);
+							CONTROL_SwitchToFault(DF_PAU_PRECHECK_FAULT);
 							break;
 
 						default:
@@ -458,7 +458,7 @@ void CONTROL_SaveTestResult()
 			break;
 
 		case PS_Fault:
-			CONTROL_SwitchToFault(DF_PAU);
+			CONTROL_SwitchToFault(DF_PAU_RESULT_FAULT);
 			break;
 
 		default:

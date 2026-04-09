@@ -145,9 +145,11 @@
 #define DF_FOLLOWING_ERROR				1
 #define DF_CURRENT_MEASURING			2
 #define DF_INTERFACE					3
-#define DF_PAU							4
+#define DF_PAU_PRECHECK_FAULT			4
 #define DF_PAU_CONFIG_TIMEOUT			5
 #define DF_PAU_ABNORMAL_STATE			6
+#define DF_PAU_CONFIG_FAULT				7
+#define DF_PAU_RESULT_FAULT				8
 
 // Problem
 #define PROBLEM_NONE					0
