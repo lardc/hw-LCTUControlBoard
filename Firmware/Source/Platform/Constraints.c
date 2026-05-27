@@ -15,11 +15,11 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 3
 	{COEF_K_MIN, COEF_K_MAX, COEF_K_UG_DEF},									// 4
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 5
-	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 6
-	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 7
-	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 8
-	{COEF_K_MIN, COEF_K_MAX, COEF_K_UPOT_DEF},									// 9
-	{COEF_B_MIN, COEF_B_MAX, 0},												// 10
+	{0, 0, 0},																	// 6
+	{0, 0, 0},																	// 7
+	{0, 0, 0},																	// 8
+	{0, 0, 0},																	// 9
+	{0, 0, 0},																	// 10
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 11
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 12
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 13
@@ -55,19 +55,19 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 43
 	{COEF_K_MIN, COEF_K_MAX, COEF_K_IMEAS_DEF},									// 44
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 45
-	{COEF_RSH_MIN, COEF_RSH_MAX, COEF_RSH_CH5_DEF},								// 46
-	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 47
-	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 48
-	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 49
-	{COEF_K_MIN, COEF_K_MAX, COEF_K_IMEAS_DEF},									// 50
-	{COEF_B_MIN, COEF_B_MAX, 0},												// 51
-	{COEF_RSH_MIN, COEF_RSH_MAX, COEF_RSH_CH6_DEF},								// 52
-	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 53
-	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 54
-	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 55
-	{COEF_K_MIN, COEF_K_MAX, COEF_K_IMEAS_DEF},									// 56
-	{COEF_B_MIN, COEF_B_MAX, 0},												// 57
-	{COEF_RSH_MIN, COEF_RSH_MAX, COEF_RSH_CH7_DEF},								// 58
+	{0, 0, 0},																	// 46
+	{0, 0, 0},																	// 47
+	{0, 0, 0},																	// 48
+	{0, 0, 0},																	// 49
+	{0, 0, 0},																	// 50
+	{0, 0, 0},																	// 51
+	{0, 0, 0},																	// 52
+	{0, 0, 0},																	// 53
+	{0, 0, 0},																	// 54
+	{0, 0, 0},																	// 55
+	{0, 0, 0},																	// 56
+	{0, 0, 0},																	// 57
+	{0, 0, 0},																	// 58
 	{0, 0, 0},																	// 59
 	{0, INT16U_MAX, 0},															// 60
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 61
@@ -75,20 +75,20 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 63
 	{COEF_K_MIN, COEF_K_MAX, COEF_K_USET_DEF},									// 64
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 65
-	{0, INT16U_MAX, U_SELTTEST_DEF},											// 66
+	{0, 0, 0},																	// 66
 	{0, INT16U_MAX, U_SELTTEST_DEF},											// 67
-	{U_RTH_MIN, U_RTH_MAX, U_RTH_DEF},											// 68
+	{0, 0, 0},																	// 68
 	{COEF_I_CH0_MIN, INT16U_MAX, COEF_I_CH0_MIN},								// 69
 	{COEF_I_CH1_MIN, INT16U_MAX, COEF_I_CH1_MIN},								// 70
 	{COEF_I_CH2_MIN, INT16U_MAX, COEF_I_CH2_MIN},								// 71
 	{COEF_I_CH3_MIN, INT16U_MAX, COEF_I_CH3_MIN},								// 72
 	{COEF_I_CH4_MIN, INT16U_MAX, COEF_I_CH4_MIN},								// 73
-	{COEF_I_CH5_MIN, INT16U_MAX, COEF_I_CH5_MIN},								// 74
-	{COEF_I_CH6_MIN, INT16U_MAX, COEF_I_CH6_MIN},								// 75
-	{COEF_I_CH7_MIN, INT16U_MAX, COEF_I_CH7_MIN},								// 76
-	{0, INT16U_MAX, 0},															// 77
-	{0, INT16U_MAX, 0},															// 78
-	{0, INT16U_MAX, 0},															// 79
+	{0, 0, 0},																	// 74
+	{0, 0, 0},																	// 75
+	{0, 0, 0},																	// 76
+	{0, 0, 0},																	// 77
+	{0, 0, 0},																	// 78
+	{0, 0, 0},																	// 79
 	{0, INT16U_MAX, 0},															// 80
 	{0, INT16U_MAX, 0},															// 81
 	{0, INT16U_MAX, 0},															// 82
@@ -99,15 +99,15 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, COEF_THRESHOLD_MAX, 0},													// 87
 	{0, INT16U_MAX, 0},															// 88
 	{REGULATOR_TIME_MIN, REGULATOR_TIME_MAX, REGULATOR_TIME_MIN},				// 89
-	{COEF_SWITCH_TIME_MIN, INT16U_MAX, COEF_SWITCH_TIME_MIN},					// 90
-	{COEF_SWITCH_TIME_IGES_MIN, INT16U_MAX, COEF_SWITCH_TIME_IGES_MIN},			// 91
-	{COEF_SWITCH_TIME_MIN, INT16U_MAX, COEF_SWITCH_TIME_MIN},					// 92
-	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 93
+	{0, 0, 0},																	// 90
+	{COEF_SWITCH_TIME_ICES_MIN, INT16U_MAX, COEF_SWITCH_TIME_ICES_MIN},			// 91
+	{0, 0, 0},																	// 92
+	{0, 0, 0},																	// 93
 	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 94
-	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 95
-	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 96
+	{0, 0, 0},																	// 95
+	{0, 0, 0},																	// 96
 	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 97
-	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 98
+	{0, 0, 0},																	// 98
 	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 99
 	{0, COEF_THRESHOLD_MAX, 0},													// 100
 	{R_TESTLOAD_MIN, INT16U_MAX, R_TESTLOAD_DEF},								// 101
@@ -141,8 +141,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 
 const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START] =
 {
-	{U_IGES_MIN, U_IGES_MAX, U_IGES_DEF},										// 128
-	{I_UGETH_MIN, I_UGETH_MAX, I_UGETH_DEF},									// 129
+	{U_ICES_MIN, U_ICES_MAX, U_ICES_DEF},										// 128
+	{I_ICES_MAX_MIN, I_ICES_MAX_MAX, I_ICES_MAX_DEF},							// 129
 	{NO, YES, NO},																// 130
 	{0, (COMMUTATION_TABLE_SIZE - 1), 0},										// 131
 	{0, INT16U_MAX, 0},															// 132

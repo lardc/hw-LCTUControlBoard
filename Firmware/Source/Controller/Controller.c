@@ -67,35 +67,17 @@ void CONTROL_InitStoragePointers();
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
-	Int16U EPIndexes[FEP_COUNT] = {
-		EP16_ExtInfoData, EP16_RegulatorUg, EP16_RegulatorIg,
-		EP16_RegulatorSetpoint, EP16_RegulatorCorrection,
-		EP16_RegulatorError, EP16_DACRaw
-	};
-	Int16U EPSized[FEP_COUNT] = {
-		VALUES_EXT_INFO_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
-		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
-		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE
-	};
-	pInt16U EPCounters[FEP_COUNT] = {
-		(pInt16U)&CONTROL_ExtInfoCounter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter
-	};
-	pFloat32 EPDatas[FEP_COUNT] = {
-		(pFloat32)CONTROL_ExtInfoData,
-		(pFloat32)CONTROL_RegulatorUg,
-		(pFloat32)CONTROL_RegulatorIg,
-		(pFloat32)CONTROL_RegulatorSetpoint,
-		(pFloat32)CONTROL_RegulatorCorrection,
-		(pFloat32)CONTROL_RegulatorError,
-		(pFloat32)CONTROL_DACRaw
-	};
+	Int16U EPIndexes[FEP_COUNT] = {EP16_ExtInfoData, EP16_RegulatorUg, EP16_RegulatorIg,
+			EP16_RegulatorSetpoint, EP16_RegulatorCorrection, EP16_RegulatorError, EP16_DACRaw};
 
+	Int16U EPSized[FEP_COUNT] = {VALUES_EXT_INFO_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
+			VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE};
+
+	pInt16U EPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_ExtInfoCounter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
+		(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter};
+
+	pFloat32 EPDatas[FEP_COUNT] = {(pFloat32)CONTROL_ExtInfoData, (pFloat32)CONTROL_RegulatorUg, (pFloat32)CONTROL_RegulatorIg,
+		(pFloat32)CONTROL_RegulatorSetpoint, (pFloat32)CONTROL_RegulatorCorrection, (pFloat32)CONTROL_RegulatorError, (pFloat32)CONTROL_DACRaw};
 	// Конфигурация сервиса работы DataTable и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
 	// Инициализация DataTable
@@ -132,7 +114,6 @@ void CONTROL_ResetData()
 	DataTable[REG_PROBLEM] = PROBLEM_NONE;
 	DataTable[REG_OP_RESULT] = OPRESULT_NONE;
 	
-	DataTable[REG_THERM_RESIS] = 0;
 	DataTable[REG_ICES_RESULT] = 0;
 	DataTable[REG_DIAG_CURRENT] = 0;
 	DataTable[REG_DIAG_VOLTAGE] = 0;
@@ -248,29 +229,20 @@ void CONTROL_InitJSONPointers()
 	UsetMin = USET_MININAL;
 	UsetMax = USET_MAXIMUM;
 
-	Imeas0Min = DataTable[REG_RANGE_I_0] * 1000;
+	Imeas0Min = DataTable[REG_RANGE_I_0] * 1000.0f;
 	Imeas0Max = IMEAS_HIGHEST;
 
-	Imeas1Min = DataTable[REG_RANGE_I_1] * 10000;
-	Imeas1Max = DataTable[REG_RANGE_I_0] * 10000;
+	Imeas1Min = DataTable[REG_RANGE_I_1] * 1000.0f;
+	Imeas1Max = DataTable[REG_RANGE_I_0] * 1000.0f;
 
-	Imeas2Min = DataTable[REG_RANGE_I_2] * 100000;
-	Imeas2Max = DataTable[REG_RANGE_I_1] * 100000;
+	Imeas2Min = DataTable[REG_RANGE_I_2] * 1000.0f;
+	Imeas2Max = DataTable[REG_RANGE_I_1] * 1000.0f;
 
-	Imeas3Min = DataTable[REG_RANGE_I_3] * 1000000;
-	Imeas3Max = DataTable[REG_RANGE_I_2] * 1000000;
+	Imeas3Min = DataTable[REG_RANGE_I_3] * 1000000.0f;
+	Imeas3Max = DataTable[REG_RANGE_I_2] * 1000000.0f;
 
-	Imeas4Min = DataTable[REG_RANGE_I_4] * 10000000;
-	Imeas4Max = DataTable[REG_RANGE_I_3] * 10000000;
-
-	Imeas5Min = DataTable[REG_RANGE_I_5] * 100000000;
-	Imeas5Max = DataTable[REG_RANGE_I_4] * 100000000;
-
-	Imeas6Min = DataTable[REG_RANGE_I_6] * 1000000000;
-	Imeas6Max = DataTable[REG_RANGE_I_5] * 1000000000;
-
-	Imeas7Min = DataTable[REG_RANGE_I_7] * 1000000000;
-	Imeas7Max = DataTable[REG_RANGE_I_6] * 1000000000;
+	Imeas4Min = DataTable[REG_RANGE_I_4] * 1000000.0f;
+	Imeas4Max = DataTable[REG_RANGE_I_3] * 1000000.0f;
 
 	JSON_AssignPointer(0, &UsetMin);
 	JSON_AssignPointer(1, &UsetMax);
@@ -289,15 +261,6 @@ void CONTROL_InitJSONPointers()
 
 	JSON_AssignPointer(10, &Imeas4Min);
 	JSON_AssignPointer(11, &Imeas4Max);
-
-	JSON_AssignPointer(12, &Imeas5Min);
-	JSON_AssignPointer(13, &Imeas5Max);
-
-	JSON_AssignPointer(14, &Imeas6Min);
-	JSON_AssignPointer(15, &Imeas6Max);
-
-	JSON_AssignPointer(16, &Imeas7Min);
-	JSON_AssignPointer(17, &Imeas7Max);
 }
 //------------------------------------------
 
