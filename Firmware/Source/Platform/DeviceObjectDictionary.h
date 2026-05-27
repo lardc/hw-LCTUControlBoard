@@ -154,11 +154,11 @@
 //
 #define REG_REGLTR_TIMER				89	// Время для выхода регулятора на рабочее напряжение, мс
 #define REG_RELAY_SW_TIMER_RTH			90	// Время для переключения реле тока при измерении Rth, мс
-#define REG_RELAY_SW_TIMER_IGES			91	// Время для переключения реле тока при измерении Iges, мс
+#define REG_RELAY_SW_TIMER_ICES			91	// Время переключения реле тока при измерении Ices, мс
 #define REG_RELAY_SW_TIMER_UGETH		92	// Время для переключения реле тока при измерении Uge_th, мс
 //
 #define REG_SLEW_RATE_RTH				93	// Скорость нарастания для измерения Rth, В\мс
-#define REG_SLEW_RATE_IGES				94	// Скорость нарастания для измерения Iges, В\мс
+#define REG_SLEW_RATE_ICES				94	// Скорость нарастания для измерения Ices, В\мс
 #define REG_SLEW_RATE_UGETH				95	// Скорость нарастания для измерения Uge_th, В\мс
 #define REG_SLEW_RATE_ST_UPOT			96	// Скорость нарастания для самодиагностики Upot, В\мс
 #define REG_SLEW_RATE_ST_TESTLOAD		97	// Скорость нарастания для самодиагностики с тестовой нагрузкой, В\мс
@@ -175,8 +175,8 @@
 // 108 - 127
 
 // Несохраняемы регистры чтения-записи
-#define REG_WORK_VOLTAGE_IGES			128	// Номинальное рабочее напряжение для измерения Iges, мВ
-#define REG_WORK_CURRENT_UGETH			129	// Номинальный рабочий ток для измерения Ugeth, мА
+#define REG_WORK_VOLTAGE_ICES			128	// Номинальное рабочее напряжение для измерения Ices, мВ
+#define REG_MAX_CURRENT_ICES			129	// Максимально допустимый ток для выбора диапазона Ices, мА
 //
 #define REG_SAFETY_MUTE					130	// Отключение контура безопасности
 //
@@ -199,7 +199,7 @@
 #define REG_DEV_SUBSTATE				198
 
 #define REG_THERM_RESIS					200	// Полученное сопротивление термистора
-#define REG_IGES_RESULT					201	// Полученное значение тока Iges
+#define REG_ICES_RESULT					201	// Полученное значение тока Ices
 #define REG_UGE_TH						202 // Полученное пороговое напряжение затвор-эмиттер
 //
 #define REG_DIAG_CURRENT				230	// Полученный ток
@@ -228,7 +228,7 @@
 #define PROBLEM_VOLTAGE_OUT_OF_RANGE		2 // Измеренное напряжение вне рабочего диапозона
 #define PROBLEM_CURRENT_OUT_OF_RANGE		3 // Измеренный ток вне рабочего диапозона
 #define PROBLEM_SAFETY						4 // Сработала система безопасности
-#define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Iges для получения точного значения
+#define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Ices для получения точного значения
 #define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	6 // Достигнут устновленный лимит напряжения без достижения уровня тока
 #define PROBLEM_WRONG_SELECTED_RELAY		7 // Выбрано неверное реле для диагностики
 

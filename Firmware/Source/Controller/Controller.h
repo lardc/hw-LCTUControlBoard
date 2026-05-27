@@ -21,22 +21,16 @@ typedef enum __DeviceSubState
 	SS_Wait48VPause			= 2,
 	SS_ConfigPulse			= 3,
 	SS_RegulatorProcess		= 4,
-	SS_RegulatorProcessUgeth= 5,
 	SS_FollowingErr			= 6,
 	SS_VoltageErr			= 7,
-	SS_CurrentErr			= 8,
-	SS_VoltageNoCurrentErr 	= 9,
 	SS_FinishProcess		= 10,
 	SS_GetResults 			= 11,
-	// Самодиагностика
 	SS_RegulatorProcessSelfTest = 12,
 } DeviceSubState;
 
 typedef enum __MeasureType
 {
-	MT_Rth			= 0,
-	MT_Iges			= 1,
-	MT_Ugeth 		= 2,
+	MT_Ices			= 1,
 	MT_ST_TestLoad	= 4,
 } MeasureType;
 

@@ -33,7 +33,7 @@ typedef void (*FUNC_AsyncDelegate)();
 volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = SS_None;
 static Boolean CycleActive = false;
-volatile MeasureType CONTROL_MeasureType = MT_Rth;
+volatile MeasureType CONTROL_MeasureType = MT_Ices;
 
 volatile Int64U CONTROL_TimeCounter = 0;
 static Int64U CT_SaveTimer = 0;					 // Последняя отметка времени автосохранения
@@ -133,8 +133,7 @@ void CONTROL_ResetData()
 	DataTable[REG_OP_RESULT] = OPRESULT_NONE;
 	
 	DataTable[REG_THERM_RESIS] = 0;
-	DataTable[REG_IGES_RESULT] = 0;
-	DataTable[REG_UGE_TH] = 0;
+	DataTable[REG_ICES_RESULT] = 0;
 	DataTable[REG_DIAG_CURRENT] = 0;
 	DataTable[REG_DIAG_VOLTAGE] = 0;
 
@@ -193,23 +192,9 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			DataTable[REG_WARNING] = 0;
 			break;
 			
-		case ACT_START_MEASURE_RTH:
-			if(CONTROL_State == DS_Ready)
-				CONTROL_StartMeasure(MT_Rth);
-			else
-				*pUserError = ERR_DEVICE_NOT_READY;
-			break;
-
 		case ACT_START_MEASURE_IGES:
 			if(CONTROL_State == DS_Ready)
-				CONTROL_StartMeasure(MT_Iges);
-			else
-				*pUserError = ERR_DEVICE_NOT_READY;
-			break;
-
-		case ACT_START_MEASURE_UGETH:
-			if(CONTROL_State == DS_Ready)
-				CONTROL_StartMeasure(MT_Ugeth);
+				CONTROL_StartMeasure(MT_Ices);
 			else
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;

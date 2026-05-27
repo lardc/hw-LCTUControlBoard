@@ -84,9 +84,9 @@ void REGLTR_Init()
 
 	switch(CONTROL_MeasureType)
 	{
-		case MT_Iges:
-			RiseRate = DataTable[REG_SLEW_RATE_IGES];
-			PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_IGES]) * CONVERSION_REDUC_THOUSAND;
+		case MT_Ices:
+			RiseRate = DataTable[REG_SLEW_RATE_ICES];
+			PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]) * CONVERSION_REDUC_THOUSAND;
 			break;
 
 		case MT_ST_TestLoad:
@@ -141,7 +141,7 @@ void RGLTR_ErrorCheck()
 
 			if(VoltageErr < VoltagErrThreshold)
 			{
-				if(CONTROL_MeasureType == MT_Iges)
+				if(CONTROL_MeasureType == MT_Ices)
 					RINGBUF_AddNewSampleIces(Sample.Ig);
 				IsMeasureOk = true;
 				VoltageErrCount = 0;
@@ -225,9 +225,9 @@ Int16U REGLTR_GetScalingCoef()
 	RisingPart = PulseAmplitude / RiseRate;
 	switch(CONTROL_MeasureType)
 	{
-		case MT_Iges:
-			FirstRelayTimer = (DataTable[REG_RELAY_SW_TIMER_IGES] > DataTable[REG_REGLTR_TIMER]) ?
-							   DataTable[REG_RELAY_SW_TIMER_IGES] : DataTable[REG_REGLTR_TIMER];
+		case MT_Ices:
+			FirstRelayTimer = (DataTable[REG_RELAY_SW_TIMER_ICES] > DataTable[REG_REGLTR_TIMER]) ?
+							   DataTable[REG_RELAY_SW_TIMER_ICES] : DataTable[REG_REGLTR_TIMER];
 			SumTicks = (RisingPart + FirstRelayTimer) * MsToMks / TIMER15_uS;
 			break;
 
