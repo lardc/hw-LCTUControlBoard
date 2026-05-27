@@ -13,6 +13,5 @@ float MEASURE_I(float SampleADC, IChannel Channel);
 void MEASURE_ConvertIScope(pFloat32 InputArray, Int16U DataLength, IChannel Channel);
 //
 Int16U MEASURE_ConvertUset(float Uset);
-float MEASURE_Resis(float Voltage, float Current);
 
 #endif // __MEASUREMENT_H

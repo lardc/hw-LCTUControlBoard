@@ -86,7 +86,7 @@ void REGLTR_Init()
 {
 	IsMeasureOk = false;
 	Qi = FollowingErrorCounter = VoltageErrCount = CurrentErrCount = FollowingErrorCounterUpot = 0;
-	RINGBUF_ResetIgesAvg();
+	RINGBUF_ResetIcesAvg();
 	FollowingErrThreshold = (CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_ST_TestLoad) ?
 								DataTable[REG_RGLTR_ST_ERR_THRESH ] : DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH];
 	FollowingErrLimit = DataTable[REG_RGLTR_FOLLOWING_ERR_LIMIT];
@@ -198,7 +198,7 @@ void RGLTR_ErrorCheck()
 				if(VoltageErr < VoltagErrThreshold)
 				{
 					if(CONTROL_MeasureType == MT_Iges)
-						RINGBUF_AddNewSampleIges(Sample.Ig);
+						RINGBUF_AddNewSampleIces(Sample.Ig);
 					IsMeasureOk = true;
 					VoltageErrCount = 0;
 				}

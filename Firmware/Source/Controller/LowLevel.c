@@ -10,8 +10,8 @@
 uint16_t PrevMask = 0;
 uint16_t Mask = 0;
 Int32U CycleCounters[COMMUTATION_TABLE_SIZE] = {0};
-uint16_t const CommMask[] = {RELAY_CH_0, RELAY_CH_1, RELAY_CH_2, RELAY_CH_3, RELAY_CH_4, RELAY_CH_5, RELAY_CH_6, RELAY_CH_7,
-							RELAY_POT_DISCON, RELAY_SELFTEST, RELAY_TEST_LOAD, RELAY_NEG_POLARITY};
+uint16_t const CommMask[] = {RELAY_CH_0, RELAY_CH_1, RELAY_CH_2, RELAY_CH_3, RELAY_CH_4,
+							RELAY_TEST_LOAD, RELAY_NEG_POLARITY};
 
 // Forward functions
 //
@@ -107,15 +107,6 @@ void LL_SetCurrentChannel(IChannel Channel)
 		case I_CHANNEL_4:
 			Mask |= RELAY_CH_4;
 			break;
-		case I_CHANNEL_5:
-			Mask |= RELAY_CH_5;
-			break;
-		case I_CHANNEL_6:
-			Mask |= RELAY_CH_6;
-			break;
-		case I_CHANNEL_7:
-			Mask |= RELAY_CH_7;
-			break;
 	}
 	LL_SPI_WriteByte(Mask);
 	PrevMask = Mask;
@@ -132,15 +123,6 @@ void LL_SetNegativePolarity(bool State)
 {
 	Mask = PrevMask;
 	State ? (Mask |= RELAY_NEG_POLARITY) : (Mask &=~ RELAY_NEG_POLARITY);
-	LL_SPI_WriteByte(Mask);
-	PrevMask = Mask;
-}
-//-----------------------------
-
-void LL_SetSelfTestUpot(bool State)
-{
-	Mask = PrevMask;
-	State ? (Mask |= RELAY_POT_DISCON | RELAY_SELFTEST) : (Mask &=~ (RELAY_POT_DISCON | RELAY_SELFTEST));
 	LL_SPI_WriteByte(Mask);
 	PrevMask = Mask;
 }

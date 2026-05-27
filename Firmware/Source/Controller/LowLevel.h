@@ -5,8 +5,8 @@
 #include "stdinc.h"
 
 // Defines
-#define COMMUTATION_TABLE_SIZE 12
-#define RELAY_ALL_CHANNELS (RELAY_CH_0|RELAY_CH_1|RELAY_CH_2|RELAY_CH_3|RELAY_CH_4|RELAY_CH_5|RELAY_CH_6|RELAY_CH_7)
+#define COMMUTATION_TABLE_SIZE 7
+#define RELAY_ALL_CHANNELS (RELAY_CH_0|RELAY_CH_1|RELAY_CH_2|RELAY_CH_3|RELAY_CH_4)
 
 // Types
 typedef enum IChannel
@@ -15,10 +15,7 @@ typedef enum IChannel
 	I_CHANNEL_1,
 	I_CHANNEL_2,
 	I_CHANNEL_3,
-	I_CHANNEL_4,
-	I_CHANNEL_5,
-	I_CHANNEL_6,
-	I_CHANNEL_7
+	I_CHANNEL_4
 } IChannel;
 
 typedef enum RelayMask
@@ -28,11 +25,6 @@ typedef enum RelayMask
 	RELAY_CH_2 			= BIT0 | BIT5,
 	RELAY_CH_3 			= BIT0 | BIT6,
 	RELAY_CH_4 			= BIT0 | BIT7,
-	RELAY_CH_5 			= BIT0 | BIT3,
-	RELAY_CH_6 			= BIT0 | BIT2,
-	RELAY_CH_7 			= BIT0 | BIT1,
-	RELAY_POT_DISCON	= BIT10,
-	RELAY_SELFTEST		= BIT11,
 	RELAY_TEST_LOAD		= BIT9,
 	RELAY_NEG_POLARITY	= BIT8
 } RelayMask;
@@ -53,7 +45,6 @@ void LL_WriteDAC(Int16U Data);
 void LL_SetCurrentChannel(IChannel Channel);
 bool LL_SafetyState();
 void LL_SetNegativePolarity(bool State);
-void LL_SetSelfTestUpot(bool State);
 void LL_SetSelfTestLoad(bool State);
 
 #endif //__LOWLEVEL_H

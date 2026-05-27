@@ -60,7 +60,7 @@ void LOGIC_HandleMeasurement()
 						break;
 
 					case MT_Iges:
-						if(ForcedCh && ForcedCh != I_CHANNEL_5 && ForcedCh != I_CHANNEL_6 && ForcedCh != I_CHANNEL_7)
+						if(ForcedCh && (ForcedCh < I_CHANNEL_0 || ForcedCh > I_CHANNEL_4))
 						{
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
@@ -70,8 +70,8 @@ void LOGIC_HandleMeasurement()
 							LL_SetNegativePolarity(true);
 						GPIO_SetState(GPIO_VCC_48, true);
 
-						LL_SetCurrentChannel(ForcedCh ? ForcedCh : I_CHANNEL_5);
-						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_5;
+						LL_SetCurrentChannel(ForcedCh ? ForcedCh : I_CHANNEL_4);
+						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_4;
 						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_IGES];
 						break;
 
@@ -104,7 +104,6 @@ void LOGIC_HandleMeasurement()
 
 					case MT_ST_Upot:
 						GPIO_SetState(GPIO_VCC_24, true);
-						LL_SetSelfTestUpot(true);
 						RelaySwitchTimer = DataTable[REG_REGLTR_TIMER] + DataTable[REG_ST_UPOT_FLATTOP_DURATION];
 						LL_SetCurrentChannel(I_CHANNEL_0);
 						LOGIC_ChannelNumber = I_CHANNEL_0;
@@ -207,7 +206,7 @@ void LOGIC_HandleMeasurement()
 					switch(CONTROL_MeasureType)
 					{
 						case MT_Rth:
-							DataTable[REG_THERM_RESIS] = MEASURE_Resis(UgResult, IgResult);
+							DataTable[REG_THERM_RESIS] = (IgResult != 0.0f) ? (UgResult / IgResult) : 0.0f;
 							DataTable[REG_DIAG_CURRENT] = IgResult;
 							DataTable[REG_DIAG_VOLTAGE] = UgResult;
 							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
@@ -215,9 +214,9 @@ void LOGIC_HandleMeasurement()
 						case MT_Iges:
 							DataTable[REG_DIAG_VOLTAGE] = UgResult;
 							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
-							if(RINGBUF_GetIgesAvgCount() >= IGES_AVG_BUF_SIZE)
+							if(RINGBUF_GetIcesAvgCount() >= ICES_AVG_BUF_SIZE)
 							{
-								DataTable[REG_IGES_RESULT] = RINGBUF_GetIgesAvg();
+								DataTable[REG_IGES_RESULT] = RINGBUF_GetIcesAvg();
 								DataTable[REG_DIAG_CURRENT] = IgResult;
 							}
 							else
@@ -251,7 +250,6 @@ void LOGIC_StopProcess()
 	GPIO_SetState(GPIO_VCC_24, false);
 	LL_SetNegativePolarity(false);
 	LL_SetSelfTestLoad(false);
-	LL_SetSelfTestUpot(false);
 	LL_Sync(false);
 	LL_SetCurrentChannel(I_CHANNEL_0);
 }
@@ -274,18 +272,10 @@ void LOGIC_SwitchChannels(float Ig)
 			break;
 
 		case I_CHANNEL_3:
-			CONTROL_SetDeviceSubState(SS_FinishProcess);
-			break;
-
-		case I_CHANNEL_5:
 			LOGIC_SingleSw(Ig);
 			break;
 
-		case I_CHANNEL_6:
-			LOGIC_SingleSw(Ig);
-			break;
-
-		case I_CHANNEL_7:
+		case I_CHANNEL_4:
 			CONTROL_SetDeviceSubState(SS_FinishProcess);
 			break;
 	}
@@ -332,29 +322,10 @@ void LOGIC_TestLoadRelaySwitch()
 		LOGIC_ChannelNumber = I_CHANNEL_3;
 		return;
 	}
-	else if(CalcCurrent > DataTable[REG_RANGE_I_4])
+	else
 	{
 		LL_SetCurrentChannel(I_CHANNEL_4);
 		LOGIC_ChannelNumber = I_CHANNEL_4;
-		return;
-	}
-	else if(CalcCurrent > DataTable[REG_RANGE_I_5])
-	{
-		LL_SetCurrentChannel(I_CHANNEL_5);
-		LOGIC_ChannelNumber = I_CHANNEL_5;
-		return;
-	}
-	else if(CalcCurrent > DataTable[REG_RANGE_I_6])
-	{
-		LL_SetCurrentChannel(I_CHANNEL_6);
-		LOGIC_ChannelNumber = I_CHANNEL_6;
-		return;
-	}
-	else if(CalcCurrent > DataTable[REG_RANGE_I_7])
-	{
-		LL_SetCurrentChannel(I_CHANNEL_7);
-		LOGIC_ChannelNumber = I_CHANNEL_7;
-		return;
 	}
 }
 //------------------------------------------

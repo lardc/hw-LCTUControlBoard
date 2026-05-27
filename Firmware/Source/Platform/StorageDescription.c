@@ -16,13 +16,8 @@ const CounterDescription CounterStorageDescription[] =
 	{"2. Current Channel 2"},
 	{"3. Current Channel 3"},
 	{"4. Current Channel 4"},
-	{"5. Current Channel 5"},
-	{"6. Current Channel 6"},
-	{"7. Current Channel 7"},
-	{"8. Potential entry relay"},
-	{"9. Self test relay"},
-	{"10. Test load relay"},
-	{"11. Polarity switch"},
+	{"5. Test load relay"},
+	{"6. Polarity switch"},
 };
 CounterData CounterTablePointers[sizeof(CounterStorageDescription) / sizeof(CounterStorageDescription[0])] = {0};
 const Int16U CounterStorageSize = sizeof(CounterStorageDescription) / sizeof(CounterStorageDescription[0]);
