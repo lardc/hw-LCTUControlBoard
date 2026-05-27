@@ -19,7 +19,7 @@
 #define ACT_DBG_24V_OFF					19	// Выключить питание 24 В
 #define ACT_DBG_SYNC					20	// Запуск синхронизации
 
-#define ACT_START_MEASURE_IGES			101	// Запуск процесса измерения Ices
+#define ACT_START_MEASURE_ICES			101	// Запуск процесса измерения Ices
 #define ACT_START_SELFTEST_TESTLOAD		104 // Запуск процесса самодиагностики с тестовой нагрузкой
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH

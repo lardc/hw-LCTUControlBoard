@@ -93,9 +93,6 @@ void REGLTR_Init()
 			RiseRate = DataTable[REG_SLEW_RATE_ST_TESTLOAD];
 			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * CONVERSION_REDUC_THOUSAND;
 			break;
-
-		default:
-			break;
 	}
 	VoltStep = RiseRate * TIMER15_uS * CONVERSION_REDUC_THOUSAND;
 

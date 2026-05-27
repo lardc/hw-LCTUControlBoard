@@ -173,7 +173,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			DataTable[REG_WARNING] = 0;
 			break;
 			
-		case ACT_START_MEASURE_IGES:
+		case ACT_START_MEASURE_ICES:
 			if(CONTROL_State == DS_Ready)
 				CONTROL_StartMeasure(MT_Ices);
 			else
