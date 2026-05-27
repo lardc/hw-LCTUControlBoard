@@ -9,7 +9,7 @@
 #include "Regulator.h"
 
 // Variables
-volatile bool UgReady = false, UPotReady = false, IgReady = false;
+volatile bool UgReady = false, IgReady = false;
 
 // Forward functions
 void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *Flag);
@@ -54,7 +54,7 @@ void TIM7_IRQHandler()
 
 void INT_ResetDMAFlags()
 {
-	UgReady = UPotReady = IgReady = false;
+	UgReady = IgReady = false;
 }
 //-----------------------------------------
 
@@ -66,7 +66,7 @@ void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *F
 
 		*Flag = true;
 
-		if(UgReady && UPotReady)
+		if(UgReady && IgReady)
 		{
 			REGLTR_Process();
 			CONTROL_WatchDogUpdate();
@@ -83,12 +83,6 @@ void DMA1_Channel1_IRQHandler()
 	// Внутри DMA1_Ch1 для получения макс кол-ва измерений
 	/*if (ADC3->ISR & OVR)
 		ADC3->ISR |= OVR;*/
-}
-//-----------------------------------------
-
-void DMA2_Channel1_IRQHandler()
-{
-	INT_GeneralDMAHandler(DMA2, DMA_ISR_TCIF1, &UPotReady);
 }
 //-----------------------------------------
 

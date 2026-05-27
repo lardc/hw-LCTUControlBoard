@@ -44,7 +44,6 @@ volatile float CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE] = {0};
 Int16U CONTROL_Values_Counter = 0;
 float CONTROL_RegulatorIg[VALUES_DEBUG_RGLTR_SIZE] = {0};
 float CONTROL_RegulatorUg[VALUES_DEBUG_RGLTR_SIZE] = {0};
-float CONTROL_RegulatorUpot[VALUES_DEBUG_RGLTR_SIZE] = {0};
 float CONTROL_RegulatorSetpoint[VALUES_DEBUG_RGLTR_SIZE] = {0};
 float CONTROL_RegulatorCorrection[VALUES_DEBUG_RGLTR_SIZE] = {0};
 float CONTROL_RegulatorError[VALUES_DEBUG_RGLTR_SIZE] = {0};
@@ -69,19 +68,17 @@ void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
 	Int16U EPIndexes[FEP_COUNT] = {
-		EP16_ExtInfoData, EP16_RegulatorUg,
-		EP16_RegulatorUpot, EP16_RegulatorIg,
+		EP16_ExtInfoData, EP16_RegulatorUg, EP16_RegulatorIg,
 		EP16_RegulatorSetpoint, EP16_RegulatorCorrection,
 		EP16_RegulatorError, EP16_DACRaw
 	};
 	Int16U EPSized[FEP_COUNT] = {
 		VALUES_EXT_INFO_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
 		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
-		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE
+		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE
 	};
 	pInt16U EPCounters[FEP_COUNT] = {
 		(pInt16U)&CONTROL_ExtInfoCounter,
-		(pInt16U)&CONTROL_Values_Counter,
 		(pInt16U)&CONTROL_Values_Counter,
 		(pInt16U)&CONTROL_Values_Counter,
 		(pInt16U)&CONTROL_Values_Counter,
@@ -92,7 +89,6 @@ void CONTROL_Init()
 	pFloat32 EPDatas[FEP_COUNT] = {
 		(pFloat32)CONTROL_ExtInfoData,
 		(pFloat32)CONTROL_RegulatorUg,
-		(pFloat32)CONTROL_RegulatorUpot,
 		(pFloat32)CONTROL_RegulatorIg,
 		(pFloat32)CONTROL_RegulatorSetpoint,
 		(pFloat32)CONTROL_RegulatorCorrection,
@@ -218,13 +214,6 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
-		case ACT_START_SELFTEST_UPOT:
-			if(CONTROL_State == DS_Ready)
-				CONTROL_StartMeasure(MT_ST_Upot);
-			else
-				*pUserError = ERR_DEVICE_NOT_READY;
-			break;
-
 		case ACT_START_SELFTEST_TESTLOAD:
 			if(CONTROL_State == DS_Ready)
 				CONTROL_StartMeasure(MT_ST_TestLoad);
@@ -274,9 +263,6 @@ void CONTROL_InitJSONPointers()
 	UsetMin = USET_MININAL;
 	UsetMax = USET_MAXIMUM;
 
-	UpotMin = UPOT_MINIMAL;
-	UpotMax = UPOT_MAXIMUM;
-
 	Imeas0Min = DataTable[REG_RANGE_I_0] * 1000;
 	Imeas0Max = IMEAS_HIGHEST;
 
@@ -304,32 +290,29 @@ void CONTROL_InitJSONPointers()
 	JSON_AssignPointer(0, &UsetMin);
 	JSON_AssignPointer(1, &UsetMax);
 
-	JSON_AssignPointer(2, &UpotMin);
-	JSON_AssignPointer(3, &UpotMax);
+	JSON_AssignPointer(2, &Imeas0Min);
+	JSON_AssignPointer(3, &Imeas0Max);
 
-	JSON_AssignPointer(4, &Imeas0Min);
-	JSON_AssignPointer(5, &Imeas0Max);
+	JSON_AssignPointer(4, &Imeas1Min);
+	JSON_AssignPointer(5, &Imeas1Max);
 
-	JSON_AssignPointer(6, &Imeas1Min);
-	JSON_AssignPointer(7, &Imeas1Max);
+	JSON_AssignPointer(6, &Imeas2Min);
+	JSON_AssignPointer(7, &Imeas2Max);
 
-	JSON_AssignPointer(8, &Imeas2Min);
-	JSON_AssignPointer(9, &Imeas2Max);
+	JSON_AssignPointer(8, &Imeas3Min);
+	JSON_AssignPointer(9, &Imeas3Max);
 
-	JSON_AssignPointer(10, &Imeas3Min);
-	JSON_AssignPointer(11, &Imeas3Max);
+	JSON_AssignPointer(10, &Imeas4Min);
+	JSON_AssignPointer(11, &Imeas4Max);
 
-	JSON_AssignPointer(12, &Imeas4Min);
-	JSON_AssignPointer(13, &Imeas4Max);
+	JSON_AssignPointer(12, &Imeas5Min);
+	JSON_AssignPointer(13, &Imeas5Max);
 
-	JSON_AssignPointer(14, &Imeas5Min);
-	JSON_AssignPointer(15, &Imeas5Max);
+	JSON_AssignPointer(14, &Imeas6Min);
+	JSON_AssignPointer(15, &Imeas6Max);
 
-	JSON_AssignPointer(16, &Imeas6Min);
-	JSON_AssignPointer(17, &Imeas6Max);
-
-	JSON_AssignPointer(18, &Imeas7Min);
-	JSON_AssignPointer(19, &Imeas7Max);
+	JSON_AssignPointer(16, &Imeas7Min);
+	JSON_AssignPointer(17, &Imeas7Max);
 }
 //------------------------------------------
 

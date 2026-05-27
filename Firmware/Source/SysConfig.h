@@ -38,7 +38,6 @@
 #define ADC_SEQ_LENGTH					10			// Размер выборки за один цикл
 #define ADC_SAMPLE_TIME					ADC_SMPL_TIME_1_5	// Время сэмплинга
 #define ADC1_CHANNEL_UG					1
-#define ADC2_CHANNEL_UPOT				1
 #define ADC3_CHANNEL_IG					1
 // ----------------------------------------------
 

@@ -37,7 +37,6 @@ typedef enum __MeasureType
 	MT_Rth			= 0,
 	MT_Iges			= 1,
 	MT_Ugeth 		= 2,
-	MT_ST_Upot		= 3,
 	MT_ST_TestLoad	= 4,
 } MeasureType;
 
@@ -54,7 +53,6 @@ extern volatile float CONTROL_ExtInfoData[];
 extern Int16U CONTROL_Values_Counter;
 extern float CONTROL_RegulatorIg[];
 extern float CONTROL_RegulatorUg[];
-extern float CONTROL_RegulatorUpot[];
 extern float CONTROL_RegulatorSetpoint[];
 extern float CONTROL_RegulatorCorrection[];
 extern float CONTROL_RegulatorError[];

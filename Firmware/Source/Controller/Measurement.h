@@ -7,7 +7,6 @@
 // Functions
 //
 float MEASURE_Ug(float SampleADC);
-float MEASURE_UPot(float SampleADC);
 float MEASURE_I(float SampleADC, IChannel Channel);
 //
 void MEASURE_ConvertIScope(pFloat32 InputArray, Int16U DataLength, IChannel Channel);

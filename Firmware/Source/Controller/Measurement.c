@@ -62,13 +62,6 @@ float MEASURE_Ug(float SampleADC)
 }
 //------------------------------------
 
-float MEASURE_UPot(float SampleADC)
-{
-	return MEASURE_ConvertX(SampleADC, REG_U_POT_P2, REG_U_POT_P1, REG_U_POT_P0, REG_U_POT_K, 
-			REG_U_POT_B, 0);
-}
-//------------------------------------
-
 float MEASURE_I(float SampleADC, IChannel Channel)
 {
 	Int16U offset = 6 * (Channel - 1);

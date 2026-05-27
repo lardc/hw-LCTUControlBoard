@@ -30,7 +30,7 @@ void LOGIC_TestLoadRelaySwitch();
 
 void LOGIC_HandleMeasurement()
 {
-	static float UgResult, UpotResult, IgResult;
+	static float UgResult, IgResult;
 
 	if(CONTROL_State == DS_InProcess)
 	{
@@ -40,7 +40,7 @@ void LOGIC_HandleMeasurement()
 		switch(CONTROL_SubState)
 		{
 			case SS_Init:
-				UgResult = UpotResult = IgResult = 0.0f;
+				UgResult = IgResult = 0.0f;
 				ForcedCh = DataTable[REG_DIAG_FORCE_CHANNEL];
 
 				switch(CONTROL_MeasureType)
@@ -102,13 +102,6 @@ void LOGIC_HandleMeasurement()
 						}
 						break;
 
-					case MT_ST_Upot:
-						GPIO_SetState(GPIO_VCC_24, true);
-						RelaySwitchTimer = DataTable[REG_REGLTR_TIMER] + DataTable[REG_ST_UPOT_FLATTOP_DURATION];
-						LL_SetCurrentChannel(I_CHANNEL_0);
-						LOGIC_ChannelNumber = I_CHANNEL_0;
-						break;
-
 					case MT_ST_TestLoad:
 						GPIO_SetState(GPIO_VCC_48, true);
 						RelaySwitchTimer = DataTable[REG_REGLTR_TIMER] + DataTable[REG_ST_TL_FLATTOP_DURATION];
@@ -135,7 +128,7 @@ void LOGIC_HandleMeasurement()
 
 				if(CONTROL_MeasureType == MT_Ugeth)
 					CONTROL_SetDeviceSubState(SS_RegulatorProcessUgeth);
-				else if(CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_ST_TestLoad)
+				else if(CONTROL_MeasureType == MT_ST_TestLoad)
 					CONTROL_SetDeviceSubState(SS_RegulatorProcessSelfTest);
 				else
 					CONTROL_SetDeviceSubState(SS_RegulatorProcess);
@@ -145,7 +138,6 @@ void LOGIC_HandleMeasurement()
 				if(CONTROL_TimeCounter > Timeout)
 				{
 					UgResult = Sample.Ug;
-					UpotResult = Sample.UPot;
 					IgResult = Sample.Ig;
 					if(IsMeasureOk)
 						ForcedCh ? CONTROL_SetDeviceSubState(SS_FinishProcess) : LOGIC_SwitchChannels(IgResult);
@@ -166,7 +158,6 @@ void LOGIC_HandleMeasurement()
 				if(CONTROL_TimeCounter > (Timeout + DataTable[REG_CURRENT_FLATTOP_DURATION]))
 				{
 					UgResult = Sample.Ug;
-					UpotResult = Sample.UPot;
 					IgResult = Sample.Ig;
 					if(IsMeasureOk)
 						CONTROL_SetDeviceSubState(SS_FinishProcess);
@@ -209,11 +200,9 @@ void LOGIC_HandleMeasurement()
 							DataTable[REG_THERM_RESIS] = (IgResult != 0.0f) ? (UgResult / IgResult) : 0.0f;
 							DataTable[REG_DIAG_CURRENT] = IgResult;
 							DataTable[REG_DIAG_VOLTAGE] = UgResult;
-							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 							break;
 						case MT_Iges:
 							DataTable[REG_DIAG_VOLTAGE] = UgResult;
-							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 							if(RINGBUF_GetIcesAvgCount() >= ICES_AVG_BUF_SIZE)
 							{
 								DataTable[REG_IGES_RESULT] = RINGBUF_GetIcesAvg();
@@ -227,7 +216,6 @@ void LOGIC_HandleMeasurement()
 							DataTable[REG_DIAG_CURRENT] = IgResult;
 							DataTable[REG_UGE_TH] = UgResult;
 							DataTable[REG_DIAG_VOLTAGE] = UgResult;
-							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 							break;
 
 						default:

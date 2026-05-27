@@ -245,7 +245,6 @@
 // EP
 #define EP16_RegulatorIg				1	// Regulator Ig data
 #define EP16_RegulatorUg				2	// Regulator Ug data
-#define EP16_RegulatorUpot				3	// Regulator Upot data
 #define EP16_RegulatorSetpoint			4	// Regulator Setpoint data
 #define EP16_RegulatorCorrection		5	// Regulator Correction data
 #define EP16_RegulatorError				6	// Regulator Error data

@@ -24,7 +24,6 @@ void INITCFG_IO()
 	
 	// Аналаговые порты
 	GPIO_InitAnalog(GPIO_ANLG_UG);
-	GPIO_InitAnalog(GPIO_ANLG_UPOT);
 	GPIO_InitAnalog(GPIO_ANLG_IG);
 	
 	// Входы
@@ -84,7 +83,6 @@ void INITCFG_ADC()
 	RCC_ADC_Clk_EN(ADC_34_ClkEN);
 
 	INITCFG_GeneralADC(ADC1, ADC1_CHANNEL_UG, ADC12_TIM15_TRGO);
-	INITCFG_GeneralADC(ADC2, ADC2_CHANNEL_UPOT, ADC12_TIM15_TRGO);
 	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_IG, ADC34_TIM15_TRGO);
 }
 //------------------------------------------------
@@ -156,8 +154,7 @@ void INITCFG_DMA()
 	DMA_Clk_Enable(DMA1_ClkEN);
 	DMA_Clk_Enable(DMA2_ClkEN);
 
-	INITCFG_GeneralDMA(DMA1_Channel1, (uint32_t)REGLTR_MemBuffUg,   (uint32_t)(&ADC1->DR));
-	INITCFG_GeneralDMA(DMA2_Channel1, (uint32_t)REGLTR_MemBuffUPot, (uint32_t)(&ADC2->DR));
-	INITCFG_GeneralDMA(DMA2_Channel5, (uint32_t)REGLTR_MemBuffIg,   (uint32_t)(&ADC3->DR));
+	INITCFG_GeneralDMA(DMA1_Channel1, (uint32_t)REGLTR_MemBuffUg, (uint32_t)(&ADC1->DR));
+	INITCFG_GeneralDMA(DMA2_Channel5, (uint32_t)REGLTR_MemBuffIg, (uint32_t)(&ADC3->DR));
 }
 //------------------------------------------------
