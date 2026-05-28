@@ -110,11 +110,13 @@
 #define REG_RGLTR_FOLLOWING_ERR_THRESH	83	// Порог ошибки Following Error, в частях от 0 до 1
 #define REG_VOLTAGE_ERR_THRESH			84	// Допустимая ошибка напряжения для начала измерения, в частях от 0 до 1
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
-// 86 - 88
+#define REG_PULSE_RISE_DURATION			86	// Длительность фронта импульса, мс
+#define REG_PULSE_DURATION				87	// Длительность импульса, мс
+#define REG_DEACT_RCON_DELAY			88	// Задержка перед Rdis после Rcon OFF, мс
 #define REG_REGLTR_TIMER				89	// Время для выхода регулятора на рабочее напряжение, мс
-// 90
+#define REG_DEACT_ROUT_DELAY			90	// Задержка на размыкание RoutLCTU, мс
 #define REG_RELAY_SW_TIMER_ICES			91	// Время переключения реле тока при измерении Ices, мс
-// 92
+#define REG_SYNC_DELAY_AFTER_FLAT		92	// Задержка выдачи SYNC после выхода на полку, мс
 //
 // 93
 #define REG_SLEW_RATE_ICES				94	// Скорость нарастания для измерения Ices, В\мс

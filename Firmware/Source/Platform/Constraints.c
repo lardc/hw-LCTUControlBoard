@@ -95,13 +95,13 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, COEF_THRESHOLD_MAX, 0},													// 83
 	{0, COEF_THRESHOLD_MAX, 0},													// 84
 	{U_ERR_COUNT_MIN, U_ERR_COUNT_MAX, U_ERR_COUNT_DEF},						// 85
-	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 86
-	{0, COEF_THRESHOLD_MAX, 0},													// 87
-	{0, INT16U_MAX, 0},															// 88
+	{PULSE_RISE_TIME_MIN, INT16U_MAX, PULSE_RISE_TIME_DEF},						// 86
+	{PULSE_DURATION_MIN, PULSE_DURATION_DEF, PULSE_DURATION_DEF},				// 87
+	{0, INT16U_MAX, DEACT_RCON_DELAY_DEF},										// 88
 	{REGULATOR_TIME_MIN, REGULATOR_TIME_MAX, REGULATOR_TIME_MIN},				// 89
-	{0, 0, 0},																	// 90
+	{0, INT16U_MAX, DEACT_ROUT_DELAY_DEF},										// 90
 	{COEF_SWITCH_TIME_ICES_MIN, INT16U_MAX, COEF_SWITCH_TIME_ICES_MIN},			// 91
-	{0, 0, 0},																	// 92
+	{0, INT16U_MAX, SYNC_DELAY_AFTER_FLAT_DEF},									// 92
 	{0, 0, 0},																	// 93
 	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 94
 	{0, 0, 0},																	// 95

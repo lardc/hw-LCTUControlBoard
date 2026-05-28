@@ -15,11 +15,6 @@
 #define TIME_FAULT_LED_BLINK		250		// Мигание светодиодом в состоянии Fault
 #define TIME_SPI_DELAY				5		// Задержка интерфейса SPI
 #define TIME_INIT_48V_TIMER			10		// Время для выставления 48v на плате, в мс
-#define PULSE_RISE_MS				1		// Длительность фронта импульса, мс
-#define PULSE_DURATION_MAX			100		// Максимальная длительность импульса, мс
-#define DEACT_RCON_DELAY_MS			100		// Задержка перед Rdis после Rcon OFF, мс
-#define DEACT_ROUT_DELAY_MS			20		// Задержка на размыкание RoutLCTU, мс
-#define SYNC_DELAY_AFTER_FLAT_MS	1		// Задержка выдачи SYNC после выхода на полку, мс
 // Другие параметры
 #define CONVERSION_REDUC_THOUSAND	0.001f	// Коэф уменьшения числа в 1000 раз
 

@@ -16,7 +16,6 @@
 //
 static Int64U Timeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
-Int16U RelaySwitchTimer = 0;
 static Int16U ForcedCh = 0;
 
 // Forward functions
@@ -55,12 +54,10 @@ void LOGIC_HandleMeasurement()
 						if(DataTable[REG_WORK_VOLTAGE_ICES] < 0)
 							LL_SetNegativePolarity(true);
 						GPIO_SetState(GPIO_VCC_48, true);
-						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_ICES];
 						break;
 
 					case MT_ST_TestLoad:
 						GPIO_SetState(GPIO_VCC_48, true);
-						RelaySwitchTimer = DataTable[REG_REGLTR_TIMER] + DataTable[REG_ST_TL_FLATTOP_DURATION];
 						LL_SetSelfTestLoad(true);
 						LOGIC_TestLoadRelaySwitch();
 						break;
@@ -83,8 +80,11 @@ void LOGIC_HandleMeasurement()
 				REGLTR_StartProcess();
 				LL_Sync(true);
 				{
-					float TimeoutTime = (RelaySwitchTimer > DataTable[REG_REGLTR_TIMER]) ?
-									RelaySwitchTimer : DataTable[REG_REGLTR_TIMER];
+					float TimeoutTime;
+					if (CONTROL_MeasureType == MT_ST_TestLoad)
+						TimeoutTime = DataTable[REG_PULSE_RISE_DURATION] + DataTable[REG_ST_TL_FLATTOP_DURATION];
+					else
+						TimeoutTime = DataTable[REG_PULSE_RISE_DURATION] + DataTable[REG_PULSE_DURATION];
 					Timeout = CONTROL_TimeCounter + TimeoutTime;
 				}
 
@@ -140,14 +140,9 @@ void LOGIC_HandleMeasurement()
 					{
 						case MT_Ices:
 							DataTable[REG_DIAG_VOLTAGE] = UgResult;
-							if(RINGBUF_GetIcesAvgCount() >= ICES_AVG_BUF_SIZE)
-							{
-								DataTable[REG_ICES_RESULT] = RINGBUF_GetIcesAvg();
-								DataTable[REG_DIAG_CURRENT] = IgResult;
-								DataTable[REG_OP_RESULT] = OPRESULT_OK;
-							}
-							else
-								CONTROL_SwitchToProblem(PROBLEM_NEED_MORE_SAMPLES);
+							DataTable[REG_ICES_RESULT] = IgResult;
+							DataTable[REG_DIAG_CURRENT] = IgResult;
+							DataTable[REG_OP_RESULT] = OPRESULT_OK;
 							break;
 
 						default:

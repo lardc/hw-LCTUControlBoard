@@ -85,15 +85,18 @@ void REGLTR_Init()
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Ices:
-			RiseRate = DataTable[REG_SLEW_RATE_ICES];
 			PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]) * CONVERSION_REDUC_THOUSAND;
 			break;
 
 		case MT_ST_TestLoad:
-			RiseRate = DataTable[REG_SLEW_RATE_ST_TESTLOAD];
 			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * CONVERSION_REDUC_THOUSAND;
 			break;
 	}
+
+	Int32U PulseRiseMs = (Int32U)DataTable[REG_PULSE_RISE_DURATION];
+	if (PulseRiseMs == 0u)
+		PulseRiseMs = 1u;
+	RiseRate = PulseAmplitude / (float)PulseRiseMs;
 	VoltStep = RiseRate * TIMER15_uS * CONVERSION_REDUC_THOUSAND;
 
 	Kp = DataTable[REG_RGLTR_Kp];
@@ -218,19 +221,16 @@ Int16U REGLTR_GetScalingCoef()
 {
 	Int16U Coef = 0;
 	Int16U MsToMks = 1000;
-	float FirstRelayTimer, RisingPart, SumTicks = 0;
+	float RisingPart, SumTicks = 0;
 	RisingPart = PulseAmplitude / RiseRate;
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Ices:
-			FirstRelayTimer = (DataTable[REG_RELAY_SW_TIMER_ICES] > DataTable[REG_REGLTR_TIMER]) ?
-							   DataTable[REG_RELAY_SW_TIMER_ICES] : DataTable[REG_REGLTR_TIMER];
-			SumTicks = (RisingPart + FirstRelayTimer) * MsToMks / TIMER15_uS;
+			SumTicks = (RisingPart + DataTable[REG_PULSE_DURATION]) * MsToMks / TIMER15_uS;
 			break;
 
 		case MT_ST_TestLoad:
-			FirstRelayTimer = DataTable[REG_ST_TL_FLATTOP_DURATION] + DataTable[REG_REGLTR_TIMER];
-			SumTicks = FirstRelayTimer * MsToMks / TIMER15_uS;
+			SumTicks = (RisingPart + DataTable[REG_ST_TL_FLATTOP_DURATION]) * MsToMks / TIMER15_uS;
 			break;
 
 		default:
