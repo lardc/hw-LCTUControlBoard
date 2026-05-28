@@ -46,11 +46,8 @@ void LL_ToggleExternalLED();
 void LL_SetStateRelay(RelayId Id, bool State);
 void LL_SetRelaySafeState();
 void LL_SPI_WriteByte(Int16U Data);
-void LL_SPI_SetStateOE(bool State);
 void LL_WriteDAC(Int16U Data);
 void LL_SetCurrentChannel(IChannel Channel);
 bool LL_SafetyState();
-void LL_SetNegativePolarity(bool State);
-void LL_SetSelfTestLoad(bool State);
 
 #endif //__LOWLEVEL_H

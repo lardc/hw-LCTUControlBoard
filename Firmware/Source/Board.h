@@ -44,10 +44,6 @@ GPIO_PortPinSettingMacro GPIO_RMES3			= {GPIOA, Pin_1};
 GPIO_PortPinSettingMacro GPIO_RMES4			= {GPIOA, Pin_2};
 GPIO_PortPinSettingMacro GPIO_RMES5			= {GPIOA, Pin_5};
 
-// Переходные алиасы до полной миграции логики
-#define GPIO_VCC_24 GPIO_SW_IND
-#define GPIO_VCC_48 GPIO_SW_FAN
-
 // Определения для портов альтернативных функций
 GPIO_PortPinSettingMacro GPIO_ALT_CAN_RX	= {GPIOB, Pin_8};
 GPIO_PortPinSettingMacro GPIO_ALT_CAN_TX	= {GPIOB, Pin_9};

@@ -13,10 +13,6 @@
 #define ACT_DBG_SWITCH_POWER			13	// Диагностическое переключение питаний
 #define ACT_DBG_SWITCH_RELAY			14 	// Диагностическое переключение реле токов
 #define ACT_DBG_DAC_WRITE				15	// Прямая запись значения в ЦАП
-#define ACT_DBG_48V_ON					16	// Включить питание 48 В
-#define ACT_DBG_48V_OFF					17	// Выключить питание 48 В
-#define ACT_DBG_24V_ON					18	// Включить питание 24 В
-#define ACT_DBG_24V_OFF					19	// Выключить питание 24 В
 #define ACT_DBG_SYNC					20	// Запуск синхронизации
 
 #define ACT_START_MEASURE_ICES			101	// Запуск процесса измерения Ices

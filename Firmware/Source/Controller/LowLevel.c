@@ -13,7 +13,6 @@ const GPIO_PortPinSettingMacro* RelayPins[RELAY_COUNT] = {&GPIO_RCON, &GPIO_ROUT
 														  &GPIO_RMES1, &GPIO_RMES2, &GPIO_RMES3, &GPIO_RMES4, &GPIO_RMES5};
 // Forward functions
 //
-void LL_SPI_SetStateOE(bool State);
 static void LL_UpdateRelayCounter(RelayId Id, bool NewState);
 static void LL_SetChannelRelaysOff();
 
@@ -87,12 +86,6 @@ void LL_SPI_WriteByte(uint16_t Data)
 }
 //-----------------------------
 
-void LL_SPI_SetStateOE(bool State)
-{
-	(void)State;
-}
-//-----------------------------
-
 void LL_WriteDAC(Int16U Data)
 {
 	LL_SPI_WriteByte(Data);
@@ -145,17 +138,5 @@ void LL_SetCurrentChannel(IChannel Channel)
 bool LL_SafetyState()
 {
 	return GPIO_GetState(GPIO_SAFETY);
-}
-//-----------------------------
-
-void LL_SetNegativePolarity(bool State)
-{
-	(void)State;
-}
-//-----------------------------
-
-void LL_SetSelfTestLoad(bool State)
-{
-	(void)State;
 }
 //-----------------------------

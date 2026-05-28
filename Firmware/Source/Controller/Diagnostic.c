@@ -46,12 +46,14 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SWITCH_RELAY:
-			for(Int16U i = I_CHANNEL_1; i <= I_CHANNEL_5; i++)
+			for(Int16U i = RELAY_RCON; i < RELAY_COUNT; i++)
 			{
-				LL_SetCurrentChannel(i);
-				DELAY_MS(1000);
+				LL_SetStateRelay((RelayId)i, true);
+				DELAY_MS(200);
+				LL_SetStateRelay((RelayId)i, false);
+				DELAY_MS(100);
 			}
-			LL_SetCurrentChannel(I_CHANNEL_1);
+			LL_SetRelaySafeState();
 			break;
 
 		case ACT_DBG_DAC_WRITE:
@@ -59,22 +61,6 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 				Int16U DACRaw =(Int16U) DataTable[REG_DBG];
 				LL_WriteDAC(DACRaw);
 			}
-			break;
-
-		case ACT_DBG_48V_ON:
-			GPIO_SetState(GPIO_SW_FAN, true);
-			break;
-
-		case ACT_DBG_48V_OFF:
-			GPIO_SetState(GPIO_SW_FAN, false);
-			break;
-
-		case ACT_DBG_24V_ON:
-			GPIO_SetState(GPIO_SW_IND, true);
-			break;
-
-		case ACT_DBG_24V_OFF:
-			GPIO_SetState(GPIO_SW_IND, false);
 			break;
 
 		case ACT_DBG_SYNC:
@@ -93,10 +79,33 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 
 void DIAG_GenerateTrapezoidWave()
 {
-	/*for (Int16U i = 0; i < REGLTR_PulseSamples.TotalSamples; ++i)
+	float PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]) * CONVERSION_REDUC_THOUSAND;
+	Int32U RiseMs = (Int32U)DataTable[REG_PULSE_RISE_DURATION];
+	Int32U FlatMs = (Int32U)DataTable[REG_PULSE_DURATION];
+	Int32U RiseSteps, FlatSteps;
+
+	if (RiseMs == 0u)
+		RiseMs = 1u;
+
+	RiseSteps = (RiseMs * 1000u) / TIMER15_uS;
+	FlatSteps = (FlatMs * 1000u) / TIMER15_uS;
+
+	if (RiseSteps == 0u)
+		RiseSteps = 1u;
+
+	for (Int32U i = 1; i <= RiseSteps; ++i)
 	{
-		LL_WriteDAC(MEASURE_ConvertUset(REGLTR_GetSetpoint(i)));
+		float setPoint = PulseAmplitude * ((float)i / (float)RiseSteps);
+		LL_WriteDAC(MEASURE_ConvertUset(setPoint));
 		DELAY_US(TIMER15_uS);
-	}*/
+	}
+
+	for (Int32U i = 0; i < FlatSteps; ++i)
+	{
+		LL_WriteDAC(MEASURE_ConvertUset(PulseAmplitude));
+		DELAY_US(TIMER15_uS);
+	}
+
+	LL_WriteDAC(0);
 }
 //------------------------------------------------
