@@ -6,6 +6,7 @@
 
 // Functions
 //
+float MEASURE_Ucap(float SampleADC);
 float MEASURE_Ug(float SampleADC);
 float MEASURE_I(float SampleADC, IChannel Channel);
 //

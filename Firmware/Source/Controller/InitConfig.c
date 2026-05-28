@@ -174,7 +174,7 @@ void INITCFG_DMA()
 	DMA_Clk_Enable(DMA1_ClkEN);
 	DMA_Clk_Enable(DMA2_ClkEN);
 
-	INITCFG_GeneralDMA(DMA1_Channel1, (uint32_t)REGLTR_MemBuffUg, (uint32_t)(&ADC1->DR));
-	INITCFG_GeneralDMA(DMA2_Channel5, (uint32_t)REGLTR_MemBuffIg, (uint32_t)(&ADC2->DR));
+	INITCFG_GeneralDMA(DMA1_Channel1, (uint32_t)REGLTR_MemBuffIg, (uint32_t)(&ADC2->DR));
+	INITCFG_GeneralDMA(DMA2_Channel5, (uint32_t)REGLTR_MemBuffUg, (uint32_t)(&ADC3->DR));
 }
 //------------------------------------------------

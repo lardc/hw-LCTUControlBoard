@@ -7,9 +7,11 @@
 #include "SysConfig.h"
 #include "Global.h"
 #include "Regulator.h"
+#include "Measurement.h"
 
 // Variables
 volatile bool UgReady = false, IgReady = false;
+volatile float UcapValue = 0.0f;
 
 // Forward functions
 void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *Flag);
@@ -41,6 +43,7 @@ void TIM7_IRQHandler()
 
 	if(TIM_StatusCheck(TIM7))
 	{
+		UcapValue = MEASURE_Ucap((float)ADC1->DR);
 		CONTROL_TimeCounter++;
 		if(++LED_BlinkTimeCounter > TIME_LED_BLINK)
 		{
@@ -78,16 +81,12 @@ void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *F
 
 void DMA1_Channel1_IRQHandler()
 {
-	INT_GeneralDMAHandler(DMA1, DMA_ISR_TCIF1, &UgReady);
-	// Очищаем флаг OVR у ADC3 для непрерывной работы DMA2_CH5
-	// Внутри DMA1_Ch1 для получения макс кол-ва измерений
-	/*if (ADC3->ISR & OVR)
-		ADC3->ISR |= OVR;*/
+	INT_GeneralDMAHandler(DMA1, DMA_ISR_TCIF1, &IgReady);
 }
 //-----------------------------------------
 
 void DMA2_Channel5_IRQHandler()
 {
-	INT_GeneralDMAHandler(DMA2, DMA_ISR_TCIF5, &IgReady);
+	INT_GeneralDMAHandler(DMA2, DMA_ISR_TCIF5, &UgReady);
 }
 //-----------------------------------------

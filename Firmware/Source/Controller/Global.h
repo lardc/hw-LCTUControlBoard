@@ -20,14 +20,8 @@
 #define DEACT_RCON_DELAY_MS			100		// Задержка перед Rdis после Rcon OFF, мс
 #define DEACT_ROUT_DELAY_MS			20		// Задержка на размыкание RoutLCTU, мс
 #define SYNC_DELAY_AFTER_FLAT_MS	1		// Задержка выдачи SYNC после выхода на полку, мс
-
-#define U_CAP_ACTIVATE_RSS			3600	// Порог включения Rss, В
-#define U_CAP_READY					7200	// Порог готовности к формированию, В
 // Другие параметры
 #define CONVERSION_REDUC_THOUSAND	0.001f	// Коэф уменьшения числа в 1000 раз
-#define ADC_K_CAP					3751.0f	// Коэффициент пересчета Ucap
-#define ADC_K_UG					3751.0f	// Коэффициент пересчета Ug
-#define ADC_K_I						1.0f	// Коэффициент пересчета I
 
 #define VALUES_EXT_INFO_SIZE		300
 #define VALUES_DEBUG_RGLTR_SIZE		600	// Размер отладочного буфера регулятора

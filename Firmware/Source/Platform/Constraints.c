@@ -83,8 +83,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_I_CH2_MIN, INT16U_MAX, COEF_I_CH2_MIN},								// 71
 	{COEF_I_CH3_MIN, INT16U_MAX, COEF_I_CH3_MIN},								// 72
 	{COEF_I_CH4_MIN, INT16U_MAX, COEF_I_CH4_MIN},								// 73
-	{0, 0, 0},																	// 74
-	{0, 0, 0},																	// 75
+	{U_CAP_ACTIVATE_RSS_MIN, U_CAP_ACTIVATE_RSS_MAX, U_CAP_ACTIVATE_RSS_DEF},	// 74
+	{U_CAP_READY_MIN, U_CAP_READY_MAX, U_CAP_READY_DEF},						// 75
 	{0, 0, 0},																	// 76
 	{0, 0, 0},																	// 77
 	{0, 0, 0},																	// 78

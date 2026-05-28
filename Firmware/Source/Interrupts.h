@@ -5,6 +5,7 @@
 
 // Variables
 //
+extern volatile float UcapValue;
 void INT_ResetDMAFlags();
 
 #endif // __INTERRUPTS_H

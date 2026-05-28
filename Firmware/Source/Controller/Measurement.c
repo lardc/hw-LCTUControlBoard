@@ -62,6 +62,13 @@ float MEASURE_Ug(float SampleADC)
 }
 //------------------------------------
 
+float MEASURE_Ucap(float SampleADC)
+{
+	float Result = (SampleADC / ADC_RESOLUTION) * DataTable[REG_U_ADC_REF] * DataTable[REG_U_G_K];
+	return (Result > 0) ? Result : 0;
+}
+//------------------------------------
+
 float MEASURE_I(float SampleADC, IChannel Channel)
 {
 	Int16U offset = 6 * (Channel - 1);

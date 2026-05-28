@@ -22,9 +22,9 @@
 //
 #define COEF_K_MIN					0
 #define COEF_K_MAX					INT16U_MAX
-#define COEF_K_USET_DEF				0.08006f	// 1 / 12.49
-#define COEF_K_IMEAS_DEF			0.383f		// 1 / 2.61
-#define COEF_K_UG_DEF				10.989f		// 1 / 0.091
+#define COEF_K_USET_DEF				3751.0f		// K default (moved from Global)
+#define COEF_K_IMEAS_DEF			1.0f		// K default (moved from Global)
+#define COEF_K_UG_DEF				3751.0f		// K default (moved from Global)
 //
 #define COEF_B_MIN					INT16S_MIN
 #define COEF_B_MAX					INT16S_MAX
@@ -42,6 +42,12 @@
 #define U_ICES_MAX					30000
 #define U_ICES_DEF					5000
 #define U_SELTTEST_DEF				5000
+#define U_CAP_ACTIVATE_RSS_MIN		0
+#define U_CAP_ACTIVATE_RSS_MAX		INT16U_MAX
+#define U_CAP_ACTIVATE_RSS_DEF		3600
+#define U_CAP_READY_MIN				0
+#define U_CAP_READY_MAX				INT16U_MAX
+#define U_CAP_READY_DEF				7200
 //
 #define U_ERR_COUNT_MIN				10		// в шт
 #define U_ERR_COUNT_MAX				20
