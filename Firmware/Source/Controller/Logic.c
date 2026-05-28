@@ -15,8 +15,10 @@
 // Variables
 //
 static Int64U Timeout = 0;
+static Int64U SyncDelayTimeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
 static Int16U ForcedCh = 0;
+static bool SyncIsOn = false;
 
 // Forward functions
 //
@@ -41,6 +43,8 @@ void LOGIC_HandleMeasurement()
 			case SS_Init:
 				UgResult = IgResult = 0.0f;
 				ForcedCh = DataTable[REG_DIAG_FORCE_CHANNEL];
+				SyncIsOn = false;
+				SyncDelayTimeout = 0;
 
 				switch(CONTROL_MeasureType)
 				{
@@ -78,7 +82,7 @@ void LOGIC_HandleMeasurement()
 			case SS_ConfigPulse:
 				REGLTR_Init();
 				REGLTR_StartProcess();
-				LL_Sync(true);
+				SyncDelayTimeout = CONTROL_TimeCounter + DataTable[REG_PULSE_RISE_DURATION] + DataTable[REG_SYNC_DELAY_AFTER_FLAT];
 				{
 					float TimeoutTime;
 					if (CONTROL_MeasureType == MT_ST_TestLoad)
@@ -95,6 +99,12 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_RegulatorProcess:
+				if (!SyncIsOn && CONTROL_TimeCounter > SyncDelayTimeout)
+				{
+					LL_Sync(true);
+					SyncIsOn = true;
+				}
+
 				if(CONTROL_TimeCounter > Timeout)
 				{
 					UgResult = Sample.Ug;
@@ -105,6 +115,12 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_RegulatorProcessSelfTest:
+				if (!SyncIsOn && CONTROL_TimeCounter > SyncDelayTimeout)
+				{
+					LL_Sync(true);
+					SyncIsOn = true;
+				}
+
 				if(CONTROL_TimeCounter > Timeout)
 					if(IsMeasureOk)
 					{
@@ -122,6 +138,11 @@ void LOGIC_HandleMeasurement()
 			case SS_VoltageErr:
 				LOGIC_StopProcess();
 				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
+				break;
+
+			case SS_MaxCurrentErr:
+				LOGIC_StopProcess();
+				CONTROL_SwitchToProblem(PROBLEM_MAX_CURRENT_EXCEEDED);
 				break;
 
 			case SS_FinishProcess:

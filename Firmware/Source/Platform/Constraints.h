@@ -52,6 +52,9 @@
 #define U_ERR_COUNT_MIN				10		// в шт
 #define U_ERR_COUNT_MAX				20
 #define U_ERR_COUNT_DEF				15
+#define I_ERR_COUNT_MIN				1		// в шт
+#define I_ERR_COUNT_MAX				20
+#define I_ERR_COUNT_DEF				5
 //
 #define I_ICES_MAX_MIN			10		// Макс. допустимый ток Ices, мА
 #define I_ICES_MAX_MAX			300

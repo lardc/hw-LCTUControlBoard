@@ -23,6 +23,7 @@ typedef enum __DeviceSubState
 	SS_RegulatorProcess		= 4,
 	SS_FollowingErr			= 6,
 	SS_VoltageErr			= 7,
+	SS_MaxCurrentErr		= 8,
 	SS_FinishProcess		= 10,
 	SS_GetResults 			= 11,
 	SS_RegulatorProcessSelfTest = 12,

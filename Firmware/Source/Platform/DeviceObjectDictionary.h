@@ -117,8 +117,8 @@
 #define REG_DEACT_ROUT_DELAY			90	// Задержка на размыкание RoutLCTU, мс
 #define REG_RELAY_SW_TIMER_ICES			91	// Время переключения реле тока при измерении Ices, мс
 #define REG_SYNC_DELAY_AFTER_FLAT		92	// Задержка выдачи SYNC после выхода на полку, мс
+#define REG_MAX_CURRENT_ERR_COUNT_LIMIT	93	// Лимит счетчика превышения тока перед PROBLEM_MAX_CURRENT_EXCEEDED
 //
-// 93
 #define REG_SLEW_RATE_ICES				94	// Скорость нарастания для измерения Ices, В\мс
 // 95 - 96
 #define REG_SLEW_RATE_ST_TESTLOAD		97	// Скорость нарастания для самодиагностики с тестовой нагрузкой, В\мс
@@ -181,6 +181,7 @@
 #define PROBLEM_SAFETY						4 // Сработала система безопасности
 #define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Ices для получения точного значения
 #define PROBLEM_WRONG_SELECTED_RELAY		7 // Выбрано неверное реле для диагностики
+#define PROBLEM_MAX_CURRENT_EXCEEDED		8 // Превышен максимальный ток в процессе измерения
 
 //  Warning
 #define WARNING_NONE					0

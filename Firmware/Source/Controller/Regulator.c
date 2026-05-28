@@ -20,7 +20,9 @@ Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
 static float Kp, Ki, Qi = 0, FollowingErrThreshold, VoltagErrThreshold;
 static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, ScalingCoef, ScalingCounter;
 static Int16U FollowingErrorCounter = 0;
-static float PulseAmplitude, RiseRate;
+static Int16U MaxCurrentErrCount = 0;
+static Int16U MaxCurrentErrLimit = 0;
+static float PulseAmplitude, RiseRate, MaxCurrentA = 0.0f;
 float RawSetPoint = 0;
 float VoltStep = 0, Qp = 0;
 float RegulatorError = 0;
@@ -72,12 +74,15 @@ void REGLTR_Init()
 {
 	IsMeasureOk = false;
 	Qi = FollowingErrorCounter = VoltageErrCount = 0;
+	MaxCurrentErrCount = 0;
 	RINGBUF_ResetIcesAvg();
 	FollowingErrThreshold = (CONTROL_MeasureType == MT_ST_TestLoad) ?
 								DataTable[REG_RGLTR_ST_ERR_THRESH] : DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH];
 	FollowingErrLimit = DataTable[REG_RGLTR_FOLLOWING_ERR_LIMIT];
 	VoltagErrThreshold = DataTable[REG_VOLTAGE_ERR_THRESH];
 	VoltagErrLimit = DataTable[REG_VOLTAGE_ERR_COUNT_LIMIT];
+	MaxCurrentErrLimit = (Int16U)DataTable[REG_MAX_CURRENT_ERR_COUNT_LIMIT];
+	MaxCurrentA = DataTable[REG_MAX_CURRENT_ICES] * CONVERSION_REDUC_THOUSAND;
 	RawSetPoint = 0;
 	RegState = RS_Rise;
 	RegulatorError = 0;
@@ -138,6 +143,20 @@ void RGLTR_ErrorCheck()
 		case RS_FlatTop:
 			RegulatorError = RawSetPoint - Sample.Ug;
 			VoltageErr = ABS(PulseAmplitude - Sample.Ug) / PulseAmplitude;
+
+			if (CONTROL_MeasureType == MT_Ices && ABS(Sample.Ig) > MaxCurrentA)
+			{
+				MaxCurrentErrCount++;
+				if (MaxCurrentErrCount > MaxCurrentErrLimit)
+				{
+					CONTROL_SetDeviceSubState(SS_MaxCurrentErr);
+					break;
+				}
+			}
+			else
+			{
+				MaxCurrentErrCount = 0;
+			}
 
 			if(VoltageErr < VoltagErrThreshold)
 			{
