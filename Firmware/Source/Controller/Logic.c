@@ -271,6 +271,7 @@ void LOGIC_StopProcess()
 	REGLTR_StopProcess();
 	LL_Sync(false);
 	LL_SetCurrentChannel(I_CHANNEL_1);
+	DataTable[REG_SELFTEST_STEP] = 0;
 }
 //------------------------------------------
 
@@ -311,6 +312,8 @@ static bool LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA)
 {
 	if (ExpectedCurrentA == 0)
 		return false;
+
+	DataTable[REG_SELFTEST_STEP] = StepIdx + 1;
 
 	LL_SetStateRelay(RELAY_RST1, false);
 	LL_SetStateRelay(RELAY_RST2, false);

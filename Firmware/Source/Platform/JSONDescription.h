@@ -4,8 +4,8 @@
 #include "Global.h"
 #include "FormatOutputJSON.h"
 
-#define USET_MININAL	1		// в мВ
-#define USET_MAXIMUM	10
+#define USET_MININAL	500		// в В
+#define USET_MAXIMUM	7000
 
 #define IMEAS_HIGHEST	300.0f	// в мА
 

@@ -117,6 +117,7 @@ void CONTROL_ResetData()
 	DataTable[REG_ICES_RESULT] = 0;
 	DataTable[REG_DIAG_CURRENT] = 0;
 	DataTable[REG_DIAG_VOLTAGE] = 0;
+	DataTable[REG_SELFTEST_STEP] = 0;
 
 	CONTROL_Values_Counter = 0;
 

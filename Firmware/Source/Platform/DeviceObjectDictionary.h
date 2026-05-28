@@ -157,6 +157,7 @@
 //
 #define REG_DIAG_CURRENT				230	// Полученный ток
 #define REG_DIAG_VOLTAGE				231	// Полученное напряжение
+#define REG_SELFTEST_STEP				232	// Текущий шаг самодиагностики (0 - не активно, 1..6)
 #define REG_DEBUG_SCALING_COEF			233	// Рассчитанный коэф масштабирования
 // -----------------------------
 
