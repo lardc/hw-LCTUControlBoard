@@ -76,7 +76,7 @@ void LL_SPI_WriteByte(uint16_t Data)
 
 void LL_SPI_SetStateOE(bool State)
 {
-	GPIO_SetState(GPIO_SPI_OE, !State);
+	(void)State;
 }
 //-----------------------------
 

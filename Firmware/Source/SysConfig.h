@@ -29,16 +29,19 @@
 // ----------------------------------------------
 
 // SPI
-#define SPI_BAUDRATE_BITS				0x5
+#define SPI_DAC_FREQ					1000000		// Частота SPI для внешнего DAC, Гц
+#define SPI_BAUDRATE_BITS				0x5			// Делитель для целевой частоты SPI_DAC_FREQ
 #define SPI_LSB_FIRST					false
 #define SPI_MSB_FIRST					true
 // ----------------------------------------------
 
 // ADC
 #define ADC_SEQ_LENGTH					10			// Размер выборки за один цикл
+#define ADC_CAP_SEQ_LENGTH				10			// Размер выборки Ucap в фоновом режиме
 #define ADC_SAMPLE_TIME					ADC_SMPL_TIME_1_5	// Время сэмплинга
-#define ADC1_CHANNEL_UG					1
-#define ADC3_CHANNEL_IG					1
+#define ADC1_CHANNEL_U_CAP				4
+#define ADC2_CHANNEL_IG					1
+#define ADC3_CHANNEL_UG					12
 // ----------------------------------------------
 
 #endif // __SYSCONFIG_H

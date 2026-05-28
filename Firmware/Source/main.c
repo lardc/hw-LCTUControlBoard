@@ -27,9 +27,6 @@ int main()
 	// Настройка АЦП
 	INITCFG_ADC();
 
-	// Настройка ЦАП
-	INITCFG_DAC1();
-	
 	// Настройка сторожевого таймера
 	INITCFG_WatchDog();
 

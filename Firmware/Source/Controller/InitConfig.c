@@ -23,6 +23,7 @@ void INITCFG_IO()
 	RCC_GPIO_Clk_EN(PORTB);
 	
 	// Аналаговые порты
+	GPIO_InitAnalog(GPIO_ANLG_U_CAP);
 	GPIO_InitAnalog(GPIO_ANLG_UG);
 	GPIO_InitAnalog(GPIO_ANLG_IG);
 	
@@ -30,18 +31,45 @@ void INITCFG_IO()
 	GPIO_InitInput(GPIO_SAFETY, NoPull);
 
 	// Выходы
-	GPIO_InitPushPullOutput(GPIO_SPI_OE);
 	GPIO_InitPushPullOutput(GPIO_LED);
 	GPIO_InitPushPullOutput(GPIO_LED_EXT);
 	GPIO_InitPushPullOutput(GPIO_SYNC);
-	GPIO_InitPushPullOutput(GPIO_VCC_24);
-	GPIO_InitPushPullOutput(GPIO_VCC_48);
 	GPIO_InitPushPullOutput(GPIO_SPI_SS);
+	GPIO_InitPushPullOutput(GPIO_SW_FAN);
+	GPIO_InitPushPullOutput(GPIO_SW_IND);
+	GPIO_InitPushPullOutput(GPIO_SW_SYNC);
+	GPIO_InitPushPullOutput(GPIO_RCON);
+	GPIO_InitPushPullOutput(GPIO_RSS);
+	GPIO_InitPushPullOutput(GPIO_ROUT_LCAU);
+	GPIO_InitPushPullOutput(GPIO_RDIS);
+	GPIO_InitPushPullOutput(GPIO_ROUT_LCTU);
+	GPIO_InitPushPullOutput(GPIO_RST1);
+	GPIO_InitPushPullOutput(GPIO_RST2);
+	GPIO_InitPushPullOutput(GPIO_RMES1);
+	GPIO_InitPushPullOutput(GPIO_RMES2);
+	GPIO_InitPushPullOutput(GPIO_RMES3);
+	GPIO_InitPushPullOutput(GPIO_RMES4);
+	GPIO_InitPushPullOutput(GPIO_RMES5);
 
-	GPIO_SetState(GPIO_SPI_OE, true);
-	GPIO_SetState(GPIO_VCC_24, false);
-	GPIO_SetState(GPIO_VCC_48, false);
-	GPIO_SetState(GPIO_SPI_SS, false);
+	GPIO_SetState(GPIO_LED, false);
+	GPIO_SetState(GPIO_LED_EXT, false);
+	GPIO_SetState(GPIO_SYNC, false);
+	GPIO_SetState(GPIO_SPI_SS, true);
+	GPIO_SetState(GPIO_SW_FAN, false);
+	GPIO_SetState(GPIO_SW_IND, false);
+	GPIO_SetState(GPIO_SW_SYNC, false);
+	GPIO_SetState(GPIO_RCON, false);
+	GPIO_SetState(GPIO_RSS, false);
+	GPIO_SetState(GPIO_ROUT_LCAU, false);
+	GPIO_SetState(GPIO_RDIS, true);
+	GPIO_SetState(GPIO_ROUT_LCTU, false);
+	GPIO_SetState(GPIO_RST1, false);
+	GPIO_SetState(GPIO_RST2, false);
+	GPIO_SetState(GPIO_RMES1, false);
+	GPIO_SetState(GPIO_RMES2, false);
+	GPIO_SetState(GPIO_RMES3, false);
+	GPIO_SetState(GPIO_RMES4, false);
+	GPIO_SetState(GPIO_RMES5, true);
 
 	// Альтернативные функции
 	GPIO_InitAltFunction(GPIO_ALT_CAN_RX, AltFn_9);
@@ -50,6 +78,7 @@ void INITCFG_IO()
 	GPIO_InitAltFunction(GPIO_ALT_UART_TX, AltFn_7);
 	GPIO_InitAltFunction(GPIO_ALT_SPI_CLK, AltFn_5);
 	GPIO_InitAltFunction(GPIO_ALT_SPI_MOSI, AltFn_5);
+	GPIO_InitAltFunction(GPIO_ALT_SPI_NSS, AltFn_5);
 }
 //------------------------------------------------
 
@@ -82,18 +111,9 @@ void INITCFG_ADC()
 	RCC_ADC_Clk_EN(ADC_12_ClkEN);
 	RCC_ADC_Clk_EN(ADC_34_ClkEN);
 
-	INITCFG_GeneralADC(ADC1, ADC1_CHANNEL_UG, ADC12_TIM15_TRGO);
-	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_IG, ADC34_TIM15_TRGO);
-}
-//------------------------------------------------
-
-void INITCFG_DAC1()
-{
-	DACx_Clk_Enable(DAC_1_ClkEN);
-	DACx_Reset();
-	DAC_TriggerConfigCh2(DAC1, TRIG1_TIMER6, TRIG1_ENABLE);
-	DAC_BufferCh2(DAC1, false);
-	DAC_EnableCh2(DAC1);
+	INITCFG_GeneralADC(ADC1, ADC1_CHANNEL_U_CAP, ADC12_TIM15_TRGO);
+	INITCFG_GeneralADC(ADC2, ADC2_CHANNEL_IG, ADC12_TIM15_TRGO);
+	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_UG, ADC34_TIM15_TRGO);
 }
 //------------------------------------------------
 
@@ -134,7 +154,7 @@ void INITCFG_ConfigCAN(Int16U NodeID)
 
 void INITCFG_SPI()
 {
-	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_LSB_FIRST);
+	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_MSB_FIRST);
 }
 //------------------------------------------------
 
@@ -155,6 +175,6 @@ void INITCFG_DMA()
 	DMA_Clk_Enable(DMA2_ClkEN);
 
 	INITCFG_GeneralDMA(DMA1_Channel1, (uint32_t)REGLTR_MemBuffUg, (uint32_t)(&ADC1->DR));
-	INITCFG_GeneralDMA(DMA2_Channel5, (uint32_t)REGLTR_MemBuffIg, (uint32_t)(&ADC3->DR));
+	INITCFG_GeneralDMA(DMA2_Channel5, (uint32_t)REGLTR_MemBuffIg, (uint32_t)(&ADC2->DR));
 }
 //------------------------------------------------

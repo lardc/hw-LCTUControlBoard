@@ -37,12 +37,12 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SWITCH_POWER:
-			GPIO_SetState(GPIO_VCC_48, true);
+			GPIO_SetState(GPIO_SW_FAN, true);
 			DELAY_MS(500);
-			GPIO_SetState(GPIO_VCC_48, false);
-			GPIO_SetState(GPIO_VCC_24, true);
+			GPIO_SetState(GPIO_SW_FAN, false);
+			GPIO_SetState(GPIO_SW_IND, true);
 			DELAY_MS(500);
-			GPIO_SetState(GPIO_VCC_24,false);
+			GPIO_SetState(GPIO_SW_IND,false);
 			break;
 
 		case ACT_DBG_SWITCH_RELAY:
@@ -62,19 +62,19 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_48V_ON:
-			GPIO_SetState(GPIO_VCC_48, true);
+			GPIO_SetState(GPIO_SW_FAN, true);
 			break;
 
 		case ACT_DBG_48V_OFF:
-			GPIO_SetState(GPIO_VCC_48, false);
+			GPIO_SetState(GPIO_SW_FAN, false);
 			break;
 
 		case ACT_DBG_24V_ON:
-			GPIO_SetState(GPIO_VCC_24, true);
+			GPIO_SetState(GPIO_SW_IND, true);
 			break;
 
 		case ACT_DBG_24V_OFF:
-			GPIO_SetState(GPIO_VCC_24, false);
+			GPIO_SetState(GPIO_SW_IND, false);
 			break;
 
 		case ACT_DBG_SYNC:
