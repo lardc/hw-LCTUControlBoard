@@ -158,7 +158,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 			
 		case ACT_DISABLE_POWER:
-			if(CONTROL_State == DS_Ready)
+			if(CONTROL_State == DS_Ready || CONTROL_State == DS_InProcess)
 			{
 				CONTROL_SetDeviceState(DS_InProcess);
 				CONTROL_SetDeviceSubState(SS_Deactivation);
@@ -219,7 +219,15 @@ bool CONTROL_IsSafetyOk()
 	{
 		if(LL_SafetyState())
 		{
-			CONTROL_SwitchToProblem(PROBLEM_SAFETY);
+			DataTable[REG_PROBLEM] = PROBLEM_SAFETY;
+			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+			if (CONTROL_State == DS_InProcess
+					&& CONTROL_SubState != SS_Deactivation
+					&& CONTROL_SubState != SS_DeactivationWaitRout
+					&& CONTROL_SubState != SS_DeactivationWaitRcon)
+			{
+				CONTROL_SetDeviceSubState(SS_Deactivation);
+			}
 			return false;
 		}
 		else

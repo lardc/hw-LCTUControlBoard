@@ -41,7 +41,7 @@ void LOGIC_HandleMeasurement()
 	if(CONTROL_State == DS_InProcess)
 	{
 		if(!CONTROL_IsSafetyOk())
-			LOGIC_StopProcess();
+			return;
 
 		switch(CONTROL_SubState)
 		{
@@ -60,8 +60,7 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_Deactivation:
-				REGLTR_StopProcess();
-				LL_Sync(false);
+				LOGIC_StopProcess();
 				LL_SetStateRelay(RELAY_RMES1, false);
 				LL_SetStateRelay(RELAY_RMES2, false);
 				LL_SetStateRelay(RELAY_RMES3, false);
