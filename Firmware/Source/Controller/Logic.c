@@ -20,19 +20,23 @@ static Int64U SyncDelayTimeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
 static Int16U ForcedCh = 0;
 static bool SyncIsOn = false;
+static Int16U SelfTestStepIdx = 0;
+static bool SelfTestStartDelayDone = false;
 
 // Forward functions
 //
 void LOGIC_StopProcess();
 static IChannel LOGIC_SelectChannelByMaxCurrent(float ImaxA);
 static bool LOGIC_SelectIcesChannel();
-static void LOGIC_TestLoadRelaySwitch();
+static bool LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA);
+static bool LOGIC_IsSelfTestStepOk(float MeasuredCurrentA, float ExpectedCurrentA);
 
 // Functions
 //
 void LOGIC_HandleMeasurement()
 {
 	static float UgResult, IgResult;
+	static float SelfTestExpectedCurrentA = 0.0f;
 
 	if(CONTROL_State == DS_InProcess)
 	{
@@ -96,7 +100,10 @@ void LOGIC_HandleMeasurement()
 					break;
 				}
 				LL_SetStateRelay(RELAY_ROUT_LCAU, true);
-				LL_SetStateRelay(RELAY_ROUT_LCTU, true);
+				if (CONTROL_MeasureType == MT_ST_TestLoad)
+					LL_SetStateRelay(RELAY_ROUT_LCTU, false);
+				else
+					LL_SetStateRelay(RELAY_ROUT_LCTU, true);
 				CONTROL_SetDeviceSubState(SS_Init);
 				break;
 
@@ -114,29 +121,40 @@ void LOGIC_HandleMeasurement()
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
 						}
-
-						if(DataTable[REG_WORK_VOLTAGE_ICES] < 0)
-							LL_SetNegativePolarity(true);
-						GPIO_SetState(GPIO_VCC_48, true);
+						Timeout = CONTROL_TimeCounter + DataTable[REG_RELAY_SW_TIMER_ICES];
+						CONTROL_SetDeviceSubState(SS_InitialRelayPause);
 						break;
 
 					case MT_ST_TestLoad:
-						GPIO_SetState(GPIO_VCC_48, true);
-						LL_SetSelfTestLoad(true);
-						LOGIC_TestLoadRelaySwitch();
+						SelfTestStepIdx = 0;
+						SelfTestStartDelayDone = false;
+						Timeout = CONTROL_TimeCounter + DataTable[REG_DEACT_ROUT_DELAY];
+						CONTROL_SetDeviceSubState(SS_InitialRelayPause);
 						break;
 
 					default:
 						CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 						return;
 				}
-				Timeout = CONTROL_TimeCounter + TIME_INIT_48V_TIMER;
-				CONTROL_SetDeviceSubState(SS_Wait48VPause);
 				break;
 
-			case SS_Wait48VPause:
+			case SS_InitialRelayPause:
 				if(CONTROL_TimeCounter > Timeout)
+				{
+					if (CONTROL_MeasureType == MT_ST_TestLoad)
+					{
+						if (!SelfTestStartDelayDone)
+						{
+							SelfTestStartDelayDone = true;
+							if (!LOGIC_SetupSelfTestStep(SelfTestStepIdx, &SelfTestExpectedCurrentA))
+							{
+								CONTROL_SwitchToProblem(PROBLEM_SELFTEST_FAILED);
+								break;
+							}
+						}
+					}
 					CONTROL_SetDeviceSubState(SS_ConfigPulse);
+				}
 				break;
 
 			case SS_ConfigPulse:
@@ -146,7 +164,7 @@ void LOGIC_HandleMeasurement()
 				{
 					float TimeoutTime;
 					if (CONTROL_MeasureType == MT_ST_TestLoad)
-						TimeoutTime = DataTable[REG_PULSE_RISE_DURATION] + DataTable[REG_ST_TL_FLATTOP_DURATION];
+						TimeoutTime = DataTable[REG_PULSE_RISE_DURATION] + DataTable[REG_ST_PULSE_DURATION];
 					else
 						TimeoutTime = DataTable[REG_PULSE_RISE_DURATION] + DataTable[REG_PULSE_DURATION];
 					Timeout = CONTROL_TimeCounter + TimeoutTime;
@@ -185,8 +203,26 @@ void LOGIC_HandleMeasurement()
 					if(IsMeasureOk)
 					{
 						IgResult = Sample.Ig;
-						DataTable[REG_OP_RESULT] = OPRESULT_OK;
-						CONTROL_SetDeviceSubState(SS_FinishProcess);
+						if(!LOGIC_IsSelfTestStepOk(IgResult, SelfTestExpectedCurrentA))
+						{
+							CONTROL_SwitchToProblem(PROBLEM_SELFTEST_FAILED);
+							break;
+						}
+						if(SelfTestStepIdx >= 5)
+						{
+							DataTable[REG_OP_RESULT] = OPRESULT_OK;
+							CONTROL_SetDeviceSubState(SS_FinishProcess);
+						}
+						else
+						{
+							SelfTestStepIdx++;
+							if (!LOGIC_SetupSelfTestStep(SelfTestStepIdx, &SelfTestExpectedCurrentA))
+							{
+								CONTROL_SwitchToProblem(PROBLEM_SELFTEST_FAILED);
+								break;
+							}
+							CONTROL_SetDeviceSubState(SS_ConfigPulse);
+						}
 					}
 				break;
 
@@ -207,28 +243,20 @@ void LOGIC_HandleMeasurement()
 
 			case SS_FinishProcess:
 				LOGIC_StopProcess();
-				Timeout = CONTROL_TimeCounter + TIME_INIT_48V_TIMER;
-				CONTROL_SetDeviceSubState(SS_GetResults);
-				break;
+				CONTROL_SetDeviceState(DS_Ready);
+				CONTROL_SetDeviceSubState(SS_None);
 
-			case SS_GetResults:
-				if(CONTROL_TimeCounter > Timeout)
+				switch(CONTROL_MeasureType)
 				{
-					CONTROL_SetDeviceState(DS_Ready);
-					CONTROL_SetDeviceSubState(SS_None);
+					case MT_Ices:
+						DataTable[REG_DIAG_VOLTAGE] = UgResult;
+						DataTable[REG_ICES_RESULT] = IgResult;
+						DataTable[REG_DIAG_CURRENT] = IgResult;
+						DataTable[REG_OP_RESULT] = OPRESULT_OK;
+						break;
 
-					switch(CONTROL_MeasureType)
-					{
-						case MT_Ices:
-							DataTable[REG_DIAG_VOLTAGE] = UgResult;
-							DataTable[REG_ICES_RESULT] = IgResult;
-							DataTable[REG_DIAG_CURRENT] = IgResult;
-							DataTable[REG_OP_RESULT] = OPRESULT_OK;
-							break;
-
-						default:
-							break;
-					}
+					default:
+						break;
 				}
 				break;
 
@@ -242,10 +270,6 @@ void LOGIC_HandleMeasurement()
 void LOGIC_StopProcess()
 {
 	REGLTR_StopProcess();
-	GPIO_SetState(GPIO_VCC_48, false);
-	GPIO_SetState(GPIO_VCC_24, false);
-	LL_SetNegativePolarity(false);
-	LL_SetSelfTestLoad(false);
 	LL_Sync(false);
 	LL_SetCurrentChannel(I_CHANNEL_1);
 }
@@ -284,10 +308,60 @@ static bool LOGIC_SelectIcesChannel()
 }
 //------------------------------------------
 
-static void LOGIC_TestLoadRelaySwitch()
+static bool LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA)
 {
-	float CalcCurrent = (DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001f) / DataTable[REG_ST_TESTLOAD_RESIS];
-	LOGIC_ChannelNumber = LOGIC_SelectChannelByMaxCurrent(CalcCurrent);
+	if (ExpectedCurrentA == 0)
+		return false;
+
+	LL_SetStateRelay(RELAY_RST1, false);
+	LL_SetStateRelay(RELAY_RST2, false);
+
+	switch (StepIdx)
+	{
+		case 0:
+			LL_SetStateRelay(RELAY_RST1, true);
+			LOGIC_ChannelNumber = I_CHANNEL_1;
+			*ExpectedCurrentA = 10e-6f;
+			break;
+		case 1:
+			LL_SetStateRelay(RELAY_RST1, true);
+			LOGIC_ChannelNumber = I_CHANNEL_1;
+			*ExpectedCurrentA = 100e-6f;
+			break;
+		case 2:
+			LL_SetStateRelay(RELAY_RST2, true);
+			LOGIC_ChannelNumber = I_CHANNEL_2;
+			*ExpectedCurrentA = 1e-3f;
+			break;
+		case 3:
+			LL_SetStateRelay(RELAY_RST2, true);
+			LOGIC_ChannelNumber = I_CHANNEL_3;
+			*ExpectedCurrentA = 10e-3f;
+			break;
+		case 4:
+			LL_SetStateRelay(RELAY_RST2, true);
+			LOGIC_ChannelNumber = I_CHANNEL_4;
+			*ExpectedCurrentA = 100e-3f;
+			break;
+		case 5:
+			LL_SetStateRelay(RELAY_RST2, true);
+			LOGIC_ChannelNumber = I_CHANNEL_5;
+			*ExpectedCurrentA = 300e-3f;
+			break;
+		default:
+			return false;
+	}
+
 	LL_SetCurrentChannel(LOGIC_ChannelNumber);
+	return true;
+}
+//------------------------------------------
+
+static bool LOGIC_IsSelfTestStepOk(float MeasuredCurrentA, float ExpectedCurrentA)
+{
+	const float tolerance = 0.1f;
+	float absMeasured = ABS(MeasuredCurrentA);
+	float diff = ABS(absMeasured - ExpectedCurrentA);
+	return diff <= (ExpectedCurrentA * tolerance);
 }
 //------------------------------------------

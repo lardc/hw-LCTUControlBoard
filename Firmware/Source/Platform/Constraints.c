@@ -107,7 +107,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, 0, 0},																	// 95
 	{0, 0, 0},																	// 96
 	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 97
-	{0, 0, 0},																	// 98
+	{PULSE_DURATION_MIN, INT16U_MAX, ST_PULSE_DURATION_DEF},						// 98
 	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 99
 	{0, COEF_THRESHOLD_MAX, 0},													// 100
 	{R_TESTLOAD_MIN, INT16U_MAX, R_TESTLOAD_DEF},								// 101

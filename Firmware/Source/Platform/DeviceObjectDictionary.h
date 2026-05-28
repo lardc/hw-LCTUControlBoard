@@ -122,7 +122,7 @@
 #define REG_SLEW_RATE_ICES				94	// Скорость нарастания для измерения Ices, В\мс
 // 95 - 96
 #define REG_SLEW_RATE_ST_TESTLOAD		97	// Скорость нарастания для самодиагностики с тестовой нагрузкой, В\мс
-// 98
+#define REG_ST_PULSE_DURATION			98	// Длительность импульса самодиагностики, мс
 #define REG_ST_TL_FLATTOP_DURATION		99	// Длительность полки поддержания напряжения при диагностики с нагрузкой, мс
 #define REG_RGLTR_ST_ERR_THRESH			100	// Порог ошибки напряжения для диаг. потенциальных линий, в частях от 0 до 1
 #define REG_ST_TESTLOAD_RESIS			101	// Сопротивление тестовой нагрузки, Ом
@@ -183,6 +183,7 @@
 #define PROBLEM_WRONG_SELECTED_RELAY		7 // Выбрано неверное реле для диагностики
 #define PROBLEM_MAX_CURRENT_EXCEEDED		8 // Превышен максимальный ток в процессе измерения
 #define PROBLEM_CAP_VOLTAGE_LOW			9 // Недостаточное напряжение накопителя (Ucap)
+#define PROBLEM_SELFTEST_FAILED			10 // Самодиагностика завершилась с ошибкой
 
 //  Warning
 #define WARNING_NONE					0
