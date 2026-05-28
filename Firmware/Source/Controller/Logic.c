@@ -171,21 +171,21 @@ void LOGIC_StopProcess()
 	LL_SetNegativePolarity(false);
 	LL_SetSelfTestLoad(false);
 	LL_Sync(false);
-	LL_SetCurrentChannel(I_CHANNEL_0);
+	LL_SetCurrentChannel(I_CHANNEL_1);
 }
 //------------------------------------------
 
 static IChannel LOGIC_SelectChannelByMaxCurrent(float ImaxA)
 {
 	if(ImaxA > DataTable[REG_RANGE_I_0])
-		return I_CHANNEL_0;
+		return I_CHANNEL_5;
 	if(ImaxA > DataTable[REG_RANGE_I_1])
-		return I_CHANNEL_1;
+		return I_CHANNEL_4;
 	if(ImaxA > DataTable[REG_RANGE_I_2])
-		return I_CHANNEL_2;
-	if(ImaxA > DataTable[REG_RANGE_I_3])
 		return I_CHANNEL_3;
-	return I_CHANNEL_4;
+	if(ImaxA > DataTable[REG_RANGE_I_3])
+		return I_CHANNEL_2;
+	return I_CHANNEL_1;
 }
 //------------------------------------------
 
@@ -193,7 +193,7 @@ static bool LOGIC_SelectIcesChannel()
 {
 	if(ForcedCh)
 	{
-		if(ForcedCh < I_CHANNEL_0 || ForcedCh > I_CHANNEL_4)
+		if(ForcedCh < I_CHANNEL_1 || ForcedCh > I_CHANNEL_5)
 			return false;
 		LOGIC_ChannelNumber = ForcedCh;
 	}

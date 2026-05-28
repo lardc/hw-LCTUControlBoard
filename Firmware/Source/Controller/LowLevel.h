@@ -5,29 +5,33 @@
 #include "stdinc.h"
 
 // Defines
-#define COMMUTATION_TABLE_SIZE 7
-#define RELAY_ALL_CHANNELS (RELAY_CH_0|RELAY_CH_1|RELAY_CH_2|RELAY_CH_3|RELAY_CH_4)
+#define COMMUTATION_TABLE_SIZE 11
 
 // Types
 typedef enum IChannel
 {
-	I_CHANNEL_0 = 1,
 	I_CHANNEL_1,
 	I_CHANNEL_2,
 	I_CHANNEL_3,
-	I_CHANNEL_4
+	I_CHANNEL_4,
+	I_CHANNEL_5
 } IChannel;
 
-typedef enum RelayMask
+typedef enum RelayId
 {
-	RELAY_CH_0 			= 0,
-	RELAY_CH_1 			= BIT0 | BIT4,
-	RELAY_CH_2 			= BIT0 | BIT5,
-	RELAY_CH_3 			= BIT0 | BIT6,
-	RELAY_CH_4 			= BIT0 | BIT7,
-	RELAY_TEST_LOAD		= BIT9,
-	RELAY_NEG_POLARITY	= BIT8
-} RelayMask;
+	RELAY_RCON = 0,
+	RELAY_ROUT_LCAU,
+	RELAY_RDIS,
+	RELAY_ROUT_LCTU,
+	RELAY_RST1,
+	RELAY_RST2,
+	RELAY_RMES1,
+	RELAY_RMES2,
+	RELAY_RMES3,
+	RELAY_RMES4,
+	RELAY_RMES5,
+	RELAY_COUNT = COMMUTATION_TABLE_SIZE
+} RelayId;
 
 // Variables
 //
@@ -39,6 +43,8 @@ void LL_ToggleBoardLED();
 void LL_ExtIndication(bool State);
 void LL_Sync(bool State);
 void LL_ToggleExternalLED();
+void LL_SetStateRelay(RelayId Id, bool State);
+void LL_SetRelaySafeState();
 void LL_SPI_WriteByte(Int16U Data);
 void LL_SPI_SetStateOE(bool State);
 void LL_WriteDAC(Int16U Data);
