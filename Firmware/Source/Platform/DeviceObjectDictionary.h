@@ -182,6 +182,7 @@
 #define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Ices для получения точного значения
 #define PROBLEM_WRONG_SELECTED_RELAY		7 // Выбрано неверное реле для диагностики
 #define PROBLEM_MAX_CURRENT_EXCEEDED		8 // Превышен максимальный ток в процессе измерения
+#define PROBLEM_CAP_VOLTAGE_LOW			9 // Недостаточное напряжение накопителя (Ucap)
 
 //  Warning
 #define WARNING_NONE					0

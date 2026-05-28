@@ -149,14 +149,20 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	{
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
-				CONTROL_SetDeviceState(DS_Ready);
+			{
+				CONTROL_SetDeviceState(DS_InProcess);
+				CONTROL_SetDeviceSubState(SS_Activation);
+			}
 			else
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 			
 		case ACT_DISABLE_POWER:
 			if(CONTROL_State == DS_Ready)
-				CONTROL_SetDeviceState(DS_None);
+			{
+				CONTROL_SetDeviceState(DS_InProcess);
+				CONTROL_SetDeviceSubState(SS_Deactivation);
+			}
 			else if(CONTROL_State != DS_None)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
@@ -202,7 +208,7 @@ void CONTROL_StartMeasure(MeasureType Type)
 	if (CONTROL_IsSafetyOk())
 	{
 		CONTROL_SetDeviceState(DS_InProcess);
-		CONTROL_SetDeviceSubState(SS_Init);
+		CONTROL_SetDeviceSubState(SS_Preparation);
 	}
 }
 //------------------------------------------

@@ -11,6 +11,7 @@
 #include "LowLevel.h"
 #include "Regulator.h"
 #include "RingBuffer.h"
+#include "Interrupts.h"
 
 // Variables
 //
@@ -40,6 +41,65 @@ void LOGIC_HandleMeasurement()
 
 		switch(CONTROL_SubState)
 		{
+			case SS_Activation:
+				// Активация по ТТ: Rdis open, Rcon close; Rss - после порога Ucap.
+				LL_SetStateRelay(RELAY_RDIS, false);
+				LL_SetStateRelay(RELAY_RCON, true);
+				if (UcapValue >= DataTable[REG_U_CAP_ACTIVATE_RSS])
+					GPIO_SetState(GPIO_RSS, true);
+				if (UcapValue >= DataTable[REG_U_CAP_READY])
+				{
+					CONTROL_SetDeviceState(DS_Ready);
+					CONTROL_SetDeviceSubState(SS_None);
+					DataTable[REG_OP_RESULT] = OPRESULT_OK;
+				}
+				break;
+
+			case SS_Deactivation:
+				REGLTR_StopProcess();
+				LL_Sync(false);
+				LL_SetStateRelay(RELAY_RMES1, false);
+				LL_SetStateRelay(RELAY_RMES2, false);
+				LL_SetStateRelay(RELAY_RMES3, false);
+				LL_SetStateRelay(RELAY_RMES4, false);
+				LL_SetStateRelay(RELAY_RMES5, true);
+				LL_SetStateRelay(RELAY_ROUT_LCAU, false);
+				GPIO_SetState(GPIO_RSS, false);
+				Timeout = CONTROL_TimeCounter + DataTable[REG_DEACT_ROUT_DELAY];
+				CONTROL_SetDeviceSubState(SS_DeactivationWaitRout);
+				break;
+
+			case SS_DeactivationWaitRout:
+				if(CONTROL_TimeCounter > Timeout)
+				{
+					LL_SetStateRelay(RELAY_ROUT_LCTU, false);
+					LL_SetStateRelay(RELAY_RCON, false);
+					Timeout = CONTROL_TimeCounter + DataTable[REG_DEACT_RCON_DELAY];
+					CONTROL_SetDeviceSubState(SS_DeactivationWaitRcon);
+				}
+				break;
+
+			case SS_DeactivationWaitRcon:
+				if(CONTROL_TimeCounter > Timeout)
+				{
+					LL_SetStateRelay(RELAY_RDIS, true);
+					CONTROL_SetDeviceState(DS_None);
+					CONTROL_SetDeviceSubState(SS_None);
+					DataTable[REG_OP_RESULT] = OPRESULT_OK;
+				}
+				break;
+
+			case SS_Preparation:
+				if (UcapValue < DataTable[REG_U_CAP_READY])
+				{
+					CONTROL_SwitchToProblem(PROBLEM_CAP_VOLTAGE_LOW);
+					break;
+				}
+				LL_SetStateRelay(RELAY_ROUT_LCAU, true);
+				LL_SetStateRelay(RELAY_ROUT_LCTU, true);
+				CONTROL_SetDeviceSubState(SS_Init);
+				break;
+
 			case SS_Init:
 				UgResult = IgResult = 0.0f;
 				ForcedCh = DataTable[REG_DIAG_FORCE_CHANNEL];

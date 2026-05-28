@@ -27,6 +27,11 @@ typedef enum __DeviceSubState
 	SS_FinishProcess		= 10,
 	SS_GetResults 			= 11,
 	SS_RegulatorProcessSelfTest = 12,
+	SS_Activation			= 13,
+	SS_Preparation			= 14,
+	SS_Deactivation			= 15,
+	SS_DeactivationWaitRout	= 16,
+	SS_DeactivationWaitRcon	= 17,
 } DeviceSubState;
 
 typedef enum __MeasureType
