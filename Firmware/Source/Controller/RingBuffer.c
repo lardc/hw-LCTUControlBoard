@@ -19,15 +19,15 @@ void RINGBUF_ResetIcesAvg()
 }
 //-----------------------------------------
 
-void RINGBUF_AddNewSampleIces(float Ig)
+void RINGBUF_AddNewSampleIces(float Ices)
 {
 	if(IcesCount >= ICES_AVG_BUF_SIZE)
 		IcesSum -= IcesBuffer[IcesIndex];
 	else
 		IcesCount++;
 
-	IcesBuffer[IcesIndex] = Ig;
-	IcesSum += Ig;
+	IcesBuffer[IcesIndex] = Ices;
+	IcesSum += Ices;
 	IcesIndex++;
 	if(IcesIndex >= ICES_AVG_BUF_SIZE)
 		IcesIndex = 0;

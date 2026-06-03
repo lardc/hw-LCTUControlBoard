@@ -51,8 +51,8 @@ extern volatile Int16U CONTROL_ExtInfoCounter;
 extern volatile float CONTROL_ExtInfoData[];
 
 extern Int16U CONTROL_Values_Counter;
-extern float CONTROL_RegulatorIg[];
-extern float CONTROL_RegulatorUg[];
+extern float CONTROL_RegulatorIces[];
+extern float CONTROL_RegulatorUce[];
 extern float CONTROL_RegulatorSetpoint[];
 extern float CONTROL_RegulatorCorrection[];
 extern float CONTROL_RegulatorError[];

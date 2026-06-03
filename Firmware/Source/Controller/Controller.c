@@ -7,7 +7,6 @@
 #include "Delay.h"
 #include "DataTable.h"
 #include "DeviceProfile.h"
-#include "Interrupts.h"
 #include "Global.h"
 #include "LowLevel.h"
 #include "SysConfig.h"
@@ -42,8 +41,8 @@ volatile Int16U CONTROL_ExtInfoCounter = 0;
 volatile float CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE] = {0};
 
 Int16U CONTROL_Values_Counter = 0;
-float CONTROL_RegulatorIg[VALUES_DEBUG_RGLTR_SIZE] = {0};
-float CONTROL_RegulatorUg[VALUES_DEBUG_RGLTR_SIZE] = {0};
+float CONTROL_RegulatorIces[VALUES_DEBUG_RGLTR_SIZE] = {0};
+float CONTROL_RegulatorUce[VALUES_DEBUG_RGLTR_SIZE] = {0};
 float CONTROL_RegulatorSetpoint[VALUES_DEBUG_RGLTR_SIZE] = {0};
 float CONTROL_RegulatorCorrection[VALUES_DEBUG_RGLTR_SIZE] = {0};
 float CONTROL_RegulatorError[VALUES_DEBUG_RGLTR_SIZE] = {0};
@@ -76,7 +75,7 @@ void CONTROL_Init()
 	pInt16U EPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_ExtInfoCounter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
 		(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter};
 
-	pFloat32 EPDatas[FEP_COUNT] = {(pFloat32)CONTROL_ExtInfoData, (pFloat32)CONTROL_RegulatorUg, (pFloat32)CONTROL_RegulatorIg,
+	pFloat32 EPDatas[FEP_COUNT] = {(pFloat32)CONTROL_ExtInfoData, (pFloat32)CONTROL_RegulatorUce, (pFloat32)CONTROL_RegulatorIces,
 		(pFloat32)CONTROL_RegulatorSetpoint, (pFloat32)CONTROL_RegulatorCorrection, (pFloat32)CONTROL_RegulatorError, (pFloat32)CONTROL_DACRaw};
 	// Конфигурация сервиса работы DataTable и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};

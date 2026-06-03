@@ -7,11 +7,9 @@
 #include "SysConfig.h"
 #include "Global.h"
 #include "Regulator.h"
-#include "Measurement.h"
 
 // Variables
 volatile bool UgReady = false, IgReady = false;
-volatile float UcapValue = 0.0f;
 
 // Forward functions
 void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *Flag);
@@ -43,7 +41,6 @@ void TIM7_IRQHandler()
 
 	if(TIM_StatusCheck(TIM7))
 	{
-		UcapValue = MEASURE_Ucap((float)ADC1->DR);
 		CONTROL_TimeCounter++;
 		if(++LED_BlinkTimeCounter > TIME_LED_BLINK)
 		{

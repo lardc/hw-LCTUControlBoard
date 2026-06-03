@@ -55,21 +55,21 @@ float MEASURE_ConvertX(float SampleADC, Int16U RegisterP2, Int16U RegisterP1, In
 }
 //------------------------------------
 
-float MEASURE_Ug(float SampleADC)
+float MEASURE_Uce(float SampleADC)
 {
 	return MEASURE_ConvertX(SampleADC, REG_U_G_P2, REG_U_G_P1, REG_U_G_P0, REG_U_G_K, 
 			REG_U_G_B, 0);
 }
 //------------------------------------
 
-float MEASURE_Ucap(float SampleADC)
+float MEASURE_Ucap()
 {
-	float Result = (SampleADC / ADC_RESOLUTION) * DataTable[REG_U_ADC_REF] * DataTable[REG_U_G_K];
+	float Result = ((float)ADC1->DR / ADC_RESOLUTION) * DataTable[REG_U_ADC_REF] * DataTable[REG_U_G_K];
 	return (Result > 0) ? Result : 0;
 }
 //------------------------------------
 
-float MEASURE_I(float SampleADC, IChannel Channel)
+float MEASURE_Ices(float SampleADC, IChannel Channel)
 {
 	Int16U offset = 6 * (Channel - 1);
 

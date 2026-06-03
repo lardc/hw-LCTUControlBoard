@@ -78,7 +78,6 @@ void INITCFG_IO()
 	GPIO_InitAltFunction(GPIO_ALT_UART_TX, AltFn_7);
 	GPIO_InitAltFunction(GPIO_ALT_SPI_CLK, AltFn_5);
 	GPIO_InitAltFunction(GPIO_ALT_SPI_MOSI, AltFn_5);
-	GPIO_InitAltFunction(GPIO_ALT_SPI_NSS, AltFn_5);
 }
 //------------------------------------------------
 
@@ -174,7 +173,7 @@ void INITCFG_DMA()
 	DMA_Clk_Enable(DMA1_ClkEN);
 	DMA_Clk_Enable(DMA2_ClkEN);
 
-	INITCFG_GeneralDMA(DMA1_Channel1, (uint32_t)REGLTR_MemBuffIg, (uint32_t)(&ADC2->DR));
-	INITCFG_GeneralDMA(DMA2_Channel5, (uint32_t)REGLTR_MemBuffUg, (uint32_t)(&ADC3->DR));
+	INITCFG_GeneralDMA(DMA1_Channel1, (uint32_t)REGLTR_MemBuffIces, (uint32_t)(&ADC2->DR));
+	INITCFG_GeneralDMA(DMA2_Channel5, (uint32_t)REGLTR_MemBuffUce, (uint32_t)(&ADC3->DR));
 }
 //------------------------------------------------

@@ -20,7 +20,7 @@ typedef enum __RegulatorState
 
 typedef struct __SamplingResult
 {
-	float Ug, Ig;
+	float Uce, Ices;
 } SamplingResult;
 
 // Variables
@@ -28,8 +28,8 @@ typedef struct __SamplingResult
 extern volatile SamplingResult Sample;
 extern volatile bool IsMeasureOk;
 
-extern Int16U REGLTR_MemBuffUg[];
-extern Int16U REGLTR_MemBuffIg[];
+extern Int16U REGLTR_MemBuffUce[];
+extern Int16U REGLTR_MemBuffIces[];
 
 // Functions
 //

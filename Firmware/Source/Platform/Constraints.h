@@ -38,8 +38,7 @@
 #define COEF_RSH_CH4_DEF			22000
 #define SLEW_RATE_MIN				1.0f
 //
-#define U_ICES_MIN					-30000		// В мВ
-#define U_ICES_MAX					30000
+#define U_ICES_MAX					30000 // В мВ
 #define U_ICES_DEF					5000
 #define U_SELTTEST_DEF				5000
 #define U_CAP_ACTIVATE_RSS_MIN		0

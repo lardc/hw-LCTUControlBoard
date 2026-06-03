@@ -15,8 +15,8 @@
 #include "math.h"
 
 // Variables
-Int16U REGLTR_MemBuffUg[ADC_SEQ_LENGTH];
-Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
+Int16U REGLTR_MemBuffUce[ADC_SEQ_LENGTH];
+Int16U REGLTR_MemBuffIces[ADC_SEQ_LENGTH];
 static float Kp, Ki, Qi = 0, FollowingErrThreshold, VoltagErrThreshold;
 static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, ScalingCoef, ScalingCounter;
 static Int16U FollowingErrorCounter = 0;
@@ -33,7 +33,7 @@ volatile SamplingResult Sample = {0};
 
 // Forward functions
 SamplingResult REGLTR_GetSample();
-void REGLTR_StoreRegulatorDebug(float Ug, float Ig, float Setpoint, float Correction, float Error, float DACRaw);
+void REGLTR_StoreRegulatorDebug(float Uce, float Ices, float Setpoint, float Correction, float Error, float DACRaw);
 Int16U REGLTR_CorrectionLogDACPoint();
 void RGLTR_ErrorCheck();
 Int16U REGLTR_GetScalingCoef();
@@ -109,8 +109,8 @@ void REGLTR_Init()
 
 	for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
 	{
-		REGLTR_MemBuffUg[i] = 0;
-		REGLTR_MemBuffIg[i] = 0;
+		REGLTR_MemBuffUce[i] = 0;
+		REGLTR_MemBuffIces[i] = 0;
 	}
 	DataTable[REG_DEBUG_SCALING_COEF] = ScalingCoef = REGLTR_GetScalingCoef();
 	if(DataTable[REG_SCALING_MUTE])
@@ -128,7 +128,7 @@ Int16U REGLTR_CorrectionLogDACPoint()
 	float SetPoint = RawSetPoint + Qp + Qi;
 	Int16U DACPoint = MEASURE_ConvertUset(SetPoint);
 
-	REGLTR_StoreRegulatorDebug(Sample.Ug, Sample.Ig, RawSetPoint, Qp + Qi, RegulatorError, (float)DACPoint);
+	REGLTR_StoreRegulatorDebug(Sample.Uce, Sample.Ices, RawSetPoint, Qp + Qi, RegulatorError, (float)DACPoint);
 
 	return DACPoint;
 }
@@ -141,10 +141,10 @@ void RGLTR_ErrorCheck()
 	switch(RegState)
 	{
 		case RS_FlatTop:
-			RegulatorError = RawSetPoint - Sample.Ug;
-			VoltageErr = ABS(PulseAmplitude - Sample.Ug) / PulseAmplitude;
+			RegulatorError = RawSetPoint - Sample.Uce;
+			VoltageErr = ABS(PulseAmplitude - Sample.Uce) / PulseAmplitude;
 
-			if (CONTROL_MeasureType == MT_Ices && ABS(Sample.Ig) > MaxCurrentA)
+			if (CONTROL_MeasureType == MT_Ices && ABS(Sample.Ices) > MaxCurrentA)
 			{
 				MaxCurrentErrCount++;
 				if (MaxCurrentErrCount > MaxCurrentErrLimit)
@@ -161,7 +161,7 @@ void RGLTR_ErrorCheck()
 			if(VoltageErr < VoltagErrThreshold)
 			{
 				if(CONTROL_MeasureType == MT_Ices)
-					RINGBUF_AddNewSampleIces(Sample.Ig);
+					RINGBUF_AddNewSampleIces(Sample.Ices);
 				IsMeasureOk = true;
 				VoltageErrCount = 0;
 			}
@@ -175,7 +175,7 @@ void RGLTR_ErrorCheck()
 
 		case RS_Rise:
 		default:
-			RegulatorError = RawSetPoint - Sample.Ug;
+			RegulatorError = RawSetPoint - Sample.Uce;
 			break;
 	}
 
@@ -198,24 +198,24 @@ void RGLTR_ErrorCheck()
 SamplingResult REGLTR_GetSample()
 {
 	SamplingResult t = {0};
-	float sumUg = 0, sumIg = 0;
+	float sumUce= 0, sumIces = 0;
 
 	for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
 	{
-		sumUg += REGLTR_MemBuffUg[i];
-		sumIg += REGLTR_MemBuffIg[i];
+		sumUce += REGLTR_MemBuffUce[i];
+		sumIces += REGLTR_MemBuffIces[i];
 	}
 
-	float avgUg = (float)sumUg / ADC_SEQ_LENGTH;
-	float avgIg = (float)sumIg / ADC_SEQ_LENGTH;
+	float avgUce = (float)sumUce / ADC_SEQ_LENGTH;
+	float avgIces = (float)sumIces / ADC_SEQ_LENGTH;
 
-	t.Ug = MEASURE_Ug(avgUg);
-	t.Ig = MEASURE_I(avgIg, LOGIC_ChannelNumber);
+	t.Uce = MEASURE_Uce(avgUce);
+	t.Ices = MEASURE_Ices(avgIces, LOGIC_ChannelNumber);
 	return t;
 }
 //-----------------------------------------
 
-void REGLTR_StoreRegulatorDebug(float Ug, float Ig, float Setpoint, float Correction, float Error, float DACRaw)
+void REGLTR_StoreRegulatorDebug(float Uce, float Ices, float Setpoint, float Correction, float Error, float DACRaw)
 {
 	if(ScalingCounter > 1)
 		ScalingCounter--;
@@ -224,8 +224,8 @@ void REGLTR_StoreRegulatorDebug(float Ug, float Ig, float Setpoint, float Correc
 		ScalingCounter = ScalingCoef;
 		if(CONTROL_Values_Counter < VALUES_DEBUG_RGLTR_SIZE)
 		{
-			CONTROL_RegulatorUg[CONTROL_Values_Counter] = Ug;
-			CONTROL_RegulatorIg[CONTROL_Values_Counter] = Ig;
+			CONTROL_RegulatorUce[CONTROL_Values_Counter] = Uce;
+			CONTROL_RegulatorIces[CONTROL_Values_Counter] = Ices;
 			CONTROL_RegulatorSetpoint[CONTROL_Values_Counter] = Setpoint;
 			CONTROL_RegulatorCorrection[CONTROL_Values_Counter] = Correction;
 			CONTROL_RegulatorError[CONTROL_Values_Counter] = Error;

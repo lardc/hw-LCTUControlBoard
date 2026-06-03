@@ -11,7 +11,7 @@
 #include "LowLevel.h"
 #include "Regulator.h"
 #include "RingBuffer.h"
-#include "Interrupts.h"
+#include "Measurement.h"
 
 // Variables
 //
@@ -35,13 +35,17 @@ static bool LOGIC_IsSelfTestStepOk(float MeasuredCurrentA, float ExpectedCurrent
 //
 void LOGIC_HandleMeasurement()
 {
-	static float UgResult, IgResult;
+	static float UceResult, IcesResult;
 	static float SelfTestExpectedCurrentA = 0.0f;
 
 	if(CONTROL_State == DS_InProcess)
 	{
+		float Ucap;
+
 		if(!CONTROL_IsSafetyOk())
 			return;
+
+		Ucap = MEASURE_Ucap();
 
 		switch(CONTROL_SubState)
 		{
@@ -49,9 +53,9 @@ void LOGIC_HandleMeasurement()
 				// Активация по ТТ: Rdis open, Rcon close; Rss - после порога Ucap.
 				LL_SetStateRelay(RELAY_RDIS, false);
 				LL_SetStateRelay(RELAY_RCON, true);
-				if (UcapValue >= DataTable[REG_U_CAP_ACTIVATE_RSS])
+				if (Ucap >= DataTable[REG_U_CAP_ACTIVATE_RSS])
 					GPIO_SetState(GPIO_RSS, true);
-				if (UcapValue >= DataTable[REG_U_CAP_READY])
+				if (Ucap >= DataTable[REG_U_CAP_READY])
 				{
 					CONTROL_SetDeviceState(DS_Ready);
 					CONTROL_SetDeviceSubState(SS_None);
@@ -93,7 +97,7 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_Preparation:
-				if (UcapValue < DataTable[REG_U_CAP_READY])
+				if (Ucap < DataTable[REG_U_CAP_READY])
 				{
 					CONTROL_SwitchToProblem(PROBLEM_CAP_VOLTAGE_LOW);
 					break;
@@ -107,7 +111,7 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_Init:
-				UgResult = IgResult = 0.0f;
+				UceResult = IcesResult = 0.0f;
 				ForcedCh = DataTable[REG_DIAG_FORCE_CHANNEL];
 				SyncIsOn = false;
 				SyncDelayTimeout = 0;
@@ -184,8 +188,8 @@ void LOGIC_HandleMeasurement()
 
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					UgResult = Sample.Ug;
-					IgResult = Sample.Ig;
+					UceResult = Sample.Uce;
+					IcesResult = Sample.Ices;
 					if(IsMeasureOk)
 						CONTROL_SetDeviceSubState(SS_FinishProcess);
 				}
@@ -201,8 +205,8 @@ void LOGIC_HandleMeasurement()
 				if(CONTROL_TimeCounter > Timeout)
 					if(IsMeasureOk)
 					{
-						IgResult = Sample.Ig;
-						if(!LOGIC_IsSelfTestStepOk(IgResult, SelfTestExpectedCurrentA))
+						IcesResult = Sample.Ices;
+						if(!LOGIC_IsSelfTestStepOk(IcesResult, SelfTestExpectedCurrentA))
 						{
 							CONTROL_SwitchToProblem(PROBLEM_SELFTEST_FAILED);
 							break;
@@ -248,9 +252,9 @@ void LOGIC_HandleMeasurement()
 				switch(CONTROL_MeasureType)
 				{
 					case MT_Ices:
-						DataTable[REG_DIAG_VOLTAGE] = UgResult;
-						DataTable[REG_ICES_RESULT] = IgResult;
-						DataTable[REG_DIAG_CURRENT] = IgResult;
+						DataTable[REG_DIAG_VOLTAGE] = UceResult;
+						DataTable[REG_ICES_RESULT] = IcesResult;
+						DataTable[REG_DIAG_CURRENT] = IcesResult;
 						DataTable[REG_OP_RESULT] = OPRESULT_OK;
 						break;
 
