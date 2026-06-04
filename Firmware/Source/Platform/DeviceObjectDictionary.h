@@ -13,16 +13,9 @@
 #define ACT_DBG_SWITCH_POWER			13	// Диагностическое переключение питаний
 #define ACT_DBG_SWITCH_RELAY			14 	// Диагностическое переключение реле токов
 #define ACT_DBG_DAC_WRITE				15	// Прямая запись значения в ЦАП
-#define ACT_DBG_48V_ON					16	// Включить питание 48 В
-#define ACT_DBG_48V_OFF					17	// Выключить питание 48 В
-#define ACT_DBG_24V_ON					18	// Включить питание 24 В
-#define ACT_DBG_24V_OFF					19	// Выключить питание 24 В
 #define ACT_DBG_SYNC					20	// Запуск синхронизации
 
-#define ACT_START_MEASURE_RTH			100 // Запуск процесса измерения Rth
-#define ACT_START_MEASURE_IGES			101	// Запуск процесса измерения Iges
-#define ACT_START_MEASURE_UGETH			102	// Запуск процесса измерения Uge_th
-#define ACT_START_SELFTEST_UPOT			103 // Запуск процесса самодиагностики потенциальных линий
+#define ACT_START_MEASURE_ICES			101	// Запуск процесса измерения Ices
 #define ACT_START_SELFTEST_TESTLOAD		104 // Запуск процесса самодиагностики с тестовой нагрузкой
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
@@ -49,12 +42,7 @@
 #define REG_U_G_P0						3	// Смещение тонкой подстройки Р0
 #define REG_U_G_K						4	// Коэффициент преобразования K
 #define REG_U_G_B						5	// Коэффициент преобразования B
-//
-#define REG_U_POT_P2					6	// Коэффициент тонкой подстройки Р2
-#define REG_U_POT_P1					7	// Коэффициент тонкой подстройки Р1
-#define REG_U_POT_P0					8	// Смещение тонкой подстройки Р0
-#define REG_U_POT_K						9	// Коэффициент преобразования K
-#define REG_U_POT_B						10	// Коэффициент преобразования B
+// 6 - 10
 //
 #define REG_I_0_P2						11	// Коэффициент тонкой подстройки Р2
 #define REG_I_0_P1						12	// Коэффициент тонкой подстройки Р1
@@ -90,30 +78,7 @@
 #define REG_I_4_K						38	// Коэффициент преобразования K
 #define REG_I_4_B						39	// Коэффициент преобразования B
 #define REG_I_4_RSH						40	// Сопротивление шунта
-//
-#define REG_I_5_P2						41	// Коэффициент тонкой подстройки Р2
-#define REG_I_5_P1						42	// Коэффициент тонкой подстройки Р1
-#define REG_I_5_P0						43	// Смещение тонкой подстройки Р0
-#define REG_I_5_K						44	// Коэффициент преобразования K
-#define REG_I_5_B						45	// Коэффициент преобразования B
-#define REG_I_5_RSH						46	// Сопротивление шунта
-//
-#define REG_I_6_P2						47	// Коэффициент тонкой подстройки Р2
-#define REG_I_6_P1						48	// Коэффициент тонкой подстройки Р1
-#define REG_I_6_P0						49	// Смещение тонкой подстройки Р0
-#define REG_I_6_K						50	// Коэффициент преобразования K
-#define REG_I_6_B						51	// Коэффициент преобразования B
-#define REG_I_6_RSH						52	// Сопротивление шунта
-//
-#define REG_I_7_P2						53	// Коэффициент тонкой подстройки Р2
-#define REG_I_7_P1						54	// Коэффициент тонкой подстройки Р1
-#define REG_I_7_P0						55	// Смещение тонкой подстройки Р0
-#define REG_I_7_K						56	// Коэффициент преобразования K
-#define REG_I_7_B						57	// Коэффициент преобразования B
-#define REG_I_7_RSH						58	// Сопротивление шунта
-//
-// 59
-//
+// 41- 59
 #define REG_CFG_NODE_ID					60	// Настройка CAN NodeID
 //
 #define REG_U_SET_P2					61	// Коэффициент тонкой подстройки Р2
@@ -122,24 +87,18 @@
 #define REG_U_SET_K						64	// Коэффициент преобразования K
 #define REG_U_SET_B						65	// Коэффициент преобразования B
 //
-#define REG_WORK_VOLTAGE_ST_UPOT		66	// Номинальное рабочее напряжение для самодиагностики потенциальных линий, мВ
+// 66
 #define REG_WORK_VOLTAGE_ST_TESTLOAD	67	// Номинальное рабочее напряжение для самодиагностики с тестовой нагрузкой, мВ
-#define REG_WORK_VOLTAGE_RTH			68	// Номинальное рабочее напряжение для измерения Rth, мВ
+// 68
 //
-#define REG_RANGE_I_0					69	// Диапазон тока для канала 0 - от 50 до 500 мА, в А
-#define REG_RANGE_I_1					70	// Диапазон тока для канала 1 - от 5 до 50 мА, в А
-#define REG_RANGE_I_2					71	// Диапазон тока для канала 2 - от 0.5 до 5 мА, в А
-#define REG_RANGE_I_3					72	// Диапазон тока для канала 3 - от 50 до 500 мкА, в А
-#define REG_RANGE_I_4					73	// Диапазон тока для канала 4 - от 2 до 50 мкА, в А
-#define REG_RANGE_I_5					74	// Диапазон тока для канала 5 - от 200 до 2000 нА, в А
-#define REG_RANGE_I_6					75	// Диапазон тока для канала 6 - от 20 до 200 нА, в А
-#define REG_RANGE_I_7					76	// Диапазон тока для канала 7 - от 5 до 20 нА, в А
-//
-#define REG_MAX_VOLTAGE_UGETH			77	// Максимальное напряжение при измерении Ugeth, B
-
-#define REG_CURRENT_RGLTR_Kp			78	// Пропорциональный коэффициент регулятора для тока Ugeth
-#define REG_CURRENT_RGLTR_Ki			79	// Интегральный коэффициент регулятора для тока при измерении Ugeth
-//
+#define REG_RANGE_I_0					69	// Нижняя граница диапазона канала 0 - 100...300 мА, в А
+#define REG_RANGE_I_1					70	// Нижняя граница диапазона канала 1 - 10...100 мА, в А
+#define REG_RANGE_I_2					71	// Нижняя граница диапазона канала 2 - 1...10 мА, в А
+#define REG_RANGE_I_3					72	// Нижняя граница диапазона канала 3 - 100...1000 мкА, в А
+#define REG_RANGE_I_4					73	// Нижняя граница диапазона канала 4 - 10...100 мкА, в А
+#define REG_U_CAP_ACTIVATE_RSS			74	// Порог включения Rss по Ucap, В
+#define REG_U_CAP_READY				75	// Порог готовности по Ucap, В
+// 76 - 79
 #define REG_RGLTR_Kp					80	// Пропорциональный коэффициент регулятора
 #define REG_RGLTR_Ki					81	// Интегральный коэффициент регулятора
 //
@@ -147,36 +106,30 @@
 #define REG_RGLTR_FOLLOWING_ERR_THRESH	83	// Порог ошибки Following Error, в частях от 0 до 1
 #define REG_VOLTAGE_ERR_THRESH			84	// Допустимая ошибка напряжения для начала измерения, в частях от 0 до 1
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
-//
-#define REG_CURRENT_FLATTOP_DURATION	86 	// Длительность полки поддержания тока, мс
-#define REG_CURRENT_ERR_THRESH			87	// Допустимая ошибка тока для начала измерения, в частях от 0 до 1
-#define REG_CURRENT_ERR_COUNT_LIMIT		88	// Лимит ошибки счетчика перед выставлением PROBLEM_CURRENT_OUT_OF_RANGE
-//
+#define REG_PULSE_RISE_DURATION			86	// Длительность фронта импульса, мс
+#define REG_PULSE_DURATION				87	// Длительность импульса, мс
+#define REG_DEACT_RCON_DELAY			88	// Задержка перед Rdis после Rcon OFF, мс
 #define REG_REGLTR_TIMER				89	// Время для выхода регулятора на рабочее напряжение, мс
-#define REG_RELAY_SW_TIMER_RTH			90	// Время для переключения реле тока при измерении Rth, мс
-#define REG_RELAY_SW_TIMER_IGES			91	// Время для переключения реле тока при измерении Iges, мс
-#define REG_RELAY_SW_TIMER_UGETH		92	// Время для переключения реле тока при измерении Uge_th, мс
+#define REG_DEACT_ROUT_DELAY			90	// Задержка на размыкание RoutLCTU, мс
+#define REG_RELAY_SW_TIMER_ICES			91	// Время переключения реле тока при измерении Ices, мс
+#define REG_SYNC_DELAY_AFTER_FLAT		92	// Задержка выдачи SYNC после выхода на полку, мс
+#define REG_MAX_CURRENT_ERR_COUNT_LIMIT	93	// Лимит счетчика превышения тока перед PROBLEM_MAX_CURRENT_EXCEEDED
 //
-#define REG_SLEW_RATE_RTH				93	// Скорость нарастания для измерения Rth, В\мс
-#define REG_SLEW_RATE_IGES				94	// Скорость нарастания для измерения Iges, В\мс
-#define REG_SLEW_RATE_UGETH				95	// Скорость нарастания для измерения Uge_th, В\мс
-#define REG_SLEW_RATE_ST_UPOT			96	// Скорость нарастания для самодиагностики Upot, В\мс
+#define REG_SLEW_RATE_ICES				94	// Скорость нарастания для измерения Ices, В\мс
+// 95 - 96
 #define REG_SLEW_RATE_ST_TESTLOAD		97	// Скорость нарастания для самодиагностики с тестовой нагрузкой, В\мс
-//
-#define REG_ST_UPOT_FLATTOP_DURATION	98	// Длительность полки поддержания напряжения при диагностики пот. линий, мс
+#define REG_ST_PULSE_DURATION			98	// Длительность импульса самодиагностики, мс
 #define REG_ST_TL_FLATTOP_DURATION		99	// Длительность полки поддержания напряжения при диагностики с нагрузкой, мс
 #define REG_RGLTR_ST_ERR_THRESH			100	// Порог ошибки напряжения для диаг. потенциальных линий, в частях от 0 до 1
 #define REG_ST_TESTLOAD_RESIS			101	// Сопротивление тестовой нагрузки, Ом
 // 102 - 105
-//
 #define REG_CNT_ACTIVE					106	// Включение сохранения счетчиков
 #define REG_SCALING_MUTE				107	// Отключение масштабирования значений в EP
-//
 // 108 - 127
 
 // Несохраняемы регистры чтения-записи
-#define REG_WORK_VOLTAGE_IGES			128	// Номинальное рабочее напряжение для измерения Iges, мВ
-#define REG_WORK_CURRENT_UGETH			129	// Номинальный рабочий ток для измерения Ugeth, мА
+#define REG_WORK_VOLTAGE_ICES			128	// Номинальное рабочее напряжение для измерения Ices, мВ
+#define REG_MAX_CURRENT_ICES			129	// Максимально допустимый ток для выбора диапазона Ices, мА
 //
 #define REG_SAFETY_MUTE					130	// Отключение контура безопасности
 //
@@ -185,9 +138,7 @@
 //
 #define REG_DBG							150	// Отладочный регистр
 #define REG_DIAG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
-//
 // 152 - 191
-//
 
 // Регистры только чтение
 #define REG_DEV_STATE					192	// Регистр состояния
@@ -198,13 +149,11 @@
 #define REG_OP_RESULT					197	// Регистр результата операции
 #define REG_DEV_SUBSTATE				198
 
-#define REG_THERM_RESIS					200	// Полученное сопротивление термистора
-#define REG_IGES_RESULT					201	// Полученное значение тока Iges
-#define REG_UGE_TH						202 // Полученное пороговое напряжение затвор-эмиттер
+#define REG_ICES_RESULT					201	// Полученное значение тока Ices
 //
 #define REG_DIAG_CURRENT				230	// Полученный ток
 #define REG_DIAG_VOLTAGE				231	// Полученное напряжение
-#define REG_DIAG_POT_VOLTAGE			232	// Полученное потенциальное напряжение
+#define REG_SELFTEST_STEP				232	// Текущий шаг самодиагностики (0 - не активно, 1..6)
 #define REG_DEBUG_SCALING_COEF			233	// Рассчитанный коэф масштабирования
 // -----------------------------
 
@@ -226,11 +175,12 @@
 #define PROBLEM_NONE						0
 #define PROBLEM_FOLLOWING_ERROR				1
 #define PROBLEM_VOLTAGE_OUT_OF_RANGE		2 // Измеренное напряжение вне рабочего диапозона
-#define PROBLEM_CURRENT_OUT_OF_RANGE		3 // Измеренный ток вне рабочего диапозона
 #define PROBLEM_SAFETY						4 // Сработала система безопасности
-#define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Iges для получения точного значения
-#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	6 // Достигнут устновленный лимит напряжения без достижения уровня тока
+#define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Ices для получения точного значения
 #define PROBLEM_WRONG_SELECTED_RELAY		7 // Выбрано неверное реле для диагностики
+#define PROBLEM_MAX_CURRENT_EXCEEDED		8 // Превышен максимальный ток в процессе измерения
+#define PROBLEM_CAP_VOLTAGE_LOW			9 // Недостаточное напряжение накопителя (Ucap)
+#define PROBLEM_SELFTEST_FAILED			10 // Самодиагностика завершилась с ошибкой
 
 //  Warning
 #define WARNING_NONE					0
@@ -245,7 +195,6 @@
 // EP
 #define EP16_RegulatorIg				1	// Regulator Ig data
 #define EP16_RegulatorUg				2	// Regulator Ug data
-#define EP16_RegulatorUpot				3	// Regulator Upot data
 #define EP16_RegulatorSetpoint			4	// Regulator Setpoint data
 #define EP16_RegulatorCorrection		5	// Regulator Correction data
 #define EP16_RegulatorError				6	// Regulator Error data

@@ -3,8 +3,6 @@
 
 #include "stdinc.h"
 
-// Variables
-//
 void INT_ResetDMAFlags();
 
 #endif // __INTERRUPTS_H

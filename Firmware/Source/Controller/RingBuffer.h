@@ -6,14 +6,14 @@
 #include "SysConfig.h"
 
 // Defines
-#define IGES_AVG_WINDOW_US			20000
-#define IGES_AVG_BUF_SIZE			((Int16U)(IGES_AVG_WINDOW_US / (Int32U)TIMER15_uS))
+#define ICES_AVG_WINDOW_US			20000
+#define ICES_AVG_BUF_SIZE			((Int16U)(ICES_AVG_WINDOW_US / (Int32U)TIMER15_uS))
 
 // Functions
 //
-void RINGBUF_ResetIgesAvg();
-void RINGBUF_AddNewSampleIges(float Ig);
-float RINGBUF_GetIgesAvg();
-Int16U RINGBUF_GetIgesAvgCount();
+void RINGBUF_ResetIcesAvg();
+void RINGBUF_AddNewSampleIces(float Ig);
+float RINGBUF_GetIcesAvg();
+Int16U RINGBUF_GetIcesAvgCount();
 
 #endif // _RINGBUFFER_H

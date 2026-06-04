@@ -55,21 +55,21 @@ float MEASURE_ConvertX(float SampleADC, Int16U RegisterP2, Int16U RegisterP1, In
 }
 //------------------------------------
 
-float MEASURE_Ug(float SampleADC)
+float MEASURE_Uce(float SampleADC)
 {
 	return MEASURE_ConvertX(SampleADC, REG_U_G_P2, REG_U_G_P1, REG_U_G_P0, REG_U_G_K, 
 			REG_U_G_B, 0);
 }
 //------------------------------------
 
-float MEASURE_UPot(float SampleADC)
+float MEASURE_Ucap()
 {
-	return MEASURE_ConvertX(SampleADC, REG_U_POT_P2, REG_U_POT_P1, REG_U_POT_P0, REG_U_POT_K, 
-			REG_U_POT_B, 0);
+	float Result = ((float)ADC1->DR / ADC_RESOLUTION) * DataTable[REG_U_ADC_REF] * DataTable[REG_U_G_K];
+	return (Result > 0) ? Result : 0;
 }
 //------------------------------------
 
-float MEASURE_I(float SampleADC, IChannel Channel)
+float MEASURE_Ices(float SampleADC, IChannel Channel)
 {
 	Int16U offset = 6 * (Channel - 1);
 
@@ -107,13 +107,4 @@ void MEASURE_ConvertIScope(pFloat32 InputArray, Int16U DataLength, IChannel Chan
 		REG_I_0_B + offset,
 		REG_I_0_RSH + offset
 	);
-}
-//------------------------------------
-
-float MEASURE_Resis(float Voltage, float Current)
-{
-	if (Current == 0.0f)
-		return 0.0f;
-	float Result = Voltage / Current;
-	return Result;
 }

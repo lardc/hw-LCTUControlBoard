@@ -3,47 +3,47 @@
 
 // Variables
 //
-static float IgesBuffer[IGES_AVG_BUF_SIZE];
-static Int16U IgesIndex = 0;
-static Int16U IgesCount = 0;
-static float IgesSum = 0.0f;
+static float IcesBuffer[ICES_AVG_BUF_SIZE];
+static Int16U IcesIndex = 0;
+static Int16U IcesCount = 0;
+static float IcesSum = 0.0f;
 
 // Functions
 //
-void RINGBUF_ResetIgesAvg()
+void RINGBUF_ResetIcesAvg()
 {
-	IgesIndex = IgesCount = 0;
-	IgesSum = 0.0f;
-	for(Int16U i = 0; i < IGES_AVG_BUF_SIZE; ++i)
-		IgesBuffer[i] = 0.0f;
+	IcesIndex = IcesCount = 0;
+	IcesSum = 0.0f;
+	for(Int16U i = 0; i < ICES_AVG_BUF_SIZE; ++i)
+		IcesBuffer[i] = 0.0f;
 }
 //-----------------------------------------
 
-void RINGBUF_AddNewSampleIges(float Ig)
+void RINGBUF_AddNewSampleIces(float Ices)
 {
-	if(IgesCount >= IGES_AVG_BUF_SIZE)
-		IgesSum -= IgesBuffer[IgesIndex];
+	if(IcesCount >= ICES_AVG_BUF_SIZE)
+		IcesSum -= IcesBuffer[IcesIndex];
 	else
-		IgesCount++;
+		IcesCount++;
 
-	IgesBuffer[IgesIndex] = Ig;
-	IgesSum += Ig;
-	IgesIndex++;
-	if(IgesIndex >= IGES_AVG_BUF_SIZE)
-		IgesIndex = 0;
+	IcesBuffer[IcesIndex] = Ices;
+	IcesSum += Ices;
+	IcesIndex++;
+	if(IcesIndex >= ICES_AVG_BUF_SIZE)
+		IcesIndex = 0;
 }
 //-----------------------------------------
 
-float RINGBUF_GetIgesAvg()
+float RINGBUF_GetIcesAvg()
 {
-	if(IgesCount == 0)
+	if(IcesCount == 0)
 		return 0;
-	return IgesSum / (float)IgesCount;
+	return IcesSum / (float)IcesCount;
 }
 //-----------------------------------------
 
-Int16U RINGBUF_GetIgesAvgCount()
+Int16U RINGBUF_GetIcesAvgCount()
 {
-	return IgesCount;
+	return IcesCount;
 }
 //-----------------------------------------

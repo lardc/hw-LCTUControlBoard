@@ -6,13 +6,12 @@
 
 // Functions
 //
-float MEASURE_Ug(float SampleADC);
-float MEASURE_UPot(float SampleADC);
-float MEASURE_I(float SampleADC, IChannel Channel);
+float MEASURE_Ucap();
+float MEASURE_Uce(float SampleADC);
+float MEASURE_Ices(float SampleADC, IChannel Channel);
 //
 void MEASURE_ConvertIScope(pFloat32 InputArray, Int16U DataLength, IChannel Channel);
 //
 Int16U MEASURE_ConvertUset(float Uset);
-float MEASURE_Resis(float Voltage, float Current);
 
 #endif // __MEASUREMENT_H

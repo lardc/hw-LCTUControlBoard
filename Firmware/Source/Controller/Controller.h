@@ -18,26 +18,25 @@ typedef enum __DeviceSubState
 {
 	SS_None 				= 0,
 	SS_Init					= 1,
-	SS_Wait48VPause			= 2,
+	SS_InitialRelayPause	= 2,
 	SS_ConfigPulse			= 3,
 	SS_RegulatorProcess		= 4,
-	SS_RegulatorProcessUgeth= 5,
 	SS_FollowingErr			= 6,
 	SS_VoltageErr			= 7,
-	SS_CurrentErr			= 8,
-	SS_VoltageNoCurrentErr 	= 9,
+	SS_MaxCurrentErr		= 8,
 	SS_FinishProcess		= 10,
 	SS_GetResults 			= 11,
-	// Самодиагностика
 	SS_RegulatorProcessSelfTest = 12,
+	SS_Activation			= 13,
+	SS_Preparation			= 14,
+	SS_Deactivation			= 15,
+	SS_DeactivationWaitRout	= 16,
+	SS_DeactivationWaitRcon	= 17,
 } DeviceSubState;
 
 typedef enum __MeasureType
 {
-	MT_Rth			= 0,
-	MT_Iges			= 1,
-	MT_Ugeth 		= 2,
-	MT_ST_Upot		= 3,
+	MT_Ices			= 1,
 	MT_ST_TestLoad	= 4,
 } MeasureType;
 
@@ -52,9 +51,8 @@ extern volatile Int16U CONTROL_ExtInfoCounter;
 extern volatile float CONTROL_ExtInfoData[];
 
 extern Int16U CONTROL_Values_Counter;
-extern float CONTROL_RegulatorIg[];
-extern float CONTROL_RegulatorUg[];
-extern float CONTROL_RegulatorUpot[];
+extern float CONTROL_RegulatorIces[];
+extern float CONTROL_RegulatorUce[];
 extern float CONTROL_RegulatorSetpoint[];
 extern float CONTROL_RegulatorCorrection[];
 extern float CONTROL_RegulatorError[];
