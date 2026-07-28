@@ -441,6 +441,8 @@ void CONTROL_SaveTestResult()
 				CONTROL_SwitchToFault(DF_INTERFACE);
 			else
 			{
+				if(Current < 0)
+					Current = 0.00001f;
 				DataTable[REG_RESULT_CURRENT] = Current;
 				DataTable[REG_RESULT_VOLTAGE] = MEASURE_GetAverageVoltage();
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;
