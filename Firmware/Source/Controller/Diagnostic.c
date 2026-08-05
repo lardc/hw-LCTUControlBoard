@@ -23,9 +23,6 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 	switch (ActionID)
 	{
 		case ACT_DBG_EXT_INDICATION:
-			LL_ExtIndication(true);
-			DELAY_MS(500);
-			LL_ExtIndication(false);
 			break;
 
 		case ACT_DBG_SPI_WRITE_TWO_BYTES:
@@ -34,15 +31,6 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 
 		case ACT_DBG_PULSE:
 			DIAG_GenerateTrapezoidWave();
-			break;
-
-		case ACT_DBG_SWITCH_POWER:
-			GPIO_SetState(GPIO_SW_FAN, true);
-			DELAY_MS(500);
-			GPIO_SetState(GPIO_SW_FAN, false);
-			GPIO_SetState(GPIO_SW_IND, true);
-			DELAY_MS(500);
-			GPIO_SetState(GPIO_SW_IND,false);
 			break;
 
 		case ACT_DBG_SWITCH_RELAY:
@@ -67,6 +55,31 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			LL_Sync(true);
 			DELAY_US(1000);
 			LL_Sync(false);
+			break;
+
+		case ACT_DBG_FAN:
+			break;
+		case ACT_DBG_ST:
+			break;
+		case ACT_DBG_LCTU_OUT:
+			break;
+		case ACT_DBG_LCAU_OUT:
+			break;
+		case ACT_DBG_CONT:
+			break;
+		case ACT_DBG_DIS:
+			break;
+		case ACT_DBG_SOFT:
+			break;
+		case ACT_DBG_SFTY_READ:
+			break;
+		case ACT_DBG_V_OUT_READ:
+			break;
+		case ACT_DBG_V_BAT_READ:
+			break;
+		case ACT_DBG_I_ADC_READ:
+			break;
+		case ACT_DBG_OPTIC:
 			break;
 
 		default:
