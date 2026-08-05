@@ -72,11 +72,16 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 				GPIO_SetState(GPIO_RST1, false);
 				GPIO_SetState(GPIO_RST2, false);
 			}
-			else if(DataTable[REG_DBG] == 1)
-				GPIO_SetState(GPIO_RST1, true);
-			else if(DataTable[REG_DBG] == 2)
-				GPIO_SetState(GPIO_RST2, true);
-			else
+ 			else if(DataTable[REG_DBG] == 1)
+ 			{
+				GPIO_SetState(GPIO_RST2, false);
+ 				GPIO_SetState(GPIO_RST1, true);
+			}
+ 			else if(DataTable[REG_DBG] == 2)
+			{
+				GPIO_SetState(GPIO_RST1, false);
+ 				GPIO_SetState(GPIO_RST2, true);
+			}
 				break;
 			break;
 
@@ -171,9 +176,9 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			GPIO_SetState(GPIO_ALT_SPI_MOSI, false);
 			DELAY_MS(100);
 
-			GPIO_SetState(GPIO_SPI_NSS, true);
-			DELAY_MS(200);
 			GPIO_SetState(GPIO_SPI_NSS, false);
+			DELAY_MS(200);
+			GPIO_SetState(GPIO_SPI_NSS, true);
 			DELAY_MS(100);
 
 			GPIO_InitAltFunction(GPIO_ALT_SPI_CLK, AltFn_5);
