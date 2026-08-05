@@ -37,7 +37,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SWITCH_RELAY:
-			for(Int16U i = RELAY_RCON; i < RELAY_COUNT; i++)
+			for(Int16U i = RELAY_RMES1; i <= RELAY_RMES5; i++)
 			{
 				LL_SetStateRelay((RelayId)i, true);
 				DELAY_MS(200);
@@ -115,20 +115,69 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_V_OUT_READ:
-			DataTable[REG_DBG] = ADC3->DR;
+			{
+				Int32U sum = 0;
+
+				DMA_ChannelEnable(DMA2_Channel5, true);
+				TIM_Start(TIM15);
+				DELAY_MS(1);
+
+				for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
+					sum += REGLTR_MemBuffUce[i];
+				DataTable[REG_DBG] = (Int16U)(sum / ADC_SEQ_LENGTH);
+
+				TIM_Stop(TIM15);
+			}
 			break;
 
 		case ACT_DBG_V_BAT_READ:
+			TIM_Start(TIM15);
+			DELAY_MS(1);
 			DataTable[REG_DBG] = ADC1->DR;
+			TIM_Stop(TIM15);
 			break;
 
 		case ACT_DBG_I_ADC_READ:
-			DataTable[REG_DBG] = ADC2->DR;
+			{
+				Int32U sum = 0;
+
+				DMA_ChannelEnable(DMA1_Channel1, true);
+				TIM_Start(TIM15);
+				DELAY_MS(1);
+
+				for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
+					sum += REGLTR_MemBuffIces[i];
+				DataTable[REG_DBG] = (Int16U)(sum / ADC_SEQ_LENGTH);
+
+				TIM_Stop(TIM15);
+			}
 			break;
 		case ACT_DBG_OPTIC:
-			//планировалось переключение ножек PB11 GPIO_SYNC, PB2 GPIO_ALT_SPI_CLK, PB10 GPIO_ALT_SPI_MOSI и PB1 GPIO_ALT_SPI_NSS с интервалом 200мс включено,
-			//100мс выключено. Но тут возможно будет проблема с реализацией так как эти ножки задействованы в SPI1
+			GPIO_InitPushPullOutput(GPIO_ALT_SPI_CLK);
+			GPIO_InitPushPullOutput(GPIO_ALT_SPI_MOSI);
 
+			GPIO_SetState(GPIO_SYNC, true);
+			DELAY_MS(200);
+			GPIO_SetState(GPIO_SYNC, false);
+			DELAY_MS(100);
+
+			GPIO_SetState(GPIO_ALT_SPI_CLK, true);
+			DELAY_MS(200);
+			GPIO_SetState(GPIO_ALT_SPI_CLK, false);
+			DELAY_MS(100);
+
+			GPIO_SetState(GPIO_ALT_SPI_MOSI, true);
+			DELAY_MS(200);
+			GPIO_SetState(GPIO_ALT_SPI_MOSI, false);
+			DELAY_MS(100);
+
+			GPIO_SetState(GPIO_SPI_NSS, true);
+			DELAY_MS(200);
+			GPIO_SetState(GPIO_SPI_NSS, false);
+			DELAY_MS(100);
+
+			GPIO_InitAltFunction(GPIO_ALT_SPI_CLK, AltFn_5);
+			GPIO_InitAltFunction(GPIO_ALT_SPI_MOSI, AltFn_5);
 			break;
 
 		default:
