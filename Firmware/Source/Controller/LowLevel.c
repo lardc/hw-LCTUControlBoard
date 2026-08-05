@@ -20,7 +20,7 @@ static void LL_SetChannelRelaysOff();
 //
 void LL_ToggleBoardLED()
 {
-	GPIO_Toggle(GPIO_LED);
+	GPIO_Toggle(GPIO_LED_EXT);
 }
 //-----------------------------
 
@@ -80,9 +80,9 @@ void LL_SetRelaySafeState()
 
 void LL_SPI_WriteByte(uint16_t Data)
 {
-	GPIO_SetState(GPIO_SPI_SS, false);
+	GPIO_SetState(GPIO_SPI_NSS, false);
 	SPI_WriteByte(SPI1, Data);
-	GPIO_SetState(GPIO_SPI_SS, true);
+	GPIO_SetState(GPIO_SPI_NSS, true);
 }
 //-----------------------------
 

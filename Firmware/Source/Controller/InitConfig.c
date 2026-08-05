@@ -31,10 +31,9 @@ void INITCFG_IO()
 	GPIO_InitInput(GPIO_SAFETY, NoPull);
 
 	// Выходы
-	GPIO_InitPushPullOutput(GPIO_LED);
 	GPIO_InitPushPullOutput(GPIO_LED_EXT);
 	GPIO_InitPushPullOutput(GPIO_SYNC);
-	GPIO_InitPushPullOutput(GPIO_SPI_SS);
+	GPIO_InitPushPullOutput(GPIO_SPI_NSS);
 	GPIO_InitPushPullOutput(GPIO_SW_FAN);
 	GPIO_InitPushPullOutput(GPIO_SW_IND);
 	GPIO_InitPushPullOutput(GPIO_SW_SYNC);
@@ -51,10 +50,9 @@ void INITCFG_IO()
 	GPIO_InitPushPullOutput(GPIO_RMES4);
 	GPIO_InitPushPullOutput(GPIO_RMES5);
 
-	GPIO_SetState(GPIO_LED, false);
 	GPIO_SetState(GPIO_LED_EXT, false);
 	GPIO_SetState(GPIO_SYNC, false);
-	GPIO_SetState(GPIO_SPI_SS, true);
+	GPIO_SetState(GPIO_SPI_NSS, true);
 	GPIO_SetState(GPIO_SW_FAN, false);
 	GPIO_SetState(GPIO_SW_IND, false);
 	GPIO_SetState(GPIO_SW_SYNC, false);
