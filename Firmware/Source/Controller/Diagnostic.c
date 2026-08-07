@@ -23,9 +23,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 	switch (ActionID)
 	{
 		case ACT_DBG_EXT_INDICATION:
-			LL_ExtIndication(true);
-			DELAY_MS(500);
-			LL_ExtIndication(false);
+			LL_ExtIndication(DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_SPI_WRITE_TWO_BYTES:
@@ -36,17 +34,8 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			DIAG_GenerateTrapezoidWave();
 			break;
 
-		case ACT_DBG_SWITCH_POWER:
-			GPIO_SetState(GPIO_SW_FAN, true);
-			DELAY_MS(500);
-			GPIO_SetState(GPIO_SW_FAN, false);
-			GPIO_SetState(GPIO_SW_IND, true);
-			DELAY_MS(500);
-			GPIO_SetState(GPIO_SW_IND,false);
-			break;
-
 		case ACT_DBG_SWITCH_RELAY:
-			for(Int16U i = RELAY_RCON; i < RELAY_COUNT; i++)
+			for(Int16U i = RELAY_RMES1; i <= RELAY_RMES5; i++)
 			{
 				LL_SetStateRelay((RelayId)i, true);
 				DELAY_MS(200);
@@ -64,9 +53,123 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SYNC:
-			LL_Sync(true);
-			DELAY_US(1000);
-			LL_Sync(false);
+			LL_Sync(DataTable[REG_DBG]);
+			break;
+
+		case ACT_DBG_FAN:
+			GPIO_SetState(GPIO_SW_FAN, DataTable[REG_DBG]);
+			break;
+
+		case ACT_DBG_ST:
+			if(DataTable[REG_DBG] == 0)
+			{
+				LL_SetStateRelay(RELAY_RST1, false);
+				LL_SetStateRelay(RELAY_RST2, false);
+			}
+			else if(DataTable[REG_DBG] == 1)
+			{
+				LL_SetStateRelay(RELAY_RST2, false);
+				LL_SetStateRelay(RELAY_RST1, true);
+			}
+			else if(DataTable[REG_DBG] == 2)
+			{
+				LL_SetStateRelay(RELAY_RST1, false);
+				LL_SetStateRelay(RELAY_RST2, true);
+			}
+			else
+				break;
+			break;
+
+		case ACT_DBG_LCTU_OUT:
+			LL_SetStateRelay(RELAY_ROUT_LCTU, DataTable[REG_DBG]);
+			break;
+
+		case ACT_DBG_LCAU_OUT:
+			LL_SetStateRelay(RELAY_ROUT_LCAU, DataTable[REG_DBG]);
+			break;
+
+		case ACT_DBG_CONT:
+			LL_SetStateRelay(RELAY_RCON, DataTable[REG_DBG]);
+			break;
+
+		case ACT_DBG_DIS:
+			LL_SetStateRelay(RELAY_RDIS, DataTable[REG_DBG]);
+			break;
+
+		case ACT_DBG_SOFT:
+			GPIO_SetState(GPIO_RSS, DataTable[REG_DBG]);
+			break;
+
+		case ACT_DBG_SFTY_READ:
+			DataTable[REG_DBG] = LL_SafetyState();
+			break;
+
+		case ACT_DBG_V_OUT_ADC_RAW_READ:
+			{
+				Int32U sum = 0;
+
+				DMA_ChannelEnable(DMA2_Channel5, true);
+				TIM_Start(TIM15);
+				DELAY_MS(1);
+
+				for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
+					sum += REGLTR_MemBuffUce[i];
+				DataTable[REG_DBG] = (Int16U)(sum / ADC_SEQ_LENGTH);
+
+				TIM_Stop(TIM15);
+				DMA_ChannelEnable(DMA2_Channel5, false);
+			}
+			break;
+
+		case ACT_DBG_BAT_RAW_READ:
+			TIM_Start(TIM15);
+			DELAY_MS(1);
+			DataTable[REG_DBG] = ADC1->DR;
+			TIM_Stop(TIM15);
+			break;
+
+		case ACT_DBG_I_ADC_RAW_READ:
+			{
+				Int32U sum = 0;
+
+				DMA_ChannelEnable(DMA1_Channel1, true);
+				TIM_Start(TIM15);
+				DELAY_MS(1);
+
+				for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
+					sum += REGLTR_MemBuffIces[i];
+				DataTable[REG_DBG] = (Int16U)(sum / ADC_SEQ_LENGTH);
+
+				TIM_Stop(TIM15);
+				DMA_ChannelEnable(DMA1_Channel1, false);
+			}
+			break;
+		case ACT_DBG_OPTIC:
+			GPIO_InitPushPullOutput(GPIO_ALT_SPI_CLK);
+			GPIO_InitPushPullOutput(GPIO_ALT_SPI_MOSI);
+
+			GPIO_SetState(GPIO_SYNC, true);
+			DELAY_MS(200);
+			GPIO_SetState(GPIO_SYNC, false);
+			DELAY_MS(100);
+
+			GPIO_SetState(GPIO_ALT_SPI_CLK, true);
+			DELAY_MS(200);
+			GPIO_SetState(GPIO_ALT_SPI_CLK, false);
+			DELAY_MS(100);
+
+			GPIO_SetState(GPIO_ALT_SPI_MOSI, true);
+			DELAY_MS(200);
+			GPIO_SetState(GPIO_ALT_SPI_MOSI, false);
+			DELAY_MS(100);
+
+			GPIO_SetState(GPIO_SPI_NSS, false);
+			DELAY_MS(200);
+			GPIO_SetState(GPIO_SPI_NSS, true);
+			DELAY_MS(100);
+
+			GPIO_InitAltFunction(GPIO_ALT_SPI_CLK, AltFn_5);
+			GPIO_InitAltFunction(GPIO_ALT_SPI_MOSI, AltFn_5);
 			break;
 
 		default:

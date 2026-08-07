@@ -7,13 +7,25 @@
 #define ACT_FAULT_CLEAR					3	// Очистка fault
 #define ACT_WARNING_CLEAR				4	// Очистка warning
 
-#define ACT_DBG_EXT_INDICATION			10	// Управление внешней индикацией
-#define ACT_DBG_SPI_WRITE_TWO_BYTES		11	// Запись двух байтов для отладки SPI
-#define ACT_DBG_PULSE					12	// Запуск импульса в виде трапеции
-#define ACT_DBG_SWITCH_POWER			13	// Диагностическое переключение питаний
-#define ACT_DBG_SWITCH_RELAY			14 	// Диагностическое переключение реле токов
-#define ACT_DBG_DAC_WRITE				15	// Прямая запись значения в ЦАП
+#define ACT_DBG_EXT_INDICATION			10	// Управление внешней индикацией по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_FAN						11	// Управление вентилятором по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_ST						12	// Управление реле самодиагностики по состоянию отладочного регистра REG_DBG
+											// 0 – выключено, 1 – включен ST1, 2 – включен ST2
+#define ACT_DBG_LCTU_OUT				13	// Управление выходным реле LCTU по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_LCAU_OUT				14	// Управление выходным реле LCAU по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_CONT					15	// Управление контактором в LCAU по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_DIS						16	// Управление реле разряда в LCAU по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_SOFT					17	// Управление плавным пуском в LCAU по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_SPI_WRITE_TWO_BYTES		18	// Запись двух байтов для отладки SPI
+#define ACT_DBG_PULSE					19	// Запуск импульса в виде трапеции
 #define ACT_DBG_SYNC					20	// Запуск синхронизации
+#define ACT_DBG_SWITCH_RELAY			21 	// Диагностическое переключение реле токов
+#define ACT_DBG_DAC_WRITE				22 	// Прямая запись значения в ЦАП
+#define ACT_DBG_SFTY_READ				23 	// Чтение состояния безопасности в отладочный регистр REG_DBG
+#define ACT_DBG_V_OUT_ADC_RAW_READ		24 	// Чтение сырого значения на выходе LCTU в отладочный регистр REG_DBG
+#define ACT_DBG_BAT_RAW_READ			25 	// Чтение сырого значения на батарее в LCAU в отладочный регистр REG_DBG
+#define ACT_DBG_I_ADC_RAW_READ			26 	// Чтение сырого значения тока в отладочный регистр REG_DBG
+#define ACT_DBG_OPTIC					27 	// Диагностическое переключение оптопередатчиков
 
 #define ACT_START_MEASURE_ICES			101	// Запуск процесса измерения Ices
 #define ACT_START_SELFTEST_TESTLOAD		104 // Запуск процесса самодиагностики с тестовой нагрузкой
