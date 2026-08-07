@@ -63,37 +63,37 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 		case ACT_DBG_ST:
 			if(DataTable[REG_DBG] == 0)
 			{
-				GPIO_SetState(GPIO_RST1, false);
-				GPIO_SetState(GPIO_RST2, false);
+				LL_SetStateRelay(RELAY_RST1, false);
+				LL_SetStateRelay(RELAY_RST2, false);
 			}
- 			else if(DataTable[REG_DBG] == 1)
- 			{
-				GPIO_SetState(GPIO_RST2, false);
- 				GPIO_SetState(GPIO_RST1, true);
-			}
- 			else if(DataTable[REG_DBG] == 2)
+			else if(DataTable[REG_DBG] == 1)
 			{
-				GPIO_SetState(GPIO_RST1, false);
- 				GPIO_SetState(GPIO_RST2, true);
+				LL_SetStateRelay(RELAY_RST2, false);
+				LL_SetStateRelay(RELAY_RST1, true);
 			}
- 			else
+			else if(DataTable[REG_DBG] == 2)
+			{
+				LL_SetStateRelay(RELAY_RST1, false);
+				LL_SetStateRelay(RELAY_RST2, true);
+			}
+			else
 				break;
 			break;
 
 		case ACT_DBG_LCTU_OUT:
-			GPIO_SetState(GPIO_ROUT_LCTU, DataTable[REG_DBG]);
+			LL_SetStateRelay(RELAY_ROUT_LCTU, DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_LCAU_OUT:
-			GPIO_SetState(GPIO_ROUT_LCAU, DataTable[REG_DBG]);
+			LL_SetStateRelay(RELAY_ROUT_LCAU, DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_CONT:
-			GPIO_SetState(GPIO_RCON, DataTable[REG_DBG]);
+			LL_SetStateRelay(RELAY_RCON, DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_DIS:
-			GPIO_SetState(GPIO_RDIS, DataTable[REG_DBG]);
+			LL_SetStateRelay(RELAY_RDIS, DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_SOFT:
@@ -104,7 +104,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			DataTable[REG_DBG] = LL_SafetyState();
 			break;
 
-		case ACT_DBG_V_OUT_READ:
+		case ACT_DBG_V_OUT_ADC_RAW_READ:
 			{
 				Int32U sum = 0;
 
@@ -121,14 +121,14 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			}
 			break;
 
-		case ACT_DBG_V_BAT_READ:
+		case ACT_DBG_BAT_RAW_READ:
 			TIM_Start(TIM15);
 			DELAY_MS(1);
 			DataTable[REG_DBG] = ADC1->DR;
 			TIM_Stop(TIM15);
 			break;
 
-		case ACT_DBG_I_ADC_READ:
+		case ACT_DBG_I_ADC_RAW_READ:
 			{
 				Int32U sum = 0;
 

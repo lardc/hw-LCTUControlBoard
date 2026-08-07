@@ -22,9 +22,9 @@
 #define ACT_DBG_SWITCH_RELAY			21 	// Диагностическое переключение реле токов
 #define ACT_DBG_DAC_WRITE				22 	// Прямая запись значения в ЦАП
 #define ACT_DBG_SFTY_READ				23 	// Чтение состояния безопасности в отладочный регистр REG_DBG
-#define ACT_DBG_V_OUT_READ				24 	// Чтение значения на выходе LCTU в отладочный регистр REG_DBG
-#define ACT_DBG_V_BAT_READ				25 	// Чтение значения на батарее в LCAU в отладочный регистр REG_DBG
-#define ACT_DBG_I_ADC_READ				26 	// Чтение значения тока в отладочный регистр REG_DBG
+#define ACT_DBG_V_OUT_ADC_RAW_READ		24 	// Чтение сырого значения на выходе LCTU в отладочный регистр REG_DBG
+#define ACT_DBG_BAT_RAW_READ			25 	// Чтение сырого значения на батарее в LCAU в отладочный регистр REG_DBG
+#define ACT_DBG_I_ADC_RAW_READ			26 	// Чтение сырого значения тока в отладочный регистр REG_DBG
 #define ACT_DBG_OPTIC					27 	// Диагностическое переключение оптопередатчиков
 
 #define ACT_START_MEASURE_ICES			101	// Запуск процесса измерения Ices
