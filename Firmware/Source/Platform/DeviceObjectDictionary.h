@@ -18,7 +18,7 @@
 #define ACT_DBG_SOFT					17	// Управление плавным пуском в LCAU по состоянию отладочного регистра REG_DBG
 #define ACT_DBG_SPI_WRITE_TWO_BYTES		18	// Запись двух байтов для отладки SPI
 #define ACT_DBG_PULSE					19	// Запуск импульса в виде трапеции
-#define ACT_DBG_SYNC					20	// Запуск синхронизации
+#define ACT_DBG_SYNC_OSC				20	// Запуск синхронизации осциллографа
 #define ACT_DBG_SWITCH_RELAY			21 	// Диагностическое переключение реле токов
 #define ACT_DBG_DAC_WRITE				22 	// Прямая запись значения в ЦАП
 #define ACT_DBG_SFTY_READ				23 	// Чтение состояния безопасности в отладочный регистр REG_DBG

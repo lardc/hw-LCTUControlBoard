@@ -52,8 +52,8 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			}
 			break;
 
-		case ACT_DBG_SYNC:
-			LL_Sync(DataTable[REG_DBG]);
+		case ACT_DBG_SYNC_OSC:
+			LL_SyncOSC(DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_FAN:

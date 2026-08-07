@@ -31,7 +31,7 @@ void INITCFG_IO()
 	GPIO_InitInput(GPIO_SAFETY, NoPull);
 
 	// Выходы
-	GPIO_InitPushPullOutput(GPIO_LED_EXT);
+	GPIO_InitPushPullOutput(GPIO_LED_BOARD);
 	GPIO_InitPushPullOutput(GPIO_SYNC);
 	GPIO_InitPushPullOutput(GPIO_SPI_NSS);
 	GPIO_InitPushPullOutput(GPIO_SW_FAN);
@@ -50,16 +50,16 @@ void INITCFG_IO()
 	GPIO_InitPushPullOutput(GPIO_RMES4);
 	GPIO_InitPushPullOutput(GPIO_RMES5);
 
-	GPIO_SetState(GPIO_LED_EXT, false);
+	GPIO_SetState(GPIO_LED_BOARD, false);
 	GPIO_SetState(GPIO_SYNC, false);
 	GPIO_SetState(GPIO_SPI_NSS, true);
 	GPIO_SetState(GPIO_SW_FAN, false);
 	GPIO_SetState(GPIO_SW_IND, false);
-	GPIO_SetState(GPIO_SW_SYNC, false);
+	GPIO_SetState(GPIO_SW_SYNC, true);
 	GPIO_SetState(GPIO_RCON, false);
 	GPIO_SetState(GPIO_RSS, false);
 	GPIO_SetState(GPIO_ROUT_LCAU, false);
-	GPIO_SetState(GPIO_RDIS, true);
+	GPIO_SetState(GPIO_RDIS, false);
 	GPIO_SetState(GPIO_ROUT_LCTU, false);
 	GPIO_SetState(GPIO_RST1, false);
 	GPIO_SetState(GPIO_RST2, false);
@@ -67,7 +67,7 @@ void INITCFG_IO()
 	GPIO_SetState(GPIO_RMES2, false);
 	GPIO_SetState(GPIO_RMES3, false);
 	GPIO_SetState(GPIO_RMES4, false);
-	GPIO_SetState(GPIO_RMES5, true);
+	GPIO_SetState(GPIO_RMES5, false);
 
 	// Альтернативные функции
 	GPIO_InitAltFunction(GPIO_ALT_CAN_RX, AltFn_9);

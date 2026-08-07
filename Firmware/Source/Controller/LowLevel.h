@@ -41,7 +41,7 @@ extern Int32U CycleCounters[COMMUTATION_TABLE_SIZE];
 //
 void LL_ToggleBoardLED();
 void LL_ExtIndication(bool State);
-void LL_Sync(bool State);
+void LL_SyncOSC(bool State);
 void LL_ToggleExternalLED();
 void LL_SetStateRelay(RelayId Id, bool State);
 void LL_SetRelaySafeState();

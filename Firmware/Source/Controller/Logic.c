@@ -182,7 +182,7 @@ void LOGIC_HandleMeasurement()
 			case SS_RegulatorProcess:
 				if (!SyncIsOn && CONTROL_TimeCounter > SyncDelayTimeout)
 				{
-					LL_Sync(true);
+					LL_SyncOSC(true);
 					SyncIsOn = true;
 				}
 
@@ -198,7 +198,7 @@ void LOGIC_HandleMeasurement()
 			case SS_RegulatorProcessSelfTest:
 				if (!SyncIsOn && CONTROL_TimeCounter > SyncDelayTimeout)
 				{
-					LL_Sync(true);
+					LL_SyncOSC(true);
 					SyncIsOn = true;
 				}
 
@@ -273,7 +273,7 @@ void LOGIC_HandleMeasurement()
 void LOGIC_StopProcess()
 {
 	REGLTR_StopProcess();
-	LL_Sync(false);
+	LL_SyncOSC(false);
 	LL_SetCurrentChannel(I_CHANNEL_1);
 	DataTable[REG_SELFTEST_STEP] = 0;
 }

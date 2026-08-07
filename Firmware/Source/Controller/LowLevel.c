@@ -20,25 +20,25 @@ static void LL_SetChannelRelaysOff();
 //
 void LL_ToggleBoardLED()
 {
-	GPIO_Toggle(GPIO_LED_EXT);
+	GPIO_Toggle(GPIO_LED_BOARD);
 }
 //-----------------------------
 
 void LL_ExtIndication(bool State)
 {
-	GPIO_SetState(GPIO_LED_EXT, State);
+	GPIO_SetState(GPIO_SW_IND, State);
 }
 //-----------------------------
 
-void LL_Sync(bool State)
+void LL_SyncOSC(bool State)
 {
-	GPIO_SetState(GPIO_SYNC, State);
+	GPIO_SetState(GPIO_SW_SYNC, State);
 }
 //-----------------------------
 
 void LL_ToggleExternalLED()
 {
-	GPIO_Toggle(GPIO_LED_EXT);
+	GPIO_Toggle(GPIO_SW_IND);
 }
 //-----------------------------
 
