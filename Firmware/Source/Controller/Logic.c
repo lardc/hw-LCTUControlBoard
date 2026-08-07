@@ -51,7 +51,7 @@ void LOGIC_HandleMeasurement()
 		{
 			case SS_Activation:
 				// Активация по ТТ: Rdis open, Rcon close; Rss - после порога Ucap.
-				LL_SetStateRelay(RELAY_RDIS, false);
+				LL_SetStateRelay(RELAY_RDIS, true);
 				LL_SetStateRelay(RELAY_RCON, true);
 				if (Ucap >= DataTable[REG_U_CAP_ACTIVATE_RSS])
 					GPIO_SetState(GPIO_RSS, true);
@@ -69,7 +69,7 @@ void LOGIC_HandleMeasurement()
 				LL_SetStateRelay(RELAY_RMES2, false);
 				LL_SetStateRelay(RELAY_RMES3, false);
 				LL_SetStateRelay(RELAY_RMES4, false);
-				LL_SetStateRelay(RELAY_RMES5, true);
+				LL_SetStateRelay(RELAY_RMES5, false);
 				LL_SetStateRelay(RELAY_ROUT_LCAU, false);
 				GPIO_SetState(GPIO_RSS, false);
 				Timeout = CONTROL_TimeCounter + DataTable[REG_DEACT_ROUT_DELAY];
@@ -89,7 +89,7 @@ void LOGIC_HandleMeasurement()
 			case SS_DeactivationWaitRcon:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					LL_SetStateRelay(RELAY_RDIS, true);
+					LL_SetStateRelay(RELAY_RDIS, false);
 					CONTROL_SetDeviceState(DS_None);
 					CONTROL_SetDeviceSubState(SS_None);
 					DataTable[REG_OP_RESULT] = OPRESULT_OK;

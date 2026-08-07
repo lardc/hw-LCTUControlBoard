@@ -73,8 +73,8 @@ void LL_SetRelaySafeState()
 	LL_SetStateRelay(RELAY_RMES2, false);
 	LL_SetStateRelay(RELAY_RMES3, false);
 	LL_SetStateRelay(RELAY_RMES4, false);
-	LL_SetStateRelay(RELAY_RMES5, true); // NC реле диапазона 300 мА
-	LL_SetStateRelay(RELAY_RDIS, true);
+	LL_SetStateRelay(RELAY_RMES5, false); // NC реле диапазона 300 мА
+	LL_SetStateRelay(RELAY_RDIS, true);	  // NC реле разряда батареи
 }
 //-----------------------------
 
