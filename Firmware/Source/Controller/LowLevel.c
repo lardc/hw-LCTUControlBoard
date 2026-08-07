@@ -32,7 +32,7 @@ void LL_ExtIndication(bool State)
 
 void LL_SyncOSC(bool State)
 {
-	GPIO_SetState(GPIO_SW_SYNC, State);
+	GPIO_SetState(GPIO_SW_SYNC, !State);
 }
 //-----------------------------
 
