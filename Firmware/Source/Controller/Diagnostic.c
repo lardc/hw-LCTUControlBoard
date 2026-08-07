@@ -23,8 +23,6 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 	switch (ActionID)
 	{
 		case ACT_DBG_EXT_INDICATION:
-			if(DataTable[REG_DBG] > 1)
-				break;
 			LL_ExtIndication(DataTable[REG_DBG]);
 			break;
 
@@ -55,14 +53,10 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SYNC:
-			if(DataTable[REG_DBG] > 1)
-				break;
 			LL_Sync(DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_FAN:
-			if(DataTable[REG_DBG] > 1)
-				break;
 			GPIO_SetState(GPIO_SW_FAN, DataTable[REG_DBG]);
 			break;
 
@@ -82,36 +76,27 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 				GPIO_SetState(GPIO_RST1, false);
  				GPIO_SetState(GPIO_RST2, true);
 			}
+ 			else
 				break;
 			break;
 
 		case ACT_DBG_LCTU_OUT:
-			if(DataTable[REG_DBG] > 1)
-				break;
 			GPIO_SetState(GPIO_ROUT_LCTU, DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_LCAU_OUT:
-			if(DataTable[REG_DBG] > 1)
-				break;
 			GPIO_SetState(GPIO_ROUT_LCAU, DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_CONT:
-			if(DataTable[REG_DBG] > 1)
-				break;
 			GPIO_SetState(GPIO_RCON, DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_DIS:
-			if(DataTable[REG_DBG] > 1)
-				break;
 			GPIO_SetState(GPIO_RDIS, DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_SOFT:
-			if(DataTable[REG_DBG] > 1)
-				break;
 			GPIO_SetState(GPIO_RSS, DataTable[REG_DBG]);
 			break;
 
@@ -132,6 +117,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 				DataTable[REG_DBG] = (Int16U)(sum / ADC_SEQ_LENGTH);
 
 				TIM_Stop(TIM15);
+				DMA_ChannelEnable(DMA2_Channel5, false);
 			}
 			break;
 
@@ -155,6 +141,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 				DataTable[REG_DBG] = (Int16U)(sum / ADC_SEQ_LENGTH);
 
 				TIM_Stop(TIM15);
+				DMA_ChannelEnable(DMA1_Channel1, false);
 			}
 			break;
 		case ACT_DBG_OPTIC:
