@@ -109,7 +109,7 @@
 #define REG_RANGE_I_3					72	// Нижняя граница диапазона канала 3 - 100...1000 мкА, в А
 #define REG_RANGE_I_4					73	// Нижняя граница диапазона канала 4 - 10...100 мкА, в А
 #define REG_U_CAP_ACTIVATE_RSS			74	// Порог включения Rss по Ucap, В
-#define REG_U_CAP_READY				75	// Порог готовности по Ucap, В
+#define REG_U_CAP_READY					75	// Порог готовности по Ucap, В
 // 76 - 79
 #define REG_RGLTR_Kp					80	// Пропорциональный коэффициент регулятора
 #define REG_RGLTR_Ki					81	// Интегральный коэффициент регулятора
@@ -184,13 +184,13 @@
 #define DF_NONE							0
 
 // Problem
-#define PROBLEM_NONE						0
-#define PROBLEM_FOLLOWING_ERROR				1
-#define PROBLEM_VOLTAGE_OUT_OF_RANGE		2 // Измеренное напряжение вне рабочего диапозона
-#define PROBLEM_SAFETY						4 // Сработала система безопасности
-#define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Ices для получения точного значения
-#define PROBLEM_WRONG_SELECTED_RELAY		7 // Выбрано неверное реле для диагностики
-#define PROBLEM_MAX_CURRENT_EXCEEDED		8 // Превышен максимальный ток в процессе измерения
+#define PROBLEM_NONE					0
+#define PROBLEM_FOLLOWING_ERROR			1
+#define PROBLEM_VOLTAGE_OUT_OF_RANGE	2 // Измеренное напряжение вне рабочего диапозона
+#define PROBLEM_SAFETY					4 // Сработала система безопасности
+#define PROBLEM_NEED_MORE_SAMPLES		5 // Недостаточная длина измерения Ices для получения точного значения
+#define PROBLEM_WRONG_SELECTED_RELAY	7 // Выбрано неверное реле для диагностики
+#define PROBLEM_MAX_CURRENT_EXCEEDED	8 // Превышен максимальный ток в процессе измерения
 #define PROBLEM_CAP_VOLTAGE_LOW			9 // Недостаточное напряжение накопителя (Ucap)
 #define PROBLEM_SELFTEST_FAILED			10 // Самодиагностика завершилась с ошибкой
 
