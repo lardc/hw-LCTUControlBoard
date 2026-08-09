@@ -9,7 +9,7 @@
 #include "Regulator.h"
 
 // Variables
-volatile bool UgReady = false, IgReady = false;
+volatile bool UceReady = false, IcesReady = false;
 
 // Forward functions
 void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *Flag);
@@ -54,7 +54,7 @@ void TIM7_IRQHandler()
 
 void INT_ResetDMAFlags()
 {
-	UgReady = IgReady = false;
+	UceReady = IcesReady = false;
 }
 //-----------------------------------------
 
@@ -66,7 +66,7 @@ void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *F
 
 		*Flag = true;
 
-		if(UgReady && IgReady)
+		if(UceReady && IcesReady)
 		{
 			REGLTR_Process();
 			CONTROL_WatchDogUpdate();
@@ -78,12 +78,12 @@ void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *F
 
 void DMA1_Channel1_IRQHandler()
 {
-	INT_GeneralDMAHandler(DMA1, DMA_ISR_TCIF1, &IgReady);
+	INT_GeneralDMAHandler(DMA1, DMA_ISR_TCIF1, &IcesReady);
 }
 //-----------------------------------------
 
 void DMA2_Channel5_IRQHandler()
 {
-	INT_GeneralDMAHandler(DMA2, DMA_ISR_TCIF5, &UgReady);
+	INT_GeneralDMAHandler(DMA2, DMA_ISR_TCIF5, &UceReady);
 }
 //-----------------------------------------
