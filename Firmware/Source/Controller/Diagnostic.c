@@ -48,7 +48,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 		case ACT_DBG_DAC_WRITE:
 			{
 				Int16U DACRaw =(Int16U) DataTable[REG_DBG];
-				LL_WriteDAC(DACRaw);
+				LL_SPI_WriteByte(DACRaw);
 			}
 			break;
 
@@ -148,14 +148,13 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			GPIO_InitPushPullOutput(GPIO_ALT_SPI_CLK);
 			GPIO_InitPushPullOutput(GPIO_ALT_SPI_MOSI);
 
-			GPIO_SetState(GPIO_SYNC, true);
-			DELAY_MS(200);
-			GPIO_SetState(GPIO_SYNC, false);
-			DELAY_MS(100);
-
 			GPIO_SetState(GPIO_ALT_SPI_CLK, true);
+			GPIO_SetState(GPIO_ALT_SPI_MOSI, false);
+
+
+			GPIO_SetState(GPIO_SPI_SYNC, false);
 			DELAY_MS(200);
-			GPIO_SetState(GPIO_ALT_SPI_CLK, false);
+			GPIO_SetState(GPIO_SPI_SYNC, true);
 			DELAY_MS(100);
 
 			GPIO_SetState(GPIO_ALT_SPI_MOSI, true);
@@ -163,9 +162,14 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			GPIO_SetState(GPIO_ALT_SPI_MOSI, false);
 			DELAY_MS(100);
 
-			GPIO_SetState(GPIO_SPI_NSS, false);
+			GPIO_SetState(GPIO_ALT_SPI_CLK, false);
 			DELAY_MS(200);
-			GPIO_SetState(GPIO_SPI_NSS, true);
+			GPIO_SetState(GPIO_ALT_SPI_CLK, true);
+			DELAY_MS(100);
+
+			GPIO_SetState(GPIO_SPI_LDAC, false);
+			DELAY_MS(200);
+			GPIO_SetState(GPIO_SPI_LDAC, true);
 			DELAY_MS(100);
 
 			GPIO_InitAltFunction(GPIO_ALT_SPI_CLK, AltFn_5);

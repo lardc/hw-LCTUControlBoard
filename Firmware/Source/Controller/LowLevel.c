@@ -69,20 +69,21 @@ void LL_SetRelaySafeState()
 	LL_SetStateRelay(RELAY_RST1, false);
 	LL_SetStateRelay(RELAY_RST2, false);
 
-	LL_SetStateRelay(RELAY_RMES1, false);
+	LL_SetStateRelay(RELAY_RMES1, false);	//NC реле диапазона 300 мА
 	LL_SetStateRelay(RELAY_RMES2, false);
 	LL_SetStateRelay(RELAY_RMES3, false);
 	LL_SetStateRelay(RELAY_RMES4, false);
-	LL_SetStateRelay(RELAY_RMES5, false); // NC реле диапазона 300 мА
-	LL_SetStateRelay(RELAY_RDIS, true);	  // NC реле разряда батареи
+	LL_SetStateRelay(RELAY_RMES5, false);
+	LL_SetStateRelay(RELAY_RDIS, true);	 	// NC реле разряда батареи
 }
 //-----------------------------
 
 void LL_SPI_WriteByte(uint16_t Data)
 {
-	GPIO_SetState(GPIO_SPI_NSS, false);
+	GPIO_SetState(GPIO_SPI_SYNC, false);
 	SPI_WriteByte(SPI1, Data);
-	GPIO_SetState(GPIO_SPI_NSS, true);
+	GPIO_SetState(GPIO_SPI_SYNC, true);
+	LL_ToggleLDAC();
 }
 //-----------------------------
 
@@ -140,3 +141,11 @@ bool LL_SafetyState()
 	return GPIO_GetState(GPIO_SAFETY);
 }
 //-----------------------------
+
+void LL_ToggleLDAC()
+{
+	GPIO_SetState(GPIO_SPI_LDAC, false);
+	DELAY_US(1);
+	GPIO_SetState(GPIO_SPI_LDAC, true);
+}
+//---------------------

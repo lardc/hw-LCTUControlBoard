@@ -32,8 +32,8 @@ void INITCFG_IO()
 
 	// Выходы
 	GPIO_InitPushPullOutput(GPIO_LED_BOARD);
-	GPIO_InitPushPullOutput(GPIO_SYNC);
-	GPIO_InitPushPullOutput(GPIO_SPI_NSS);
+	GPIO_InitPushPullOutput(GPIO_SPI_SYNC);
+	GPIO_InitPushPullOutput(GPIO_SPI_LDAC);
 	GPIO_InitPushPullOutput(GPIO_SW_FAN);
 	GPIO_InitPushPullOutput(GPIO_SW_IND);
 	GPIO_InitPushPullOutput(GPIO_SW_SYNC);
@@ -51,8 +51,8 @@ void INITCFG_IO()
 	GPIO_InitPushPullOutput(GPIO_RMES5);
 
 	GPIO_SetState(GPIO_LED_BOARD, false);
-	GPIO_SetState(GPIO_SYNC, false);
-	GPIO_SetState(GPIO_SPI_NSS, true);
+	GPIO_SetState(GPIO_SPI_SYNC, true);
+	GPIO_SetState(GPIO_SPI_LDAC, true);
 	GPIO_SetState(GPIO_SW_FAN, false);
 	GPIO_SetState(GPIO_SW_IND, false);
 	GPIO_SetState(GPIO_SW_SYNC, true);
@@ -152,6 +152,7 @@ void INITCFG_ConfigCAN(Int16U NodeID)
 void INITCFG_SPI()
 {
 	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_MSB_FIRST);
+	SPI_InvertClockPolarity(SPI1, true);
 }
 //------------------------------------------------
 
