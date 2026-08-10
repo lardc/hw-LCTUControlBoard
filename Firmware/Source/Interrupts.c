@@ -76,9 +76,9 @@ void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *F
 }
 //-----------------------------------------
 
-void DMA1_Channel1_IRQHandler()
+void DMA2_Channel1_IRQHandler()
 {
-	INT_GeneralDMAHandler(DMA1, DMA_ISR_TCIF1, &IcesReady);
+	INT_GeneralDMAHandler(DMA2, DMA_ISR_TCIF1, &IcesReady);
 }
 //-----------------------------------------
 

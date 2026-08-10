@@ -6,7 +6,7 @@
 #include "Regulator.h"
 
 // Forward functions
-void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger);
+void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger, bool EnableDMA);
 
 // Functions
 //
@@ -86,7 +86,7 @@ void INITCFG_UART()
 }
 //------------------------------------------------
 
-void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger)
+void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger, bool EnableDMA)
 {
 	ADC_Calibration(ADCx);
 	ADC_Enable(ADCx);
@@ -98,7 +98,8 @@ void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger)
 	ADC_ChannelSeqLen(ADCx, ADC_SEQ_LENGTH);
 
 	ADC_ChannelSet_SampleTime(ADCx, Channel, ADC_SAMPLE_TIME);
-	ADC_DMAConfigWithAutDLY(ADCx);
+	if (EnableDMA)
+		ADC_DMAConfigWithAutDLY(ADCx);
 	ADC_SamplingStart(ADCx);
 }
 //------------------------------------------------
@@ -108,9 +109,10 @@ void INITCFG_ADC()
 	RCC_ADC_Clk_EN(ADC_12_ClkEN);
 	RCC_ADC_Clk_EN(ADC_34_ClkEN);
 
-	INITCFG_GeneralADC(ADC1, ADC1_CHANNEL_U_CAP, ADC12_TIM15_TRGO);
-	INITCFG_GeneralADC(ADC2, ADC2_CHANNEL_IG, ADC12_TIM15_TRGO);
-	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_UG, ADC34_TIM15_TRGO);
+	// ADC1 (Ucap) читается по DR без DMA: AUTDLY+DMAEN без DMA-канала блокирует обновление
+	INITCFG_GeneralADC(ADC1, ADC1_CHANNEL_U_CAP, ADC12_TIM15_TRGO, false);
+	INITCFG_GeneralADC(ADC2, ADC2_CHANNEL_IG, ADC12_TIM15_TRGO, true);
+	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_UG, ADC34_TIM15_TRGO, true);
 }
 //------------------------------------------------
 
@@ -172,7 +174,7 @@ void INITCFG_DMA()
 	DMA_Clk_Enable(DMA1_ClkEN);
 	DMA_Clk_Enable(DMA2_ClkEN);
 
-	INITCFG_GeneralDMA(DMA1_Channel1, (uint32_t)REGLTR_MemBuffIces, (uint32_t)(&ADC2->DR));
+	INITCFG_GeneralDMA(DMA2_Channel1, (uint32_t)REGLTR_MemBuffIces, (uint32_t)(&ADC2->DR));
 	INITCFG_GeneralDMA(DMA2_Channel5, (uint32_t)REGLTR_MemBuffUce, (uint32_t)(&ADC3->DR));
 }
 //------------------------------------------------

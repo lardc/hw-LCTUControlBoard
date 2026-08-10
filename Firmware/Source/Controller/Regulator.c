@@ -266,7 +266,7 @@ Int16U REGLTR_GetScalingCoef()
 
 void REGLTR_StartProcess()
 {
-	DMA_ChannelEnable(DMA1_Channel1, true);
+	DMA_ChannelEnable(DMA2_Channel1, true);
 	DMA_ChannelEnable(DMA2_Channel5, true);
 
 	TIM_Start(TIM15);
@@ -278,7 +278,7 @@ void REGLTR_StopProcess()
 	LL_WriteDAC(0,0);
 	TIM_Stop(TIM15);
 
-	DMA_ChannelEnable(DMA1_Channel1, false);
+	DMA_ChannelEnable(DMA2_Channel1, false);
 	DMA_ChannelEnable(DMA2_Channel5, false);
 }
 //------------------------------------

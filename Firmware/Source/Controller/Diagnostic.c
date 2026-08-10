@@ -125,17 +125,22 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_BAT_RAW_READ:
-			TIM_Start(TIM15);
-			DELAY_MS(1);
-			DataTable[REG_DBG] = ADC1->DR;
-			TIM_Stop(TIM15);
+			{
+				(void)ADC1->DR;
+				ADC1->ISR |= (EOC | EOS | OVR);
+
+				TIM_Start(TIM15);
+				DELAY_MS(1);
+				DataTable[REG_DBG] = (ADC1->ISR & EOC) ? (Int16U)ADC1->DR : 0;
+				TIM_Stop(TIM15);
+			}
 			break;
 
 		case ACT_DBG_I_ADC_RAW_READ:
 			{
 				Int32U sum = 0;
 
-				DMA_ChannelEnable(DMA1_Channel1, true);
+				DMA_ChannelEnable(DMA2_Channel1, true);
 				TIM_Start(TIM15);
 				DELAY_MS(1);
 
@@ -144,7 +149,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 				DataTable[REG_DBG] = (Int16U)(sum / ADC_SEQ_LENGTH);
 
 				TIM_Stop(TIM15);
-				DMA_ChannelEnable(DMA1_Channel1, false);
+				DMA_ChannelEnable(DMA2_Channel1, false);
 			}
 			break;
 		case ACT_DBG_OPTIC:
