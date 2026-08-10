@@ -78,19 +78,22 @@ void LL_SetRelaySafeState()
 }
 //-----------------------------
 
-void LL_SPI_WriteByte(uint16_t Data)
+void LL_SPI_WriteByte(uint16_t Data, bool DACChannel)
 {
+	Data = DACChannel ? (Data | DAC_CHANNEL_B) : (Data & ~DAC_CHANNEL_B);
+
 	GPIO_SetState(GPIO_SPI_SYNC, false);
 	SPI_WriteByte(SPI1, Data);
 	GPIO_SetState(GPIO_SPI_SYNC, true);
-	LL_ToggleLDAC();
+
 }
 //-----------------------------
 
-void LL_WriteDAC(Int16U Data)
+void LL_WriteDAC(Int16U DataA, Int16U DataB)
 {
-	LL_SPI_WriteByte(Data);
-	LL_SPI_WriteByte(0);
+	LL_SPI_WriteByte(DataA, false);
+	LL_SPI_WriteByte(DataB, true);
+	LL_ToggleLDAC();
 }
 //-----------------------------
 

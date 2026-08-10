@@ -58,13 +58,13 @@ void REGLTR_Process()
 				RegState = RS_FlatTop;
 			}
 			DACSetpoint = REGLTR_CorrectionLogDACPoint();
-			LL_WriteDAC(DACSetpoint);
+			LL_WriteDAC(DACSetpoint,0);
 			break;
 
 		case RS_FlatTop:
 		default:
 			DACSetpoint = REGLTR_CorrectionLogDACPoint();
-			LL_WriteDAC(DACSetpoint);
+			LL_WriteDAC(DACSetpoint,0);
 			break;
 	}
 }
@@ -275,7 +275,7 @@ void REGLTR_StartProcess()
 
 void REGLTR_StopProcess()
 {
-	LL_WriteDAC(0);
+	LL_WriteDAC(0,0);
 	TIM_Stop(TIM15);
 
 	DMA_ChannelEnable(DMA1_Channel1, false);

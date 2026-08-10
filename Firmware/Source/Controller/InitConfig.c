@@ -151,7 +151,7 @@ void INITCFG_ConfigCAN(Int16U NodeID)
 
 void INITCFG_SPI()
 {
-	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_MSB_FIRST);
+	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_LSB_FIRST);
 	SPI_InvertClockPolarity(SPI1, true);
 }
 //------------------------------------------------

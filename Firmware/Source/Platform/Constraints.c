@@ -141,7 +141,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 
 const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START] =
 {
-	{0, U_ICES_MAX, U_ICES_DEF},												// 128
+	{U_ICES_MIN, U_ICES_MAX, U_ICES_DEF},										// 128
 	{I_ICES_MAX_MIN, I_ICES_MAX_MAX, I_ICES_MAX_DEF},							// 129
 	{NO, YES, NO},																// 130
 	{0, (COMMUTATION_TABLE_SIZE - 1), 0},										// 131
@@ -165,7 +165,7 @@ const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START]
 	{0, 0, 0},																	// 149
 	{0, INT16U_MAX, 0},															// 150
 	{NO, I_CHANNEL_5, NO},														// 151
-	{0, 0, 0},																	// 152
+	{0, INT16U_MAX, 0},															// 152
 	{0, 0, 0},																	// 153
 	{0, 0, 0},																	// 154
 	{0, 0, 0},																	// 155

@@ -27,7 +27,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SPI_WRITE_TWO_BYTES:
-			LL_SPI_WriteByte(DataTable[REG_DBG]);
+			LL_WriteDAC(DataTable[REG_DBG], DataTable[REG_DBG2]);
 			break;
 
 		case ACT_DBG_PULSE:
@@ -48,7 +48,10 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 		case ACT_DBG_DAC_WRITE:
 			{
 				Int16U DACRaw =(Int16U) DataTable[REG_DBG];
-				LL_SPI_WriteByte(DACRaw);
+
+				LL_SPI_WriteByte(DACRaw, false);
+				LL_SPI_WriteByte(0, true);
+				LL_ToggleLDAC();
 			}
 			break;
 
@@ -203,16 +206,16 @@ void DIAG_GenerateTrapezoidWave()
 	for (Int32U i = 1; i <= RiseSteps; ++i)
 	{
 		float setPoint = PulseAmplitude * ((float)i / (float)RiseSteps);
-		LL_WriteDAC(MEASURE_ConvertUset(setPoint));
+		LL_WriteDAC(MEASURE_ConvertUset(setPoint),0);
 		DELAY_US(TIMER15_uS);
 	}
 
 	for (Int32U i = 0; i < FlatSteps; ++i)
 	{
-		LL_WriteDAC(MEASURE_ConvertUset(PulseAmplitude));
+		LL_WriteDAC(MEASURE_ConvertUset(PulseAmplitude),0);
 		DELAY_US(TIMER15_uS);
 	}
 
-	LL_WriteDAC(0);
+	LL_WriteDAC(0,0);
 }
 //------------------------------------------------
