@@ -36,6 +36,7 @@ volatile MeasureType CONTROL_MeasureType = MT_Ices;
 
 volatile Int64U CONTROL_TimeCounter = 0;
 static Int64U CT_SaveTimer = 0;					 // Последняя отметка времени автосохранения
+volatile Boolean RequestSaveToFlash = FALSE;
 
 volatile Int16U CONTROL_ExtInfoCounter = 0;
 volatile float CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE] = {0};
@@ -129,11 +130,19 @@ void CONTROL_Idle()
 {
 	//Обработка логики мастер-команд
 	LOGIC_HandleMeasurement();
-	// Counter data update
-	if (DataTable[REG_CNT_ACTIVE] && (CONTROL_TimeCounter - CT_SaveTimer) >= CT_SAVE_TIMEOUT)
+
+	if(CONTROL_State != DS_InProcess)
 	{
-		STF_SaveCounterData();
-		CT_SaveTimer = CONTROL_TimeCounter;
+		if(RequestSaveToFlash)
+		{
+			RequestSaveToFlash = FALSE;
+			STF_SaveDiagData();
+		}
+		if(DataTable[REG_CNT_ACTIVE] && (CONTROL_TimeCounter - CT_SaveTimer) >= CT_SAVE_TIMEOUT)
+		{
+			STF_SaveCounterData();
+			CT_SaveTimer = CONTROL_TimeCounter;
+		}
 	}
 
 	DEVPROFILE_ProcessRequests();
@@ -282,6 +291,19 @@ void CONTROL_InitStoragePointers()
 {
 	for (Int16U i = 0; i < COMMUTATION_TABLE_SIZE; ++i)
 		STF_AssignCounterPointer(i, (Int32U)&CycleCounters[i]);
+
+	STF_AssignPointer(0, (Int32U)&DataTable[REG_DEV_STATE]);
+	STF_AssignPointer(1, (Int32U)&DataTable[REG_FAULT_REASON]);
+	STF_AssignPointer(2, (Int32U)&DataTable[REG_DISABLE_REASON]);
+	STF_AssignPointer(3, (Int32U)&DataTable[REG_WARNING]);
+	STF_AssignPointer(4, (Int32U)&DataTable[REG_PROBLEM]);
+	STF_AssignPointer(5, (Int32U)&DataTable[REG_OP_RESULT]);
+	STF_AssignPointer(6, (Int32U)&DataTable[REG_DEV_SUBSTATE]);
+	STF_AssignPointer(7, (Int32U)&DataTable[REG_ICES_RESULT]);
+	STF_AssignPointer(8, (Int32U)&DataTable[REG_DIAG_CURRENT]);
+	STF_AssignPointer(9, (Int32U)&DataTable[REG_DIAG_VOLTAGE]);
+	STF_AssignPointer(10, (Int32U)&DataTable[REG_SELFTEST_STEP]);
+	STF_AssignPointer(11, (Int32U)&DataTable[REG_DEBUG_SCALING_COEF]);
 }
 //------------------------------------------
 
