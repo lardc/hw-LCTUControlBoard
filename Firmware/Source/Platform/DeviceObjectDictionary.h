@@ -18,7 +18,7 @@
 #define ACT_DBG_SOFT					17	// Управление плавным пуском в LCAU по состоянию отладочного регистра REG_DBG
 #define ACT_DBG_SPI_WRITE_TWO_BYTES		18	// Запись двух байтов для отладки SPI
 #define ACT_DBG_PULSE					19	// Запуск импульса в виде трапеции
-#define ACT_DBG_SYNC					20	// Запуск синхронизации
+#define ACT_DBG_SYNC_OSC				20	// Запуск синхронизации осциллографа
 #define ACT_DBG_SWITCH_RELAY			21 	// Диагностическое переключение реле токов
 #define ACT_DBG_DAC_WRITE				22 	// Прямая запись значения в ЦАП
 #define ACT_DBG_SFTY_READ				23 	// Чтение состояния безопасности в отладочный регистр REG_DBG
@@ -35,11 +35,17 @@
 
 #define ACT_BOOT_LOADER_REQUEST			320	// Перезапуск процессора с целью перепрограммирования
 
+#define ACT_FLASH_DIAG_INIT_READ		331	// Инициализировать начало считывания отладочной информации
+#define ACT_FLASH_DIAG_SAVE				332	// Сохранение блока отладочной информации во флэш
+#define ACT_FLASH_DIAG_ERASE			333	// Стирание области отладочной информации
+
 #define ACT_FLASH_CNT_INIT_READ			334	// Перемещение указателя в область счетчиков
 #define ACT_SET_COUNTER					336	// Установка значения счетчика
 #define ACT_SAVE_COUNTERS				337	// Сохранить счетчики в памяти
 #define ACT_ERASE_COUNTERS				338	// Удалить счетчики из памяти
 #define ACT_FLASH_COUNTER_TO_EP			339 // Выполнить чтение массива из памяти счетчиков отработки в EP
+
+#define ACT_FLASH_DIAG_TO_EP			340	// Выполнить чтение массива из памяти отладочной информации в EP
 
 #define ACT_JSON_INIT_READ				341	// Инициализация начала считывания JSON
 #define ACT_JSON_TO_EP					342	// Выполнить чтение шаблона JSON в EP
@@ -109,7 +115,7 @@
 #define REG_RANGE_I_3					72	// Нижняя граница диапазона канала 3 - 100...1000 мкА, в А
 #define REG_RANGE_I_4					73	// Нижняя граница диапазона канала 4 - 10...100 мкА, в А
 #define REG_U_CAP_ACTIVATE_RSS			74	// Порог включения Rss по Ucap, В
-#define REG_U_CAP_READY				75	// Порог готовности по Ucap, В
+#define REG_U_CAP_READY					75	// Порог готовности по Ucap, В
 // 76 - 79
 #define REG_RGLTR_Kp					80	// Пропорциональный коэффициент регулятора
 #define REG_RGLTR_Ki					81	// Интегральный коэффициент регулятора
@@ -140,7 +146,7 @@
 // 108 - 127
 
 // Несохраняемы регистры чтения-записи
-#define REG_WORK_VOLTAGE_ICES			128	// Номинальное рабочее напряжение для измерения Ices, мВ
+#define REG_WORK_VOLTAGE_ICES			128	// Номинальное рабочее напряжение для измерения Ices, В
 #define REG_MAX_CURRENT_ICES			129	// Максимально допустимый ток для выбора диапазона Ices, мА
 //
 #define REG_SAFETY_MUTE					130	// Отключение контура безопасности
@@ -150,6 +156,7 @@
 //
 #define REG_DBG							150	// Отладочный регистр
 #define REG_DIAG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
+#define REG_DBG2						152	// Отладочный регистр 2
 // 152 - 191
 
 // Регистры только чтение
@@ -184,13 +191,13 @@
 #define DF_NONE							0
 
 // Problem
-#define PROBLEM_NONE						0
-#define PROBLEM_FOLLOWING_ERROR				1
-#define PROBLEM_VOLTAGE_OUT_OF_RANGE		2 // Измеренное напряжение вне рабочего диапозона
-#define PROBLEM_SAFETY						4 // Сработала система безопасности
-#define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Ices для получения точного значения
-#define PROBLEM_WRONG_SELECTED_RELAY		7 // Выбрано неверное реле для диагностики
-#define PROBLEM_MAX_CURRENT_EXCEEDED		8 // Превышен максимальный ток в процессе измерения
+#define PROBLEM_NONE					0
+#define PROBLEM_FOLLOWING_ERROR			1
+#define PROBLEM_VOLTAGE_OUT_OF_RANGE	2 // Измеренное напряжение вне рабочего диапозона
+#define PROBLEM_SAFETY					4 // Сработала система безопасности
+#define PROBLEM_NEED_MORE_SAMPLES		5 // Недостаточная длина измерения Ices для получения точного значения
+#define PROBLEM_WRONG_SELECTED_RELAY	7 // Выбрано неверное реле для диагностики
+#define PROBLEM_MAX_CURRENT_EXCEEDED	8 // Превышен максимальный ток в процессе измерения
 #define PROBLEM_CAP_VOLTAGE_LOW			9 // Недостаточное напряжение накопителя (Ucap)
 #define PROBLEM_SELFTEST_FAILED			10 // Самодиагностика завершилась с ошибкой
 

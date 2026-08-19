@@ -57,17 +57,17 @@ void IO_Config()
 	GPIO_Config(LED_BLINK_PORT, LED_BLINK_PIN, Output, PushPull, HighSpeed, NoPull);
 	
 	//Альтернативные функции портов
-	GPIO_Config(GPIOA, Pin_9, AltFn, PushPull, HighSpeed, NoPull); //PA9(USART1 TX)
-	GPIO_AltFn(GPIOA, Pin_9, AltFn_7);
+	GPIO_Config(GPIOB, Pin_6, AltFn, PushPull, HighSpeed, NoPull); //PB6(USART1 TX)
+	GPIO_AltFn(GPIOB, Pin_6, AltFn_7);
 	
-	GPIO_Config(GPIOA, Pin_10, AltFn, PushPull, HighSpeed, NoPull); //PA10(USART1 RX)
-	GPIO_AltFn(GPIOA, Pin_10, AltFn_7);
+	GPIO_Config(GPIOB, Pin_7, AltFn, PushPull, HighSpeed, NoPull); //PB7(USART1 RX)
+	GPIO_AltFn(GPIOB, Pin_7, AltFn_7);
 	
-	GPIO_Config(GPIOA, Pin_11, AltFn, PushPull, HighSpeed, NoPull); //PA11(CAN RX)
-	GPIO_AltFn(GPIOA, Pin_11, AltFn_9);
+	GPIO_Config(GPIOB, Pin_8, AltFn, PushPull, HighSpeed, NoPull); //PB8(CAN RX)
+	GPIO_AltFn(GPIOB, Pin_8, AltFn_9);
 	
-	GPIO_Config(GPIOA, Pin_12, AltFn, PushPull, HighSpeed, NoPull); //PA12(CAN TX)
-	GPIO_AltFn(GPIOA, Pin_12, AltFn_9);
+	GPIO_Config(GPIOB, Pin_9, AltFn, PushPull, HighSpeed, NoPull); //PB9(CAN TX)
+	GPIO_AltFn(GPIOB, Pin_9, AltFn_9);
 	
 }
 //--------------------------------------------

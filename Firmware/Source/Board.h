@@ -24,9 +24,9 @@ GPIO_PortPinSettingMacro GPIO_ANLG_IG		= {GPIOA, Pin_4};
 GPIO_PortPinSettingMacro GPIO_SAFETY		= {GPIOB, Pin_3};
 
 // Определения для выходных портов
-GPIO_PortPinSettingMacro GPIO_LED_EXT		= {GPIOB, Pin_4};   // service LED
-GPIO_PortPinSettingMacro GPIO_SYNC			= {GPIOB, Pin_11};
-GPIO_PortPinSettingMacro GPIO_SPI_NSS		= {GPIOB, Pin_1};
+GPIO_PortPinSettingMacro GPIO_LED_BOARD		= {GPIOB, Pin_4};   // service LED
+GPIO_PortPinSettingMacro GPIO_SPI_SYNC		= {GPIOB, Pin_11};
+GPIO_PortPinSettingMacro GPIO_SPI_LDAC		= {GPIOB, Pin_1};
 GPIO_PortPinSettingMacro GPIO_SW_FAN		= {GPIOB, Pin_14};
 GPIO_PortPinSettingMacro GPIO_SW_IND		= {GPIOB, Pin_13};
 GPIO_PortPinSettingMacro GPIO_SW_SYNC		= {GPIOB, Pin_12};
@@ -41,14 +41,14 @@ GPIO_PortPinSettingMacro GPIO_RMES1			= {GPIOB, Pin_5};
 GPIO_PortPinSettingMacro GPIO_RMES2			= {GPIOA, Pin_0};
 GPIO_PortPinSettingMacro GPIO_RMES3			= {GPIOA, Pin_1};
 GPIO_PortPinSettingMacro GPIO_RMES4			= {GPIOA, Pin_2};
-GPIO_PortPinSettingMacro GPIO_RMES5			= {GPIOA, Pin_5};
+GPIO_PortPinSettingMacro GPIO_RMES5			= {GPIOA, Pin_6};
 
 // Определения для портов альтернативных функций
 GPIO_PortPinSettingMacro GPIO_ALT_CAN_RX	= {GPIOB, Pin_8};
 GPIO_PortPinSettingMacro GPIO_ALT_CAN_TX	= {GPIOB, Pin_9};
 GPIO_PortPinSettingMacro GPIO_ALT_UART_RX	= {GPIOB, Pin_7};
 GPIO_PortPinSettingMacro GPIO_ALT_UART_TX	= {GPIOB, Pin_6};
-GPIO_PortPinSettingMacro GPIO_ALT_SPI_CLK	= {GPIOB, Pin_2};
-GPIO_PortPinSettingMacro GPIO_ALT_SPI_MOSI	= {GPIOB, Pin_10};
+GPIO_PortPinSettingMacro GPIO_ALT_SPI_CLK	= {GPIOA, Pin_5};
+GPIO_PortPinSettingMacro GPIO_ALT_SPI_MOSI	= {GPIOA, Pin_7};
 
 #endif // __BOARD_H

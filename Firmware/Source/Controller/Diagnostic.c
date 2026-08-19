@@ -27,7 +27,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SPI_WRITE_TWO_BYTES:
-			LL_SPI_WriteByte(DataTable[REG_DBG]);
+			LL_WriteDAC(DataTable[REG_DBG], DataTable[REG_DBG2]);
 			break;
 
 		case ACT_DBG_PULSE:
@@ -48,12 +48,15 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 		case ACT_DBG_DAC_WRITE:
 			{
 				Int16U DACRaw =(Int16U) DataTable[REG_DBG];
-				LL_WriteDAC(DACRaw);
+
+				LL_SPI_WriteByte(DACRaw, false);
+				LL_SPI_WriteByte(0, true);
+				LL_ToggleLDAC();
 			}
 			break;
 
-		case ACT_DBG_SYNC:
-			LL_Sync(DataTable[REG_DBG]);
+		case ACT_DBG_SYNC_OSC:
+			LL_SyncOSC(DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_FAN:
@@ -122,17 +125,22 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_BAT_RAW_READ:
-			TIM_Start(TIM15);
-			DELAY_MS(1);
-			DataTable[REG_DBG] = ADC1->DR;
-			TIM_Stop(TIM15);
+			{
+				(void)ADC1->DR;
+				ADC1->ISR |= (EOC | EOS | OVR);
+
+				TIM_Start(TIM15);
+				DELAY_MS(1);
+				DataTable[REG_DBG] = (ADC1->ISR & EOC) ? (Int16U)ADC1->DR : 0;
+				TIM_Stop(TIM15);
+			}
 			break;
 
 		case ACT_DBG_I_ADC_RAW_READ:
 			{
 				Int32U sum = 0;
 
-				DMA_ChannelEnable(DMA1_Channel1, true);
+				DMA_ChannelEnable(DMA2_Channel1, true);
 				TIM_Start(TIM15);
 				DELAY_MS(1);
 
@@ -141,21 +149,20 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 				DataTable[REG_DBG] = (Int16U)(sum / ADC_SEQ_LENGTH);
 
 				TIM_Stop(TIM15);
-				DMA_ChannelEnable(DMA1_Channel1, false);
+				DMA_ChannelEnable(DMA2_Channel1, false);
 			}
 			break;
 		case ACT_DBG_OPTIC:
 			GPIO_InitPushPullOutput(GPIO_ALT_SPI_CLK);
 			GPIO_InitPushPullOutput(GPIO_ALT_SPI_MOSI);
 
-			GPIO_SetState(GPIO_SYNC, true);
-			DELAY_MS(200);
-			GPIO_SetState(GPIO_SYNC, false);
-			DELAY_MS(100);
-
 			GPIO_SetState(GPIO_ALT_SPI_CLK, true);
+			GPIO_SetState(GPIO_ALT_SPI_MOSI, false);
+
+
+			GPIO_SetState(GPIO_SPI_SYNC, false);
 			DELAY_MS(200);
-			GPIO_SetState(GPIO_ALT_SPI_CLK, false);
+			GPIO_SetState(GPIO_SPI_SYNC, true);
 			DELAY_MS(100);
 
 			GPIO_SetState(GPIO_ALT_SPI_MOSI, true);
@@ -163,9 +170,14 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			GPIO_SetState(GPIO_ALT_SPI_MOSI, false);
 			DELAY_MS(100);
 
-			GPIO_SetState(GPIO_SPI_NSS, false);
+			GPIO_SetState(GPIO_ALT_SPI_CLK, false);
 			DELAY_MS(200);
-			GPIO_SetState(GPIO_SPI_NSS, true);
+			GPIO_SetState(GPIO_ALT_SPI_CLK, true);
+			DELAY_MS(100);
+
+			GPIO_SetState(GPIO_SPI_LDAC, false);
+			DELAY_MS(200);
+			GPIO_SetState(GPIO_SPI_LDAC, true);
 			DELAY_MS(100);
 
 			GPIO_InitAltFunction(GPIO_ALT_SPI_CLK, AltFn_5);
@@ -199,16 +211,16 @@ void DIAG_GenerateTrapezoidWave()
 	for (Int32U i = 1; i <= RiseSteps; ++i)
 	{
 		float setPoint = PulseAmplitude * ((float)i / (float)RiseSteps);
-		LL_WriteDAC(MEASURE_ConvertUset(setPoint));
+		LL_WriteDAC(MEASURE_ConvertUset(setPoint),0);
 		DELAY_US(TIMER15_uS);
 	}
 
 	for (Int32U i = 0; i < FlatSteps; ++i)
 	{
-		LL_WriteDAC(MEASURE_ConvertUset(PulseAmplitude));
+		LL_WriteDAC(MEASURE_ConvertUset(PulseAmplitude),0);
 		DELAY_US(TIMER15_uS);
 	}
 
-	LL_WriteDAC(0);
+	LL_WriteDAC(0,0);
 }
 //------------------------------------------------

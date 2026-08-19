@@ -6,7 +6,7 @@
 #include "Regulator.h"
 
 // Forward functions
-void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger);
+void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger, bool EnableDMA);
 
 // Functions
 //
@@ -31,9 +31,9 @@ void INITCFG_IO()
 	GPIO_InitInput(GPIO_SAFETY, NoPull);
 
 	// Выходы
-	GPIO_InitPushPullOutput(GPIO_LED_EXT);
-	GPIO_InitPushPullOutput(GPIO_SYNC);
-	GPIO_InitPushPullOutput(GPIO_SPI_NSS);
+	GPIO_InitPushPullOutput(GPIO_LED_BOARD);
+	GPIO_InitPushPullOutput(GPIO_SPI_SYNC);
+	GPIO_InitPushPullOutput(GPIO_SPI_LDAC);
 	GPIO_InitPushPullOutput(GPIO_SW_FAN);
 	GPIO_InitPushPullOutput(GPIO_SW_IND);
 	GPIO_InitPushPullOutput(GPIO_SW_SYNC);
@@ -50,16 +50,16 @@ void INITCFG_IO()
 	GPIO_InitPushPullOutput(GPIO_RMES4);
 	GPIO_InitPushPullOutput(GPIO_RMES5);
 
-	GPIO_SetState(GPIO_LED_EXT, false);
-	GPIO_SetState(GPIO_SYNC, false);
-	GPIO_SetState(GPIO_SPI_NSS, true);
+	GPIO_SetState(GPIO_LED_BOARD, false);
+	GPIO_SetState(GPIO_SPI_SYNC, true);
+	GPIO_SetState(GPIO_SPI_LDAC, true);
 	GPIO_SetState(GPIO_SW_FAN, false);
 	GPIO_SetState(GPIO_SW_IND, false);
-	GPIO_SetState(GPIO_SW_SYNC, false);
+	GPIO_SetState(GPIO_SW_SYNC, true);
 	GPIO_SetState(GPIO_RCON, false);
 	GPIO_SetState(GPIO_RSS, false);
 	GPIO_SetState(GPIO_ROUT_LCAU, false);
-	GPIO_SetState(GPIO_RDIS, true);
+	GPIO_SetState(GPIO_RDIS, false);
 	GPIO_SetState(GPIO_ROUT_LCTU, false);
 	GPIO_SetState(GPIO_RST1, false);
 	GPIO_SetState(GPIO_RST2, false);
@@ -67,7 +67,7 @@ void INITCFG_IO()
 	GPIO_SetState(GPIO_RMES2, false);
 	GPIO_SetState(GPIO_RMES3, false);
 	GPIO_SetState(GPIO_RMES4, false);
-	GPIO_SetState(GPIO_RMES5, true);
+	GPIO_SetState(GPIO_RMES5, false);
 
 	// Альтернативные функции
 	GPIO_InitAltFunction(GPIO_ALT_CAN_RX, AltFn_9);
@@ -86,7 +86,7 @@ void INITCFG_UART()
 }
 //------------------------------------------------
 
-void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger)
+void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger, bool EnableDMA)
 {
 	ADC_Calibration(ADCx);
 	ADC_Enable(ADCx);
@@ -98,7 +98,8 @@ void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger)
 	ADC_ChannelSeqLen(ADCx, ADC_SEQ_LENGTH);
 
 	ADC_ChannelSet_SampleTime(ADCx, Channel, ADC_SAMPLE_TIME);
-	ADC_DMAConfigWithAutDLY(ADCx);
+	if (EnableDMA)
+		ADC_DMAConfigWithAutDLY(ADCx);
 	ADC_SamplingStart(ADCx);
 }
 //------------------------------------------------
@@ -108,9 +109,10 @@ void INITCFG_ADC()
 	RCC_ADC_Clk_EN(ADC_12_ClkEN);
 	RCC_ADC_Clk_EN(ADC_34_ClkEN);
 
-	INITCFG_GeneralADC(ADC1, ADC1_CHANNEL_U_CAP, ADC12_TIM15_TRGO);
-	INITCFG_GeneralADC(ADC2, ADC2_CHANNEL_IG, ADC12_TIM15_TRGO);
-	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_UG, ADC34_TIM15_TRGO);
+	// ADC1 (Ucap) читается по DR без DMA: AUTDLY+DMAEN без DMA-канала блокирует обновление
+	INITCFG_GeneralADC(ADC1, ADC1_CHANNEL_U_CAP, ADC12_TIM15_TRGO, false);
+	INITCFG_GeneralADC(ADC2, ADC2_CHANNEL_IG, ADC12_TIM15_TRGO, true);
+	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_UG, ADC34_TIM15_TRGO, true);
 }
 //------------------------------------------------
 
@@ -151,7 +153,8 @@ void INITCFG_ConfigCAN(Int16U NodeID)
 
 void INITCFG_SPI()
 {
-	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_MSB_FIRST);
+	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_LSB_FIRST);
+	SPI_InvertClockPolarity(SPI1, true);
 }
 //------------------------------------------------
 
@@ -171,7 +174,7 @@ void INITCFG_DMA()
 	DMA_Clk_Enable(DMA1_ClkEN);
 	DMA_Clk_Enable(DMA2_ClkEN);
 
-	INITCFG_GeneralDMA(DMA1_Channel1, (uint32_t)REGLTR_MemBuffIces, (uint32_t)(&ADC2->DR));
+	INITCFG_GeneralDMA(DMA2_Channel1, (uint32_t)REGLTR_MemBuffIces, (uint32_t)(&ADC2->DR));
 	INITCFG_GeneralDMA(DMA2_Channel5, (uint32_t)REGLTR_MemBuffUce, (uint32_t)(&ADC3->DR));
 }
 //------------------------------------------------

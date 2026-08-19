@@ -20,25 +20,25 @@ static void LL_SetChannelRelaysOff();
 //
 void LL_ToggleBoardLED()
 {
-	GPIO_Toggle(GPIO_LED_EXT);
+	GPIO_Toggle(GPIO_LED_BOARD);
 }
 //-----------------------------
 
 void LL_ExtIndication(bool State)
 {
-	GPIO_SetState(GPIO_LED_EXT, State);
+	GPIO_SetState(GPIO_SW_IND, State);
 }
 //-----------------------------
 
-void LL_Sync(bool State)
+void LL_SyncOSC(bool State)
 {
-	GPIO_SetState(GPIO_SYNC, State);
+	GPIO_SetState(GPIO_SW_SYNC, !State);
 }
 //-----------------------------
 
 void LL_ToggleExternalLED()
 {
-	GPIO_Toggle(GPIO_LED_EXT);
+	GPIO_Toggle(GPIO_SW_IND);
 }
 //-----------------------------
 
@@ -69,27 +69,31 @@ void LL_SetRelaySafeState()
 	LL_SetStateRelay(RELAY_RST1, false);
 	LL_SetStateRelay(RELAY_RST2, false);
 
-	LL_SetStateRelay(RELAY_RMES1, false);
+	LL_SetStateRelay(RELAY_RMES1, false);	//NC реле диапазона 300 мА
 	LL_SetStateRelay(RELAY_RMES2, false);
 	LL_SetStateRelay(RELAY_RMES3, false);
 	LL_SetStateRelay(RELAY_RMES4, false);
-	LL_SetStateRelay(RELAY_RMES5, true); // NC реле диапазона 300 мА
-	LL_SetStateRelay(RELAY_RDIS, true);
+	LL_SetStateRelay(RELAY_RMES5, false);
+	LL_SetStateRelay(RELAY_RDIS, true);	 	// NC реле разряда батареи
 }
 //-----------------------------
 
-void LL_SPI_WriteByte(uint16_t Data)
+void LL_SPI_WriteByte(uint16_t Data, bool DACChannel)
 {
-	GPIO_SetState(GPIO_SPI_NSS, false);
+	Data = DACChannel ? (Data | DAC_CHANNEL_B) : (Data & ~DAC_CHANNEL_B);
+
+	GPIO_SetState(GPIO_SPI_SYNC, false);
 	SPI_WriteByte(SPI1, Data);
-	GPIO_SetState(GPIO_SPI_NSS, true);
+	GPIO_SetState(GPIO_SPI_SYNC, true);
+
 }
 //-----------------------------
 
-void LL_WriteDAC(Int16U Data)
+void LL_WriteDAC(Int16U DataA, Int16U DataB)
 {
-	LL_SPI_WriteByte(Data);
-	LL_SPI_WriteByte(0);
+	LL_SPI_WriteByte(DataA, false);
+	LL_SPI_WriteByte(DataB, true);
+	LL_ToggleLDAC();
 }
 //-----------------------------
 
@@ -140,3 +144,11 @@ bool LL_SafetyState()
 	return GPIO_GetState(GPIO_SAFETY);
 }
 //-----------------------------
+
+void LL_ToggleLDAC()
+{
+	GPIO_SetState(GPIO_SPI_LDAC, false);
+	DELAY_US(1);
+	GPIO_SetState(GPIO_SPI_LDAC, true);
+}
+//---------------------

@@ -18,6 +18,8 @@
 #include "SaveToFlashConfig.h"
 #include "StorageDescription.h"
 #include "LowLevel.h"
+#include "ZwNFLASH.h"
+#include "ZwIWDG.h"
 
 // Types
 //
@@ -165,8 +167,8 @@ static Boolean DEVPROFILE_Validate16(Int16U Address, Int16U Data)
 
 static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 {
-	static Int32U MemoryPointer = 0;
-	static Int32U MemoryEndPointer = 0;
+	static Int32U MemoryPointer = FLASH_DIAG_START_ADDR;
+	static Int32U MemoryEndPointer = FLASH_DIAG_END_ADDR;
 
 	switch(ActionID)
 	{
@@ -219,8 +221,29 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 			CycleCounters[(Int16U)DataTable[REG_CNT_NUMBER]] = DataTable[REG_CNT_VALUE];
 			break;
 
+		case ACT_FLASH_CNT_INIT_READ:
+			STF_ResetStateMachine();
+			MemoryPointer = FLASH_COUNTER_START_ADDR;
+			MemoryEndPointer = FLASH_COUNTER_END_ADDR;
+			break;
+
+		case ACT_FLASH_DIAG_INIT_READ:
+			MemoryPointer = FLASH_DIAG_START_ADDR;
+			MemoryEndPointer = FLASH_DIAG_END_ADDR;
+			break;
+
+		case ACT_FLASH_DIAG_SAVE:
+			STF_SaveDiagData();
+			break;
+
 		case ACT_SAVE_COUNTERS:
 			STF_SaveCounterData();
+			break;
+
+		case ACT_FLASH_DIAG_ERASE:
+			IWDG_ConfigureSlowUpdate();
+			STF_EraseDataSector();
+			IWDG_ConfigureFastUpdate();
 			break;
 
 		case ACT_ERASE_COUNTERS:
@@ -232,14 +255,23 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 					*(pInt32U)CounterTablePointers[i].Address = 0;
 					CounterTablePointers[i].Value = 0;
 				}
+				IWDG_ConfigureSlowUpdate();
 				STF_EraseCounterDataSector();
+				IWDG_ConfigureFastUpdate();
 			}
 			break;
 
-		case ACT_FLASH_CNT_INIT_READ:
-			STF_ResetStateMachine();
-			MemoryPointer = FLASH_COUNTER_START_ADDR;
-			MemoryEndPointer = FLASH_COUNTER_END_ADDR;
+		case ACT_FLASH_DIAG_TO_EP:
+			{
+				DEVPROFILE_ResetEPReadState();
+				DEVPROFILE_ResetScopes(0);
+
+				for(CONTROL_ExtInfoCounter = 0; CONTROL_ExtInfoCounter < VALUES_EXT_INFO_SIZE && MemoryPointer <= MemoryEndPointer;)
+				{
+					CONTROL_ExtInfoData[CONTROL_ExtInfoCounter++] = NFLASH_ReadWord16(MemoryPointer);
+					MemoryPointer += 2;
+				}
+			}
 			break;
 
 		case ACT_FLASH_COUNTER_TO_EP:
