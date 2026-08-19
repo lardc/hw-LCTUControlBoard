@@ -138,7 +138,7 @@ void CONTROL_Idle()
 			RequestSaveToFlash = FALSE;
 			STF_SaveDiagData();
 		}
-		if(DataTable[REG_CNT_ACTIVE] && (CONTROL_TimeCounter - CT_SaveTimer) >= CT_SAVE_TIMEOUT)
+		else if(DataTable[REG_CNT_ACTIVE] && (CONTROL_TimeCounter - CT_SaveTimer) >= CT_SAVE_TIMEOUT)
 		{
 			STF_SaveCounterData();
 			CT_SaveTimer = CONTROL_TimeCounter;
