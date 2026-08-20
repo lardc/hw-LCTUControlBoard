@@ -35,11 +35,17 @@
 
 #define ACT_BOOT_LOADER_REQUEST			320	// Перезапуск процессора с целью перепрограммирования
 
+#define ACT_FLASH_DIAG_INIT_READ		331	// Инициализировать начало считывания отладочной информации
+#define ACT_FLASH_DIAG_SAVE				332	// Сохранение блока отладочной информации во флэш
+#define ACT_FLASH_DIAG_ERASE			333	// Стирание области отладочной информации
+
 #define ACT_FLASH_CNT_INIT_READ			334	// Перемещение указателя в область счетчиков
 #define ACT_SET_COUNTER					336	// Установка значения счетчика
 #define ACT_SAVE_COUNTERS				337	// Сохранить счетчики в памяти
 #define ACT_ERASE_COUNTERS				338	// Удалить счетчики из памяти
 #define ACT_FLASH_COUNTER_TO_EP			339 // Выполнить чтение массива из памяти счетчиков отработки в EP
+
+#define ACT_FLASH_DIAG_TO_EP			340	// Выполнить чтение массива из памяти отладочной информации в EP
 
 #define ACT_JSON_INIT_READ				341	// Инициализация начала считывания JSON
 #define ACT_JSON_TO_EP					342	// Выполнить чтение шаблона JSON в EP

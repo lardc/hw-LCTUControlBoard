@@ -42,6 +42,7 @@ typedef enum __MeasureType
 
 // Variables
 extern volatile Int64U CONTROL_TimeCounter;
+extern volatile Boolean RequestSaveToFlash;
 
 extern volatile DeviceState CONTROL_State;
 extern volatile DeviceSubState CONTROL_SubState;
