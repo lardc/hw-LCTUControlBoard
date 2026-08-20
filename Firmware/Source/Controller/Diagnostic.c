@@ -195,22 +195,33 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 void DIAG_GenerateTrapezoidWave()
 {
 	float PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]) * CONVERSION_REDUC_THOUSAND;
+	float StartAmplitude = ABS(DataTable[REG_DBG]) * CONVERSION_REDUC_THOUSAND;
 	Int32U RiseMs = (Int32U)DataTable[REG_PULSE_RISE_DURATION];
 	Int32U FlatMs = (Int32U)DataTable[REG_PULSE_DURATION];
-	Int32U RiseSteps, FlatSteps;
+	Int32U RiseSteps, FlatSteps, StartSteps;
 
 	if (RiseMs == 0u)
 		RiseMs = 1u;
 
 	RiseSteps = (RiseMs * 1000u) / TIMER15_uS;
 	FlatSteps = (FlatMs * 1000u) / TIMER15_uS;
+	StartSteps = (TIME_START_FLAT * 1000u) / TIMER15_uS;
 
 	if (RiseSteps == 0u)
 		RiseSteps = 1u;
 
-	for (Int32U i = 1; i <= RiseSteps; ++i)
+	for (Int32U i = 0; i <= StartSteps; ++i)
 	{
-		float setPoint = PulseAmplitude * ((float)i / (float)RiseSteps);
+		LL_WriteDAC(MEASURE_ConvertUset(StartAmplitude),0);
+		DELAY_US(TIMER15_uS);
+	}
+	for (Int32U i = 0; i < RiseSteps; ++i)
+	{
+		float setPoint = StartAmplitude;
+		if (RiseSteps > 1u)
+			setPoint += (PulseAmplitude - StartAmplitude) * ((float)i / (float)(RiseSteps - 1u));
+		else
+			setPoint = PulseAmplitude;
 		LL_WriteDAC(MEASURE_ConvertUset(setPoint),0);
 		DELAY_US(TIMER15_uS);
 	}
