@@ -304,6 +304,12 @@ void CONTROL_InitStoragePointers()
 	STF_AssignPointer(9, (Int32U)&DataTable[REG_DIAG_VOLTAGE]);
 	STF_AssignPointer(10, (Int32U)&DataTable[REG_SELFTEST_STEP]);
 	STF_AssignPointer(11, (Int32U)&DataTable[REG_DEBUG_SCALING_COEF]);
+	STF_AssignPointer(12, (Int32U)CONTROL_RegulatorIces);
+	STF_AssignPointer(13, (Int32U)CONTROL_RegulatorUce);
+	STF_AssignPointer(14, (Int32U)CONTROL_RegulatorSetpoint);
+	STF_AssignPointer(15, (Int32U)CONTROL_RegulatorCorrection);
+	STF_AssignPointer(16, (Int32U)CONTROL_RegulatorError);
+	STF_AssignPointer(17, (Int32U)CONTROL_DACRaw);
 }
 //------------------------------------------
 
