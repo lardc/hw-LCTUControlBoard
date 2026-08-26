@@ -64,7 +64,8 @@ float MEASURE_Uce(float SampleADC)
 
 float MEASURE_Ucap()
 {
-	float Result = ((float)ADC1->DR / ADC_RESOLUTION) * DataTable[REG_U_ADC_REF] * DataTable[REG_U_G_K];
+	float Result = ((float)ADC1->DR / ADC_RESOLUTION) * DataTable[REG_U_ADC_REF] * DataTable[REG_U_BAT_K] + DataTable[REG_U_BAT_B];
+	DataTable[REG_U_BAT] = Result;
 	return (Result > 0) ? Result : 0;
 }
 //------------------------------------

@@ -60,7 +60,10 @@
 #define REG_U_G_P0						3	// Смещение тонкой подстройки Р0
 #define REG_U_G_K						4	// Коэффициент преобразования K
 #define REG_U_G_B						5	// Коэффициент преобразования B
-// 6 - 10
+//
+#define REG_U_BAT_K						6	// Коэффициент преобразования K
+#define REG_U_BAT_B						7	// Коэффициент преобразования B
+// 8 - 10
 //
 #define REG_I_0_P2						11	// Коэффициент тонкой подстройки Р2
 #define REG_I_0_P1						12	// Коэффициент тонкой подстройки Р1
@@ -174,6 +177,7 @@
 #define REG_DIAG_VOLTAGE				231	// Полученное напряжение
 #define REG_SELFTEST_STEP				232	// Текущий шаг самодиагностики (0 - не активно, 1..6)
 #define REG_DEBUG_SCALING_COEF			233	// Рассчитанный коэф масштабирования
+#define REG_U_BAT						234	// Напряжение на батарее, В
 // -----------------------------
 
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
