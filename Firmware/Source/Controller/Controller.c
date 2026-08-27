@@ -218,7 +218,7 @@ void CONTROL_StartMeasure(MeasureType Type)
 	if(CONTROL_IsSafetyOk())
 	{
 		CONTROL_SetDeviceState(DS_InProcess);
-		CONTROL_SetDeviceSubState(SS_Preparation);
+		CONTROL_SetDeviceSubState(SS_Init);
 	}
 }
 //------------------------------------------
@@ -231,7 +231,7 @@ bool CONTROL_IsSafetyOk()
 	{
 		if(CONTROL_State == DS_InProcess)
 		{
-			// TODO: остановка формирования с отключением HV выхода
+			// TODO: остановка формирования с отключением HV выхода, но без разряда
 
 			DataTable[REG_PROBLEM] = PROBLEM_SAFETY;
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;

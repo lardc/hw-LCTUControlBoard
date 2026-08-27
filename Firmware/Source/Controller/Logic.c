@@ -60,21 +60,20 @@ void LOGIC_HandleMeasurement()
 				}
 				break;
 
-			case SS_Preparation:
-				if (Ucap < DataTable[REG_U_CAP_READY])
+			case SS_Init:
+				if(Ucap < DataTable[REG_U_CAP_READY])
 				{
+					// TODO: здесь фолт
 					CONTROL_SwitchToProblem(PROBLEM_CAP_VOLTAGE_LOW);
 					break;
 				}
+
 				LL_SetStateRelay(RELAY_LCAU_HV_OUT, true);
-				if (CONTROL_MeasureType == MT_ST_TestLoad)
+				if(CONTROL_MeasureType == MT_ST_TestLoad)
 					LL_SetStateRelay(RELAY_HV_OUT, false);
 				else
 					LL_SetStateRelay(RELAY_HV_OUT, true);
-				CONTROL_SetDeviceSubState(SS_Init);
-				break;
 
-			case SS_Init:
 				UceResult = IcesResult = 0.0f;
 				ForcedCh = DataTable[REG_DIAG_FORCE_CHANNEL];
 				SyncIsOn = false;
@@ -144,6 +143,7 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_RegulatorProcess:
+				// TODO: странная логика с флагом SyncIsOn
 				if (!SyncIsOn && CONTROL_TimeCounter > SyncDelayTimeout)
 				{
 					LL_SyncOSC(true);
@@ -166,6 +166,7 @@ void LOGIC_HandleMeasurement()
 					SyncIsOn = true;
 				}
 
+				// TODO: если первое условие выполнилось, а второе не выполняется. Проверить условия в других сабстейтах
 				if(CONTROL_TimeCounter > Timeout)
 					if(IsMeasureOk)
 					{
@@ -286,7 +287,7 @@ static bool LOGIC_SelectIcesChannel()
 	}
 	else
 	{
-		float ImaxA = DataTable[REG_MAX_CURRENT_ICES] * CONVERSION_REDUC_THOUSAND;
+		float ImaxA = DataTable[REG_MAX_CURRENT_ICES] * 0.001f;
 		LOGIC_ChannelNumber = LOGIC_SelectChannelByMaxCurrent(ImaxA);
 	}
 
@@ -307,6 +308,7 @@ static bool LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA)
 
 	switch (StepIdx)
 	{
+		// TODO: заменить ожидаемые значения из регистров
 		case 0:
 			LL_SetStateRelay(RELAY_SELFTEST1_7MEG, true);
 			LOGIC_ChannelNumber = I_CHANNEL_1;

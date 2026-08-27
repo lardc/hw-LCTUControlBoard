@@ -82,7 +82,7 @@ void REGLTR_Init()
 	VoltagErrThreshold = DataTable[REG_VOLTAGE_ERR_THRESH];
 	VoltagErrLimit = DataTable[REG_VOLTAGE_ERR_COUNT_LIMIT];
 	MaxCurrentErrLimit = (Int16U)DataTable[REG_MAX_CURRENT_ERR_COUNT_LIMIT];
-	MaxCurrentA = DataTable[REG_MAX_CURRENT_ICES] * CONVERSION_REDUC_THOUSAND;
+	MaxCurrentA = DataTable[REG_MAX_CURRENT_ICES] * 0.001f;
 	RawSetPoint = 0;
 	RegState = RS_Rise;
 	RegulatorError = 0;
@@ -90,11 +90,11 @@ void REGLTR_Init()
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Ices:
-			PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]) * CONVERSION_REDUC_THOUSAND;
+			PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]) * 0.001f;
 			break;
 
 		case MT_ST_TestLoad:
-			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * CONVERSION_REDUC_THOUSAND;
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001f;
 			break;
 	}
 
@@ -102,7 +102,7 @@ void REGLTR_Init()
 	if (PulseRiseMs == 0u)
 		PulseRiseMs = 1u;
 	RiseRate = PulseAmplitude / (float)PulseRiseMs;
-	VoltStep = RiseRate * TIMER15_uS * CONVERSION_REDUC_THOUSAND;
+	VoltStep = RiseRate * TIMER15_uS * 0.001f;
 
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];
