@@ -162,7 +162,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				CONTROL_SetDeviceState(DS_InProcess);
 				CONTROL_SetDeviceSubState(SS_Activation);
 			}
-			else
+			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 			
