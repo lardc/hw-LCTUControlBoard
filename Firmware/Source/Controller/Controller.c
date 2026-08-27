@@ -231,7 +231,11 @@ bool CONTROL_IsSafetyOk()
 	{
 		if(CONTROL_State == DS_InProcess)
 		{
-			// TODO: остановка формирования с отключением HV выхода, но без разряда
+			LOGIC_StopProcess();
+			LL_SetStateRelay(RELAY_HV_OUT, false);
+
+			CONTROL_SetDeviceState(DS_Ready);
+			CONTROL_SetDeviceSubState(SS_None);
 
 			DataTable[REG_PROBLEM] = PROBLEM_SAFETY;
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
