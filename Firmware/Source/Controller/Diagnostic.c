@@ -206,11 +206,12 @@ void DIAG_GenerateTrapezoidWave()
 	if (RiseSteps == 0u)
 		RiseSteps = 1u;
 
-	for (Int32U i = 0; i <= StartSteps; ++i)
+	for(Int32U i = 0; i < StartSteps; ++i)
 	{
-		LL_WriteDAC(MEASURE_ConvertUset(StartAmplitude),0);
+		LL_WriteDAC(MEASURE_ConvertUset(StartAmplitude), 0);
 		DELAY_US(TIMER15_uS);
 	}
+
 	for (Int32U i = 0; i < RiseSteps; ++i)
 	{
 		float setPoint = StartAmplitude;
