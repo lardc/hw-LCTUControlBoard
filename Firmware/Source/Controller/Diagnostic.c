@@ -35,7 +35,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SWITCH_RELAY:
-			for(Int16U i = RELAY_RMES1; i <= RELAY_RMES5; i++)
+			for(Int16U i = RELAY_RMES1_NC; i <= RELAY_RMES5; i++)
 			{
 				LL_SetStateRelay((RelayId)i, true);
 				DELAY_MS(200);
@@ -92,7 +92,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_LCAU_DISCHARGE:
-			LL_SetStateRelay(RELAY_LCAU_DISCHARGE, DataTable[REG_DBG]);
+			LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_LCAU_SOFTSTART:
@@ -100,7 +100,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SFTY_READ:
-			DataTable[REG_DBG] = LL_SafetyState();
+			DataTable[REG_DBG] = LL_IsSafetyOk();
 			break;
 
 		case ACT_DBG_V_OUT_ADC_RAW_READ:

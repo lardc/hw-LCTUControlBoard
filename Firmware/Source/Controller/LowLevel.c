@@ -10,9 +10,9 @@
 Int32U CycleCounters[COMMUTATION_TABLE_SIZE] = {0};
 static bool RelayState[RELAY_COUNT] = {false};
 const GPIO_PortPinSettingMacro* RelayPins[RELAY_COUNT] = {
-		&GPIO_LCAU_INPUT_CONTACTOR, &GPIO_LCAU_HV_OUT, &GPIO_LCAU_DISCHARGE,
+		&GPIO_LCAU_INPUT_CONTACTOR, &GPIO_LCAU_HV_OUT, &GPIO_LCAU_DISCHARGE_DISABLE,
 		&GPIO_HV_OUT, &GPIO_SELFTEST1_7MEG, &GPIO_SELFTEST2_700MEG,
-		&GPIO_RMES1, &GPIO_RMES2, &GPIO_RMES3, &GPIO_RMES4, &GPIO_RMES5};
+		&GPIO_RMES1_NC, &GPIO_RMES2, &GPIO_RMES3, &GPIO_RMES4, &GPIO_RMES5};
 
 // Forward functions
 //
@@ -68,13 +68,13 @@ void LL_SetRelaySafeState()
 {
 	LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, false);
 	LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
-	LL_SetStateRelay(RELAY_LCAU_DISCHARGE, true);	// NC реле разряда батареи
+	LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, true);	// NC реле разряда батареи
 
 	LL_SetStateRelay(RELAY_HV_OUT, false);
 	LL_SetStateRelay(RELAY_SELFTEST1_7MEG, false);
 	LL_SetStateRelay(RELAY_SELFTEST2_700MEG, false);
 
-	LL_SetStateRelay(RELAY_RMES1, false);			// NC реле диапазона 300 мА
+	LL_SetStateRelay(RELAY_RMES1_NC, false);				// NC реле канала тока
 	LL_SetStateRelay(RELAY_RMES2, false);
 	LL_SetStateRelay(RELAY_RMES3, false);
 	LL_SetStateRelay(RELAY_RMES4, false);
@@ -109,7 +109,7 @@ void LL_WriteDAC(Int16U DataA, Int16U DataB)
 
 static void LL_SetChannelRelaysOff()
 {
-	LL_SetStateRelay(RELAY_RMES1, false);
+	LL_SetStateRelay(RELAY_RMES1_NC, false);
 	LL_SetStateRelay(RELAY_RMES2, false);
 	LL_SetStateRelay(RELAY_RMES3, false);
 	LL_SetStateRelay(RELAY_RMES4, false);
@@ -123,7 +123,7 @@ void LL_SetCurrentChannel(IChannel Channel)
 	{
 		case I_CHANNEL_1:
 			LL_SetChannelRelaysOff();
-			LL_SetStateRelay(RELAY_RMES1, true);
+			LL_SetStateRelay(RELAY_RMES1_NC, true);
 			break;
 		case I_CHANNEL_2:
 			LL_SetChannelRelaysOff();
@@ -143,15 +143,15 @@ void LL_SetCurrentChannel(IChannel Channel)
 			break;
 		default:
 			LL_SetChannelRelaysOff();
-			LL_SetStateRelay(RELAY_RMES1, true);
+			LL_SetStateRelay(RELAY_RMES1_NC, true);
 			break;
 	}
 }
 //-----------------------------
 
-bool LL_SafetyState()
+bool LL_IsSafetyOk()
 {
-	return GPIO_GetState(GPIO_SAFETY);
+	return !GPIO_GetState(GPIO_SAFETY);
 }
 //-----------------------------
 

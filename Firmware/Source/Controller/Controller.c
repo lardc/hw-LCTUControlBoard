@@ -167,10 +167,11 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 			
 		case ACT_DISABLE_POWER:
-			if(CONTROL_State == DS_Ready || CONTROL_State == DS_InProcess)
+			if(CONTROL_State == DS_Ready)
 			{
-				CONTROL_SetDeviceState(DS_InProcess);
-				CONTROL_SetDeviceSubState(SS_Deactivation);
+				LOGIC_Deactivate();
+				CONTROL_SetDeviceState(DS_None);
+				CONTROL_SetDeviceSubState(SS_None);
 			}
 			else if(CONTROL_State != DS_None)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -214,7 +215,7 @@ void CONTROL_StartMeasure(MeasureType Type)
 {
 	CONTROL_MeasureType = Type;
 	CONTROL_ResetData();
-	if (CONTROL_IsSafetyOk())
+	if(CONTROL_IsSafetyOk())
 	{
 		CONTROL_SetDeviceState(DS_InProcess);
 		CONTROL_SetDeviceSubState(SS_Preparation);
@@ -224,26 +225,19 @@ void CONTROL_StartMeasure(MeasureType Type)
 
 bool CONTROL_IsSafetyOk()
 {
-	if(!DataTable[REG_SAFETY_MUTE])
+	if(LL_IsSafetyOk() || DataTable[REG_SAFETY_MUTE])
+		return true;
+	else
 	{
-		if(LL_SafetyState())
+		if(CONTROL_State == DS_InProcess)
 		{
+			// TODO: остановка формирования с отключением HV выхода
+
 			DataTable[REG_PROBLEM] = PROBLEM_SAFETY;
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-			if (CONTROL_State == DS_InProcess
-					&& CONTROL_SubState != SS_Deactivation
-					&& CONTROL_SubState != SS_DeactivationWaitRout
-					&& CONTROL_SubState != SS_DeactivationWaitRcon)
-			{
-				CONTROL_SetDeviceSubState(SS_Deactivation);
-			}
-			return false;
 		}
-		else
-			return true;
+		return false;
 	}
-	else
-		return true;
 }
 //-----------------------------------------------
 

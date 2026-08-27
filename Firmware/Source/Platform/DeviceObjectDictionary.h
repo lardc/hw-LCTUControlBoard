@@ -29,6 +29,7 @@
 
 #define ACT_START_MEASURE_ICES			101	// Запуск процесса измерения Ices
 #define ACT_START_SELFTEST_TESTLOAD		104 // Запуск процесса самодиагностики с тестовой нагрузкой
+
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
 #define ACT_RESET_TO_DEFAULT			202	// Сброс DataTable в состояние по умолчанию
@@ -129,7 +130,7 @@
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
 #define REG_PULSE_RISE_DURATION			86	// Длительность фронта импульса, мс
 #define REG_PULSE_DURATION				87	// Длительность импульса, мс
-#define REG_DEACT_RCON_DELAY			88	// Задержка перед Rdis после Rcon OFF, мс
+// 88
 #define REG_REGLTR_TIMER				89	// Время для выхода регулятора на рабочее напряжение, мс
 #define REG_DEACT_ROUT_DELAY			90	// Задержка на размыкание RoutLCTU, мс
 #define REG_RELAY_SW_TIMER_ICES			91	// Время переключения реле тока при измерении Ices, мс

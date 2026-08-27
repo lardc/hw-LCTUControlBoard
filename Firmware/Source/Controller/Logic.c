@@ -48,48 +48,15 @@ void LOGIC_HandleMeasurement()
 		switch(CONTROL_SubState)
 		{
 			case SS_Activation:
-				LL_SetStateRelay(RELAY_LCAU_DISCHARGE, true);
+				LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, true);
 				LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, true);
-				if (Ucap >= DataTable[REG_U_CAP_ACTIVATE_RSS])
-					GPIO_SetState(GPIO_LCAU_SOFTSTART_DISABLE, true);
-				if (Ucap >= DataTable[REG_U_CAP_READY])
+				if(Ucap >= DataTable[REG_U_CAP_ACTIVATE_RSS])
+					LL_LCAU_SoftStart(false);
+
+				if(Ucap >= DataTable[REG_U_CAP_READY])
 				{
 					CONTROL_SetDeviceState(DS_Ready);
 					CONTROL_SetDeviceSubState(SS_None);
-					DataTable[REG_OP_RESULT] = OPRESULT_OK;
-				}
-				break;
-
-			case SS_Deactivation:
-				LOGIC_StopProcess();
-				LL_SetStateRelay(RELAY_RMES1, false);
-				LL_SetStateRelay(RELAY_RMES2, false);
-				LL_SetStateRelay(RELAY_RMES3, false);
-				LL_SetStateRelay(RELAY_RMES4, false);
-				LL_SetStateRelay(RELAY_RMES5, false);
-				LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
-				GPIO_SetState(GPIO_LCAU_SOFTSTART_DISABLE, false);
-				Timeout = CONTROL_TimeCounter + DataTable[REG_DEACT_ROUT_DELAY];
-				CONTROL_SetDeviceSubState(SS_DeactivationWaitRout);
-				break;
-
-			case SS_DeactivationWaitRout:
-				if(CONTROL_TimeCounter > Timeout)
-				{
-					LL_SetStateRelay(RELAY_HV_OUT, false);
-					LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, false);
-					Timeout = CONTROL_TimeCounter + DataTable[REG_DEACT_RCON_DELAY];
-					CONTROL_SetDeviceSubState(SS_DeactivationWaitRcon);
-				}
-				break;
-
-			case SS_DeactivationWaitRcon:
-				if(CONTROL_TimeCounter > Timeout)
-				{
-					LL_SetStateRelay(RELAY_LCAU_DISCHARGE, false);
-					CONTROL_SetDeviceState(DS_None);
-					CONTROL_SetDeviceSubState(SS_None);
-					DataTable[REG_OP_RESULT] = OPRESULT_OK;
 				}
 				break;
 
@@ -264,6 +231,25 @@ void LOGIC_HandleMeasurement()
 				break;
 		}
 	}
+}
+//------------------------------------------
+
+void LOGIC_Deactivate()
+{
+	LOGIC_StopProcess();
+
+	LL_SetStateRelay(RELAY_RMES1_NC, false);
+	LL_SetStateRelay(RELAY_RMES2, false);
+	LL_SetStateRelay(RELAY_RMES3, false);
+	LL_SetStateRelay(RELAY_RMES4, false);
+	LL_SetStateRelay(RELAY_RMES5, false);
+
+	LL_SetStateRelay(RELAY_HV_OUT, false);
+	LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
+	LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, false);
+
+	LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, false);
+	LL_LCAU_SoftStart(true);
 }
 //------------------------------------------
 

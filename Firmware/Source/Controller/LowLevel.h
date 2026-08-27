@@ -23,11 +23,11 @@ typedef enum RelayId
 {
 	RELAY_LCAU_INPUT_CONTACTOR = 0,
 	RELAY_LCAU_HV_OUT,
-	RELAY_LCAU_DISCHARGE,
+	RELAY_LCAU_DISCHARGE_DISABLE,
 	RELAY_HV_OUT,
 	RELAY_SELFTEST1_7MEG,
 	RELAY_SELFTEST2_700MEG,
-	RELAY_RMES1,
+	RELAY_RMES1_NC,
 	RELAY_RMES2,
 	RELAY_RMES3,
 	RELAY_RMES4,
@@ -50,7 +50,7 @@ void LL_SetRelaySafeState();
 void LL_SPI_WriteByte(uint16_t Data, bool DACChannel);
 void LL_WriteDAC(Int16U DataA,Int16U DataB);
 void LL_SetCurrentChannel(IChannel Channel);
-bool LL_SafetyState();
+bool LL_IsSafetyOk();
 void LL_ToggleLDAC();
 void LL_LCAU_SoftStart(bool State);
 
