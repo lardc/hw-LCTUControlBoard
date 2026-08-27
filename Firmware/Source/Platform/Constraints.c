@@ -15,8 +15,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 3
 	{COEF_K_MIN, COEF_K_MAX, COEF_K_UG_DEF},									// 4
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 5
-	{0, 0, 0},																	// 6
-	{0, 0, 0},																	// 7
+	{COEF_K_MIN, COEF_K_MAX, COEF_K_UBAT_DEF},									// 6
+	{COEF_B_MIN, COEF_B_MAX, 0},												// 7
 	{0, 0, 0},																	// 8
 	{0, 0, 0},																	// 9
 	{0, 0, 0},																	// 10

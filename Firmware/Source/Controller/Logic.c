@@ -25,7 +25,6 @@ static bool SelfTestStartDelayDone = false;
 
 // Forward functions
 //
-void LOGIC_StopProcess();
 static IChannel LOGIC_SelectChannelByMaxCurrent(float ImaxA);
 static bool LOGIC_SelectIcesChannel();
 static bool LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA);

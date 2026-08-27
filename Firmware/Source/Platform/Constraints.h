@@ -20,11 +20,12 @@
 #define COEF_P0_MAX					INT16S_MAX
 #define COEF_P0_DEF					0
 //
-#define COEF_K_MIN					0
-#define COEF_K_MAX					INT16U_MAX
-#define COEF_K_USET_DEF				3751.0f		// K default (moved from Global)
-#define COEF_K_IMEAS_DEF			1.0f		// K default (moved from Global)
-#define COEF_K_UG_DEF				3751.0f		// K default (moved from Global)
+#define COEF_K_MIN					1e-6f
+#define COEF_K_MAX					1e+6f
+#define COEF_K_USET_DEF				3751.0f
+#define COEF_K_IMEAS_DEF			1.0f
+#define COEF_K_UG_DEF				3751.0f
+#define COEF_K_UBAT_DEF				1.0f
 //
 #define COEF_B_MIN					INT16S_MIN
 #define COEF_B_MAX					INT16S_MAX
