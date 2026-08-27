@@ -9,13 +9,13 @@
 
 #define ACT_DBG_EXT_INDICATION			10	// Управление внешней индикацией по состоянию отладочного регистра REG_DBG
 #define ACT_DBG_FAN						11	// Управление вентилятором по состоянию отладочного регистра REG_DBG
-#define ACT_DBG_ST						12	// Управление реле самодиагностики по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_SELF_TEST_RELAY			12	// Управление реле самодиагностики по состоянию отладочного регистра REG_DBG
 											// 0 – выключено, 1 – включен ST1, 2 – включен ST2
-#define ACT_DBG_LCTU_OUT				13	// Управление выходным реле LCTU по состоянию отладочного регистра REG_DBG
-#define ACT_DBG_LCAU_OUT				14	// Управление выходным реле LCAU по состоянию отладочного регистра REG_DBG
-#define ACT_DBG_CONT					15	// Управление контактором в LCAU по состоянию отладочного регистра REG_DBG
-#define ACT_DBG_DIS						16	// Управление реле разряда в LCAU по состоянию отладочного регистра REG_DBG
-#define ACT_DBG_SOFT					17	// Управление плавным пуском в LCAU по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_HV_OUT					13	// Управление выходным HV реле по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_LCAU_HV_OUT				14	// Управление выходным реле LCAU по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_LCAU_INPUT_CONTACTOR	15	// Управление входным контактором в LCAU по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_LCAU_DISCHARGE			16	// Управление реле разряда в LCAU по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_LCAU_SOFTSTART			17	// Управление плавным пуском в LCAU по состоянию отладочного регистра REG_DBG
 #define ACT_DBG_SPI_WRITE_TWO_BYTES		18	// Запись двух байтов для отладки SPI
 #define ACT_DBG_PULSE					19	// Запуск импульса в виде трапеции
 #define ACT_DBG_SYNC_OSC				20	// Запуск синхронизации осциллографа

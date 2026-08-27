@@ -48,11 +48,10 @@ void LOGIC_HandleMeasurement()
 		switch(CONTROL_SubState)
 		{
 			case SS_Activation:
-				// Активация по ТТ: Rdis open, Rcon close; Rss - после порога Ucap.
-				LL_SetStateRelay(RELAY_RDIS, true);
-				LL_SetStateRelay(RELAY_RCON, true);
+				LL_SetStateRelay(RELAY_LCAU_DISCHARGE, true);
+				LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, true);
 				if (Ucap >= DataTable[REG_U_CAP_ACTIVATE_RSS])
-					GPIO_SetState(GPIO_RSS, true);
+					GPIO_SetState(GPIO_LCAU_SOFTSTART_DISABLE, true);
 				if (Ucap >= DataTable[REG_U_CAP_READY])
 				{
 					CONTROL_SetDeviceState(DS_Ready);
@@ -68,8 +67,8 @@ void LOGIC_HandleMeasurement()
 				LL_SetStateRelay(RELAY_RMES3, false);
 				LL_SetStateRelay(RELAY_RMES4, false);
 				LL_SetStateRelay(RELAY_RMES5, false);
-				LL_SetStateRelay(RELAY_ROUT_LCAU, false);
-				GPIO_SetState(GPIO_RSS, false);
+				LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
+				GPIO_SetState(GPIO_LCAU_SOFTSTART_DISABLE, false);
 				Timeout = CONTROL_TimeCounter + DataTable[REG_DEACT_ROUT_DELAY];
 				CONTROL_SetDeviceSubState(SS_DeactivationWaitRout);
 				break;
@@ -77,8 +76,8 @@ void LOGIC_HandleMeasurement()
 			case SS_DeactivationWaitRout:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					LL_SetStateRelay(RELAY_ROUT_LCTU, false);
-					LL_SetStateRelay(RELAY_RCON, false);
+					LL_SetStateRelay(RELAY_HV_OUT, false);
+					LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, false);
 					Timeout = CONTROL_TimeCounter + DataTable[REG_DEACT_RCON_DELAY];
 					CONTROL_SetDeviceSubState(SS_DeactivationWaitRcon);
 				}
@@ -87,7 +86,7 @@ void LOGIC_HandleMeasurement()
 			case SS_DeactivationWaitRcon:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					LL_SetStateRelay(RELAY_RDIS, false);
+					LL_SetStateRelay(RELAY_LCAU_DISCHARGE, false);
 					CONTROL_SetDeviceState(DS_None);
 					CONTROL_SetDeviceSubState(SS_None);
 					DataTable[REG_OP_RESULT] = OPRESULT_OK;
@@ -100,11 +99,11 @@ void LOGIC_HandleMeasurement()
 					CONTROL_SwitchToProblem(PROBLEM_CAP_VOLTAGE_LOW);
 					break;
 				}
-				LL_SetStateRelay(RELAY_ROUT_LCAU, true);
+				LL_SetStateRelay(RELAY_LCAU_HV_OUT, true);
 				if (CONTROL_MeasureType == MT_ST_TestLoad)
-					LL_SetStateRelay(RELAY_ROUT_LCTU, false);
+					LL_SetStateRelay(RELAY_HV_OUT, false);
 				else
-					LL_SetStateRelay(RELAY_ROUT_LCTU, true);
+					LL_SetStateRelay(RELAY_HV_OUT, true);
 				CONTROL_SetDeviceSubState(SS_Init);
 				break;
 
@@ -317,38 +316,38 @@ static bool LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA)
 
 	DataTable[REG_SELFTEST_STEP] = StepIdx + 1;
 
-	LL_SetStateRelay(RELAY_RST1, false);
-	LL_SetStateRelay(RELAY_RST2, false);
+	LL_SetStateRelay(RELAY_SELFTEST1_7MEG, false);
+	LL_SetStateRelay(RELAY_SELFTEST2_700MEG, false);
 
 	switch (StepIdx)
 	{
 		case 0:
-			LL_SetStateRelay(RELAY_RST1, true);
+			LL_SetStateRelay(RELAY_SELFTEST1_7MEG, true);
 			LOGIC_ChannelNumber = I_CHANNEL_1;
 			*ExpectedCurrentA = 10e-6f;
 			break;
 		case 1:
-			LL_SetStateRelay(RELAY_RST1, true);
+			LL_SetStateRelay(RELAY_SELFTEST1_7MEG, true);
 			LOGIC_ChannelNumber = I_CHANNEL_1;
 			*ExpectedCurrentA = 100e-6f;
 			break;
 		case 2:
-			LL_SetStateRelay(RELAY_RST2, true);
+			LL_SetStateRelay(RELAY_SELFTEST2_700MEG, true);
 			LOGIC_ChannelNumber = I_CHANNEL_2;
 			*ExpectedCurrentA = 1e-3f;
 			break;
 		case 3:
-			LL_SetStateRelay(RELAY_RST2, true);
+			LL_SetStateRelay(RELAY_SELFTEST2_700MEG, true);
 			LOGIC_ChannelNumber = I_CHANNEL_3;
 			*ExpectedCurrentA = 10e-3f;
 			break;
 		case 4:
-			LL_SetStateRelay(RELAY_RST2, true);
+			LL_SetStateRelay(RELAY_SELFTEST2_700MEG, true);
 			LOGIC_ChannelNumber = I_CHANNEL_4;
 			*ExpectedCurrentA = 100e-3f;
 			break;
 		case 5:
-			LL_SetStateRelay(RELAY_RST2, true);
+			LL_SetStateRelay(RELAY_SELFTEST2_700MEG, true);
 			LOGIC_ChannelNumber = I_CHANNEL_5;
 			*ExpectedCurrentA = 300e-3f;
 			break;

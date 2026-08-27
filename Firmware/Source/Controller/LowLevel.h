@@ -21,12 +21,12 @@ typedef enum IChannel
 
 typedef enum RelayId
 {
-	RELAY_RCON = 0,
-	RELAY_ROUT_LCAU,
-	RELAY_RDIS,
-	RELAY_ROUT_LCTU,
-	RELAY_RST1,
-	RELAY_RST2,
+	RELAY_LCAU_INPUT_CONTACTOR = 0,
+	RELAY_LCAU_HV_OUT,
+	RELAY_LCAU_DISCHARGE,
+	RELAY_HV_OUT,
+	RELAY_SELFTEST1_7MEG,
+	RELAY_SELFTEST2_700MEG,
 	RELAY_RMES1,
 	RELAY_RMES2,
 	RELAY_RMES3,
@@ -52,5 +52,6 @@ void LL_WriteDAC(Int16U DataA,Int16U DataB);
 void LL_SetCurrentChannel(IChannel Channel);
 bool LL_SafetyState();
 void LL_ToggleLDAC();
+void LL_LCAU_SoftStart(bool State);
 
 #endif //__LOWLEVEL_H

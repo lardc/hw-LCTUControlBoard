@@ -46,13 +46,9 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_DAC_WRITE:
-			{
-				Int16U DACRaw =(Int16U) DataTable[REG_DBG];
-
-				LL_SPI_WriteByte(DACRaw, false);
-				LL_SPI_WriteByte(0, true);
-				LL_ToggleLDAC();
-			}
+			LL_SPI_WriteByte((Int16U)DataTable[REG_DBG], false);
+			LL_SPI_WriteByte(0, true);
+			LL_ToggleLDAC();
 			break;
 
 		case ACT_DBG_SYNC_OSC:
@@ -63,44 +59,44 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			GPIO_SetState(GPIO_SW_FAN, DataTable[REG_DBG]);
 			break;
 
-		case ACT_DBG_ST:
+		case ACT_DBG_SELF_TEST_RELAY:
 			if(DataTable[REG_DBG] == 0)
 			{
-				LL_SetStateRelay(RELAY_RST1, false);
-				LL_SetStateRelay(RELAY_RST2, false);
+				LL_SetStateRelay(RELAY_SELFTEST1_7MEG, false);
+				LL_SetStateRelay(RELAY_SELFTEST2_700MEG, false);
 			}
 			else if(DataTable[REG_DBG] == 1)
 			{
-				LL_SetStateRelay(RELAY_RST2, false);
-				LL_SetStateRelay(RELAY_RST1, true);
+				LL_SetStateRelay(RELAY_SELFTEST2_700MEG, false);
+				LL_SetStateRelay(RELAY_SELFTEST1_7MEG, true);
 			}
 			else if(DataTable[REG_DBG] == 2)
 			{
-				LL_SetStateRelay(RELAY_RST1, false);
-				LL_SetStateRelay(RELAY_RST2, true);
+				LL_SetStateRelay(RELAY_SELFTEST1_7MEG, false);
+				LL_SetStateRelay(RELAY_SELFTEST2_700MEG, true);
 			}
 			else
 				break;
 			break;
 
-		case ACT_DBG_LCTU_OUT:
-			LL_SetStateRelay(RELAY_ROUT_LCTU, DataTable[REG_DBG]);
+		case ACT_DBG_HV_OUT:
+			LL_SetStateRelay(RELAY_HV_OUT, DataTable[REG_DBG]);
 			break;
 
-		case ACT_DBG_LCAU_OUT:
-			LL_SetStateRelay(RELAY_ROUT_LCAU, DataTable[REG_DBG]);
+		case ACT_DBG_LCAU_HV_OUT:
+			LL_SetStateRelay(RELAY_LCAU_HV_OUT, DataTable[REG_DBG]);
 			break;
 
-		case ACT_DBG_CONT:
-			LL_SetStateRelay(RELAY_RCON, DataTable[REG_DBG]);
+		case ACT_DBG_LCAU_INPUT_CONTACTOR:
+			LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, DataTable[REG_DBG]);
 			break;
 
-		case ACT_DBG_DIS:
-			LL_SetStateRelay(RELAY_RDIS, DataTable[REG_DBG]);
+		case ACT_DBG_LCAU_DISCHARGE:
+			LL_SetStateRelay(RELAY_LCAU_DISCHARGE, DataTable[REG_DBG]);
 			break;
 
-		case ACT_DBG_SOFT:
-			GPIO_SetState(GPIO_RSS, DataTable[REG_DBG]);
+		case ACT_DBG_LCAU_SOFTSTART:
+			LL_LCAU_SoftStart(!DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_SFTY_READ:
