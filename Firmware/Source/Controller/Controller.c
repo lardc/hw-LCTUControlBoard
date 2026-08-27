@@ -233,6 +233,7 @@ bool CONTROL_IsSafetyOk()
 		{
 			LOGIC_StopProcess();
 			LL_SetStateRelay(RELAY_HV_OUT, false);
+			LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
 
 			CONTROL_SetDeviceState(DS_Ready);
 			CONTROL_SetDeviceSubState(SS_None);
