@@ -65,7 +65,6 @@ float MEASURE_Uce(float SampleADC)
 float MEASURE_Ucap()
 {
 	float Result = ((float)ADC1->DR / ADC_RESOLUTION) * DataTable[REG_U_ADC_REF] * DataTable[REG_U_BAT_K] + DataTable[REG_U_BAT_B];
-	DataTable[REG_U_BAT] = Result;
 	return (Result > 0) ? Result : 0;
 }
 //------------------------------------
@@ -83,14 +82,14 @@ Int16U MEASURE_ConvertUset(float Uset)
 {
 	float Result = Uset * Uset * DataTable[REG_U_SET_P2] + Uset * DataTable[REG_U_SET_P1] + DataTable[REG_U_SET_P0];
 	Result = Result * DataTable[REG_U_SET_K] + DataTable[REG_U_SET_B];
-	Result = (Int16U)((Result / DataTable[REG_U_ADC_REF]) * ADC_RESOLUTION);
+	Result = (Result / DataTable[REG_U_ADC_REF]) * ADC_RESOLUTION;
 
-	if (Result < 0)
-		Result = 0;
-	else if (Result > ADC_RESOLUTION)
-		Result = ADC_RESOLUTION;
-
-	return (Int16U)Result;
+	if(Result < 0)
+		return 0;
+	else if(Result > ADC_RESOLUTION)
+		return ADC_RESOLUTION;
+	else
+		return (Int16U)Result;
 }
 //------------------------------------
 
@@ -109,3 +108,4 @@ void MEASURE_ConvertIScope(pFloat32 InputArray, Int16U DataLength, IChannel Chan
 		REG_I_0_RSH + offset
 	);
 }
+//------------------------------------

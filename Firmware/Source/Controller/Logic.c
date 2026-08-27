@@ -40,12 +40,10 @@ void LOGIC_HandleMeasurement()
 
 	if(CONTROL_State == DS_InProcess)
 	{
-		float Ucap;
-
 		if(!CONTROL_IsSafetyOk())
 			return;
 
-		Ucap = MEASURE_Ucap();
+		float Ucap = DataTable[REG_U_BAT] = MEASURE_Ucap();
 
 		switch(CONTROL_SubState)
 		{
