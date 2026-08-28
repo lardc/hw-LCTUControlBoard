@@ -154,9 +154,7 @@ void RGLTR_ErrorCheck()
 				}
 			}
 			else
-			{
 				MaxCurrentErrCount = 0;
-			}
 
 			if(VoltageErr < VoltagErrThreshold)
 			{

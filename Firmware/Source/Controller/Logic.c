@@ -21,14 +21,12 @@ Int16U LOGIC_ChannelNumber = 0;
 static Int16U ForcedCh = 0;
 static bool SyncIsOn = false;
 static Int16U SelfTestStepIdx = 0;
-static bool SelfTestStartDelayDone = false;
 
 // Forward functions
 //
 static IChannel LOGIC_SelectChannelByMaxCurrent(float ImaxA);
 static bool LOGIC_SelectIcesChannel();
 static bool LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA);
-static bool LOGIC_IsSelfTestStepOk(float MeasuredCurrentA, float ExpectedCurrentA);
 
 // Functions
 //
@@ -92,7 +90,6 @@ void LOGIC_HandleMeasurement()
 
 					case MT_ST_TestLoad:
 						SelfTestStepIdx = 0;
-						SelfTestStartDelayDone = false;
 						Timeout = CONTROL_TimeCounter + DataTable[REG_DEACT_ROUT_DELAY];
 						CONTROL_SetDeviceSubState(SS_InitialRelayPause);
 						break;
@@ -108,14 +105,10 @@ void LOGIC_HandleMeasurement()
 				{
 					if (CONTROL_MeasureType == MT_ST_TestLoad)
 					{
-						if (!SelfTestStartDelayDone)
+						if (!LOGIC_SetupSelfTestStep(SelfTestStepIdx, &SelfTestExpectedCurrentA))
 						{
-							SelfTestStartDelayDone = true;
-							if (!LOGIC_SetupSelfTestStep(SelfTestStepIdx, &SelfTestExpectedCurrentA))
-							{
-								CONTROL_SwitchToProblem(PROBLEM_SELFTEST_FAILED);
-								break;
-							}
+							CONTROL_SwitchToProblem(PROBLEM_SELFTEST_FAILED);
+							break;
 						}
 					}
 					CONTROL_SetDeviceSubState(SS_ConfigPulse);
@@ -170,7 +163,7 @@ void LOGIC_HandleMeasurement()
 					if(IsMeasureOk)
 					{
 						IcesResult = Sample.Ices;
-						if(!LOGIC_IsSelfTestStepOk(IcesResult, SelfTestExpectedCurrentA))
+						if(ABS(ABS(IcesResult) - SelfTestExpectedCurrentA) > (SelfTestExpectedCurrentA * DataTable[REG_ST_CURRENT_ERR_THRESH]))
 						{
 							CONTROL_SwitchToProblem(PROBLEM_SELFTEST_FAILED);
 							break;
@@ -297,8 +290,7 @@ static bool LOGIC_SelectIcesChannel()
 
 static bool LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA)
 {
-	if (ExpectedCurrentA == 0)
-		return false;
+	float Resistance;
 
 	DataTable[REG_SELFTEST_STEP] = StepIdx + 1;
 
@@ -307,51 +299,43 @@ static bool LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA)
 
 	switch (StepIdx)
 	{
-		// TODO: заменить ожидаемые значения из регистров
 		case 0:
 			LL_SetStateRelay(RELAY_SELFTEST1_7MEG, true);
 			LOGIC_ChannelNumber = I_CHANNEL_1;
-			*ExpectedCurrentA = 10e-6f;
+			Resistance = DataTable[REG_ST_TESTLOAD_RESIS_7MOHM];
 			break;
 		case 1:
 			LL_SetStateRelay(RELAY_SELFTEST1_7MEG, true);
 			LOGIC_ChannelNumber = I_CHANNEL_1;
-			*ExpectedCurrentA = 100e-6f;
+			Resistance = DataTable[REG_ST_TESTLOAD_RESIS_7MOHM];
 			break;
 		case 2:
 			LL_SetStateRelay(RELAY_SELFTEST2_700MEG, true);
 			LOGIC_ChannelNumber = I_CHANNEL_2;
-			*ExpectedCurrentA = 1e-3f;
+			Resistance = DataTable[REG_ST_TESTLOAD_RESIS_700MOHM];
 			break;
 		case 3:
 			LL_SetStateRelay(RELAY_SELFTEST2_700MEG, true);
 			LOGIC_ChannelNumber = I_CHANNEL_3;
-			*ExpectedCurrentA = 10e-3f;
+			Resistance = DataTable[REG_ST_TESTLOAD_RESIS_700MOHM];
 			break;
 		case 4:
 			LL_SetStateRelay(RELAY_SELFTEST2_700MEG, true);
 			LOGIC_ChannelNumber = I_CHANNEL_4;
-			*ExpectedCurrentA = 100e-3f;
+			Resistance = DataTable[REG_ST_TESTLOAD_RESIS_700MOHM];
 			break;
 		case 5:
 			LL_SetStateRelay(RELAY_SELFTEST2_700MEG, true);
 			LOGIC_ChannelNumber = I_CHANNEL_5;
-			*ExpectedCurrentA = 300e-3f;
+			Resistance = DataTable[REG_ST_TESTLOAD_RESIS_700MOHM];
 			break;
 		default:
 			return false;
 	}
 
+	*ExpectedCurrentA = (DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001f) / Resistance;
+
 	LL_SetCurrentChannel(LOGIC_ChannelNumber);
 	return true;
-}
-//------------------------------------------
-
-static bool LOGIC_IsSelfTestStepOk(float MeasuredCurrentA, float ExpectedCurrentA)
-{
-	const float tolerance = 0.1f;
-	float absMeasured = ABS(MeasuredCurrentA);
-	float diff = ABS(absMeasured - ExpectedCurrentA);
-	return diff <= (ExpectedCurrentA * tolerance);
 }
 //------------------------------------------

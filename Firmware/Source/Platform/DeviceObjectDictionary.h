@@ -130,21 +130,19 @@
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
 #define REG_PULSE_RISE_DURATION			86	// Длительность фронта импульса, мс
 #define REG_PULSE_DURATION				87	// Длительность импульса, мс
-// 88
-#define REG_REGLTR_TIMER				89	// Время для выхода регулятора на рабочее напряжение, мс
+// 88 - 89
 #define REG_DEACT_ROUT_DELAY			90	// Задержка на размыкание RoutLCTU, мс
 #define REG_RELAY_SW_TIMER_ICES			91	// Время переключения реле тока при измерении Ices, мс
 #define REG_SYNC_DELAY_AFTER_FLAT		92	// Задержка выдачи SYNC после выхода на полку, мс
 #define REG_MAX_CURRENT_ERR_COUNT_LIMIT	93	// Лимит счетчика превышения тока перед PROBLEM_MAX_CURRENT_EXCEEDED
-//
-#define REG_SLEW_RATE_ICES				94	// Скорость нарастания для измерения Ices, В\мс
-// 95 - 96
-#define REG_SLEW_RATE_ST_TESTLOAD		97	// Скорость нарастания для самодиагностики с тестовой нагрузкой, В\мс
+// 94 - 97
 #define REG_ST_PULSE_DURATION			98	// Длительность импульса самодиагностики, мс
 #define REG_ST_TL_FLATTOP_DURATION		99	// Длительность полки поддержания напряжения при диагностики с нагрузкой, мс
 #define REG_RGLTR_ST_ERR_THRESH			100	// Порог ошибки напряжения для диаг. потенциальных линий, в частях от 0 до 1
-#define REG_ST_TESTLOAD_RESIS			101	// Сопротивление тестовой нагрузки, Ом
-// 102 - 105
+#define REG_ST_TESTLOAD_RESIS_7MOHM		101	// Сопротивление цепи самотестирования 7 МОм, Ом
+#define REG_ST_TESTLOAD_RESIS_700MOHM	102	// Сопротивление цепи самотестирования 700 МОм, Ом
+#define REG_ST_CURRENT_ERR_THRESH		103	// Порог погрешности тока самодиагностики, в частях от 0 до 1
+// 104 - 105
 #define REG_CNT_ACTIVE					106	// Включение сохранения счетчиков
 #define REG_SCALING_MUTE				107	// Отключение масштабирования значений в EP
 // 108 - 127

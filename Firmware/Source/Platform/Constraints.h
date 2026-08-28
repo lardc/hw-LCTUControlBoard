@@ -37,11 +37,11 @@
 #define COEF_RSH_CH2_DEF			220
 #define COEF_RSH_CH3_DEF			2200
 #define COEF_RSH_CH4_DEF			22000
-#define SLEW_RATE_MIN				1.0f
 //
 #define U_ICES_MIN					500
 #define U_ICES_MAX					7000 // в В
 #define U_ICES_DEF					500
+#define U_SELTTEST_MIN				1		// мВ
 #define U_SELTTEST_DEF				7000
 #define U_CAP_ACTIVATE_RSS_MIN		0
 #define U_CAP_ACTIVATE_RSS_MAX		INT16U_MAX
@@ -75,15 +75,15 @@
 #define PULSE_DURATION_DEF			100
 #define DEACT_ROUT_DELAY_DEF		20
 #define SYNC_DELAY_AFTER_FLAT_DEF	1
-#define REGULATOR_TIME_MIN			10
-#define REGULATOR_TIME_MAX			10000
 #define ST_PULSE_DURATION_DEF		100
 #define COEF_FLATTOP_DURATION_DEF	10
 //
 #define COEF_BASE_VOLT_DEF		3 		// в В
 //
-#define R_TESTLOAD_DEF			10000	// в Ом
-#define R_TESTLOAD_MIN			1
+#define R_ST_TESTLOAD_MIN			1
+#define R_ST_TESTLOAD_7MOHM_DEF		7e6f	// 7 МОм
+#define R_ST_TESTLOAD_700MOHM_DEF	700e6f	// 700 МОм
+#define ST_CURRENT_ERR_THRESH_DEF	0.1f
 //
 #define NO						0
 #define YES						1
