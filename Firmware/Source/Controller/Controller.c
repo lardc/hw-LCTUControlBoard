@@ -17,6 +17,7 @@
 #include "Logic.h"
 #include "JSONDescription.h"
 #include "SaveToFlash.h"
+#include "Constraints.h"
 
 // Defines
 //
@@ -37,6 +38,7 @@ volatile MeasureType CONTROL_MeasureType = MT_Ices;
 volatile Int64U CONTROL_TimeCounter = 0;
 static Int64U CT_SaveTimer = 0;					 // Последняя отметка времени автосохранения
 volatile Boolean RequestSaveToFlash = FALSE;
+static Boolean PendingAutoSelfTest = false;
 
 volatile Int16U CONTROL_ExtInfoCounter = 0;
 volatile float CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE] = {0};
@@ -98,6 +100,13 @@ void CONTROL_Init()
 
 
 	CONTROL_ResetToDefaultState();
+
+	if(DataTable[REG_USE_SELFTEST] == YES)
+	{
+		PendingAutoSelfTest = true;
+		CONTROL_SetDeviceState(DS_InProcess);
+		CONTROL_SetDeviceSubState(SS_Activation);
+	}
 }
 //------------------------------------------
 
@@ -130,6 +139,12 @@ void CONTROL_Idle()
 {
 	//Обработка логики мастер-команд
 	LOGIC_HandleMeasurement();
+
+	if(PendingAutoSelfTest && CONTROL_State == DS_Ready)
+	{
+		PendingAutoSelfTest = false;
+		CONTROL_StartMeasure(MT_ST_TestLoad);
+	}
 
 	if(CONTROL_State != DS_InProcess)
 	{
