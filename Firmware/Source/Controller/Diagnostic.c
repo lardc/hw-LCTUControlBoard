@@ -180,6 +180,13 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			GPIO_InitAltFunction(GPIO_ALT_SPI_MOSI, AltFn_5);
 			break;
 
+		case ACT_DBG_START_SELFTEST_TESTLOAD:
+			if(CONTROL_State == DS_Ready)
+				CONTROL_StartMeasure(MT_ST_TestLoad);
+			else
+				*pUserError = ERR_DEVICE_NOT_READY;
+			break;
+
 		default:
 			return false;
 	}

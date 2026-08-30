@@ -27,6 +27,7 @@ static Int16U SelfTestStepIdx = 0;
 static IChannel LOGIC_SelectChannelByMaxCurrent(float ImaxA);
 static bool LOGIC_SelectIcesChannel();
 static bool LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA);
+static void LOGIC_ErrorHandler(DeviceSubState SubState);
 
 // Functions
 //
@@ -60,8 +61,7 @@ void LOGIC_HandleMeasurement()
 			case SS_Init:
 				if(Ucap < DataTable[REG_U_CAP_READY])
 				{
-					// TODO: здесь фолт
-					CONTROL_SwitchToProblem(PROBLEM_CAP_VOLTAGE_LOW);
+					CONTROL_SwitchToFault(DF_CAP_VOLTAGE_LOW);
 					break;
 				}
 
@@ -107,7 +107,10 @@ void LOGIC_HandleMeasurement()
 					{
 						if (!LOGIC_SetupSelfTestStep(SelfTestStepIdx, &SelfTestExpectedCurrentA))
 						{
-							CONTROL_SwitchToProblem(PROBLEM_SELFTEST_FAILED);
+							DataTable[REG_DIAG_CURRENT] = Sample.Ices;
+							DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
+							LOGIC_StopProcess();
+							CONTROL_SwitchToFault(DF_SELFTEST_FAILED);
 							break;
 						}
 					}
@@ -165,7 +168,7 @@ void LOGIC_HandleMeasurement()
 						IcesResult = Sample.Ices;
 						if(ABS(ABS(IcesResult) - SelfTestExpectedCurrentA) > (SelfTestExpectedCurrentA * DataTable[REG_ST_CURRENT_ERR_THRESH]))
 						{
-							CONTROL_SwitchToProblem(PROBLEM_SELFTEST_FAILED);
+							CONTROL_SetDeviceSubState(SS_CurrentErr);
 							break;
 						}
 						if(SelfTestStepIdx >= 5)
@@ -178,7 +181,10 @@ void LOGIC_HandleMeasurement()
 							SelfTestStepIdx++;
 							if (!LOGIC_SetupSelfTestStep(SelfTestStepIdx, &SelfTestExpectedCurrentA))
 							{
-								CONTROL_SwitchToProblem(PROBLEM_SELFTEST_FAILED);
+								DataTable[REG_DIAG_CURRENT] = Sample.Ices;
+								DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
+								LOGIC_StopProcess();
+								CONTROL_SwitchToFault(DF_SELFTEST_FAILED);
 								break;
 							}
 							CONTROL_SetDeviceSubState(SS_ConfigPulse);
@@ -187,18 +193,10 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_FollowingErr:
-				LOGIC_StopProcess();
-				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR);
-				break;
-
 			case SS_VoltageErr:
-				LOGIC_StopProcess();
-				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
-				break;
-
+			case SS_CurrentErr:
 			case SS_MaxCurrentErr:
-				LOGIC_StopProcess();
-				CONTROL_SwitchToProblem(PROBLEM_MAX_CURRENT_EXCEEDED);
+				LOGIC_ErrorHandler(CONTROL_SubState);
 				break;
 
 			case SS_FinishProcess:
@@ -337,5 +335,48 @@ static bool LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA)
 
 	LL_SetCurrentChannel(LOGIC_ChannelNumber);
 	return true;
+}
+//------------------------------------------
+
+static void LOGIC_ErrorHandler(DeviceSubState SubState)
+{
+	Int16U FaultReason, ProblemReason;
+
+	switch(SubState)
+	{
+		case SS_FollowingErr:
+			FaultReason = DF_FOLLOWING_ERROR;
+			ProblemReason = PROBLEM_FOLLOWING_ERROR;
+			break;
+
+		case SS_VoltageErr:
+			FaultReason = DF_VOLTAGE_OUT_OF_RANGE;
+			ProblemReason = PROBLEM_VOLTAGE_OUT_OF_RANGE;
+			break;
+
+		case SS_CurrentErr:
+			FaultReason = DF_CURRENT_OUT_OF_RANGE;
+			ProblemReason = PROBLEM_SELFTEST_FAILED;
+			break;
+
+		case SS_MaxCurrentErr:
+			LOGIC_StopProcess();
+			CONTROL_SwitchToProblem(PROBLEM_MAX_CURRENT_EXCEEDED);
+			return;
+
+		default:
+			return;
+	}
+
+	LOGIC_StopProcess();
+
+	if(CONTROL_MeasureType == MT_ST_TestLoad)
+	{
+		DataTable[REG_DIAG_CURRENT] = Sample.Ices;
+		DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
+		CONTROL_SwitchToFault(FaultReason);
+	}
+	else
+		CONTROL_SwitchToProblem(ProblemReason);
 }
 //------------------------------------------

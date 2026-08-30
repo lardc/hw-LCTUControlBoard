@@ -24,6 +24,7 @@ typedef enum __DeviceSubState
 	SS_FollowingErr,
 	SS_VoltageErr,
 	SS_MaxCurrentErr,
+	SS_CurrentErr,
 	SS_FinishProcess,
 	SS_GetResults,
 	SS_RegulatorProcessSelfTest,
@@ -61,6 +62,8 @@ void CONTROL_Idle();
 void CONTROL_SetDeviceState(DeviceState NewState);
 void CONTROL_SetDeviceSubState(DeviceSubState NewSubState);
 void CONTROL_SwitchToProblem(Int16U Reason);
+void CONTROL_SwitchToFault(Int16U Reason);
+void CONTROL_StartMeasure(MeasureType Type);
 bool CONTROL_IsSafetyOk();
 void CONTROL_WatchDogUpdate();
 void CONTROL_InitJSONPointers();

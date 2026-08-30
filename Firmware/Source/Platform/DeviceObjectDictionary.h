@@ -26,9 +26,9 @@
 #define ACT_DBG_BAT_RAW_READ			25 	// Чтение сырого значения на батарее в LCAU в отладочный регистр REG_DBG
 #define ACT_DBG_I_ADC_RAW_READ			26 	// Чтение сырого значения тока в отладочный регистр REG_DBG
 #define ACT_DBG_OPTIC					27 	// Диагностическое переключение оптопередатчиков
+#define ACT_DBG_START_SELFTEST_TESTLOAD	30	// Запуск процесса самодиагностики с тестовой нагрузкой
 
 #define ACT_START_MEASURE_ICES			101	// Запуск процесса измерения Ices
-#define ACT_START_SELFTEST_TESTLOAD		104 // Запуск процесса самодиагностики с тестовой нагрузкой
 
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
@@ -193,6 +193,11 @@
 
 //  Fault and disable codes
 #define DF_NONE							0
+#define DF_FOLLOWING_ERROR				1	// Ошибка Following Error при самодиагностике
+#define DF_VOLTAGE_OUT_OF_RANGE			2	// Ошибка по напряжению при самодиагностике
+#define DF_CURRENT_OUT_OF_RANGE			3	// Ошибка по току при самодиагностике
+#define DF_SELFTEST_FAILED				4	// Самодиагностика завершилась с ошибкой
+#define DF_CAP_VOLTAGE_LOW				5	// Недостаточное напряжение накопителя при самодиагностике
 
 // Problem
 #define PROBLEM_NONE					0
@@ -202,7 +207,6 @@
 #define PROBLEM_NEED_MORE_SAMPLES		5 // Недостаточная длина измерения Ices для получения точного значения
 #define PROBLEM_WRONG_SELECTED_RELAY	7 // Выбрано неверное реле для диагностики
 #define PROBLEM_MAX_CURRENT_EXCEEDED	8 // Превышен максимальный ток в процессе измерения
-#define PROBLEM_CAP_VOLTAGE_LOW			9 // Недостаточное напряжение накопителя (Ucap)
 #define PROBLEM_SELFTEST_FAILED			10 // Самодиагностика завершилась с ошибкой
 
 //  Warning

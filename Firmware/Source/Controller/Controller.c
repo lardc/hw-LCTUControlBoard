@@ -60,7 +60,6 @@ void Delay_mS(uint32_t Delay);
 void CONTROL_WatchDogUpdate();
 void CONTROL_ResetToDefaultState();
 void CONTROL_ResetData();
-void CONTROL_StartMeasure(MeasureType Type);
 bool CONTROL_IsSafetyOk();
 void CONTROL_InitStoragePointers();
 
@@ -211,13 +210,6 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
-		case ACT_START_SELFTEST_TESTLOAD:
-			if(CONTROL_State == DS_Ready)
-				CONTROL_StartMeasure(MT_ST_TestLoad);
-			else
-				*pUserError = ERR_DEVICE_NOT_READY;
-			break;
-
 		default:
 			return DIAG_HandleDiagnosticAction(ActionID, pUserError);
 	}
@@ -332,6 +324,7 @@ void CONTROL_SwitchToFault(Int16U Reason)
 	CONTROL_SetDeviceSubState(SS_None);
 	CONTROL_SetDeviceState(DS_Fault);
 	DataTable[REG_FAULT_REASON] = Reason;
+	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 }
 //------------------------------------------
 
