@@ -81,6 +81,7 @@
 #define COEF_BASE_VOLT_DEF		3 		// в В
 //
 #define R_ST_TESTLOAD_MIN			1
+#define R_ST_TESTLOAD_MAX			1e9f
 #define R_ST_TESTLOAD_7MOHM_DEF		7e6f	// 7 МОм
 #define R_ST_TESTLOAD_700MOHM_DEF	700e6f	// 700 МОм
 #define ST_CURRENT_ERR_THRESH_DEF	0.1f
