@@ -19,7 +19,6 @@ static Int64U Timeout = 0;
 static Int64U SyncDelayTimeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
 static Int16U ForcedCh = 0;
-static bool SyncIsOn = false;
 static Int16U SelfTestStepIdx = 0;
 
 // Forward functions
@@ -73,7 +72,6 @@ void LOGIC_HandleMeasurement()
 
 				UceResult = IcesResult = 0.0f;
 				ForcedCh = DataTable[REG_DIAG_FORCE_CHANNEL];
-				SyncIsOn = false;
 				SyncDelayTimeout = 0;
 
 				switch(CONTROL_MeasureType)
@@ -138,12 +136,8 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_RegulatorProcess:
-				// TODO: странная логика с флагом SyncIsOn
-				if (!SyncIsOn && CONTROL_TimeCounter > SyncDelayTimeout)
-				{
+				if (!LL_IsSyncOn() && CONTROL_TimeCounter > SyncDelayTimeout)
 					LL_SyncOSC(true);
-					SyncIsOn = true;
-				}
 
 				if(CONTROL_TimeCounter > Timeout)
 				{
@@ -155,41 +149,36 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_RegulatorProcessSelfTest:
-				if (!SyncIsOn && CONTROL_TimeCounter > SyncDelayTimeout)
-				{
+				if (!LL_IsSyncOn() && CONTROL_TimeCounter > SyncDelayTimeout)
 					LL_SyncOSC(true);
-					SyncIsOn = true;
-				}
 
-				// TODO: если первое условие выполнилось, а второе не выполняется. Проверить условия в других сабстейтах
-				if(CONTROL_TimeCounter > Timeout)
-					if(IsMeasureOk)
+				if(IsMeasureOk && CONTROL_TimeCounter > Timeout)
+				{
+					IcesResult = Sample.Ices;
+					if(ABS(ABS(IcesResult) - SelfTestExpectedCurrentA) > (SelfTestExpectedCurrentA * DataTable[REG_ST_CURRENT_ERR_THRESH]))
 					{
-						IcesResult = Sample.Ices;
-						if(ABS(ABS(IcesResult) - SelfTestExpectedCurrentA) > (SelfTestExpectedCurrentA * DataTable[REG_ST_CURRENT_ERR_THRESH]))
+						CONTROL_SetDeviceSubState(SS_CurrentErr);
+						break;
+					}
+					if(SelfTestStepIdx >= 5)
+					{
+						DataTable[REG_OP_RESULT] = OPRESULT_OK;
+						CONTROL_SetDeviceSubState(SS_FinishProcess);
+					}
+					else
+					{
+						SelfTestStepIdx++;
+						if(!LOGIC_SetupSelfTestStep(SelfTestStepIdx, &SelfTestExpectedCurrentA))
 						{
-							CONTROL_SetDeviceSubState(SS_CurrentErr);
+							DataTable[REG_DIAG_CURRENT] = Sample.Ices;
+							DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
+							LOGIC_StopProcess();
+							CONTROL_SwitchToFault(DF_SELFTEST_FAILED);
 							break;
 						}
-						if(SelfTestStepIdx >= 5)
-						{
-							DataTable[REG_OP_RESULT] = OPRESULT_OK;
-							CONTROL_SetDeviceSubState(SS_FinishProcess);
-						}
-						else
-						{
-							SelfTestStepIdx++;
-							if (!LOGIC_SetupSelfTestStep(SelfTestStepIdx, &SelfTestExpectedCurrentA))
-							{
-								DataTable[REG_DIAG_CURRENT] = Sample.Ices;
-								DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
-								LOGIC_StopProcess();
-								CONTROL_SwitchToFault(DF_SELFTEST_FAILED);
-								break;
-							}
-							CONTROL_SetDeviceSubState(SS_ConfigPulse);
-						}
+						CONTROL_SetDeviceSubState(SS_ConfigPulse);
 					}
+				}
 				break;
 
 			case SS_FollowingErr:

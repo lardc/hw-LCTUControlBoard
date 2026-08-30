@@ -39,6 +39,12 @@ void LL_SyncOSC(bool State)
 }
 //-----------------------------
 
+bool LL_IsSyncOn()
+{
+	return !GPIO_GetState(GPIO_SW_SYNC);
+}
+//-----------------------------
+
 void LL_ToggleExternalLED()
 {
 	GPIO_Toggle(GPIO_SW_IND);
