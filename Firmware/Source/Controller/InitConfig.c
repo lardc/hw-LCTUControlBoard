@@ -90,7 +90,10 @@ void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger, bool 
 {
 	ADC_Calibration(ADCx);
 	ADC_Enable(ADCx);
-	ADC_TrigConfig(ADCx, Trigger, RISE);
+	if(Trigger == ADCxx_SOFT_TRIG)
+		ADC_SoftTrigConfig(ADCx);
+	else
+		ADC_TrigConfig(ADCx, Trigger, RISE);
 
 	ADC_ChannelSeqReset(ADCx);
 	for(int i = 1; i <= ADC_SEQ_LENGTH; i++)
@@ -109,8 +112,10 @@ void INITCFG_ADC()
 	RCC_ADC_Clk_EN(ADC_12_ClkEN);
 	RCC_ADC_Clk_EN(ADC_34_ClkEN);
 
-	// ADC1 (Ucap) читается по DR без DMA: AUTDLY+DMAEN без DMA-канала блокирует обновление
-	INITCFG_GeneralADC(ADC1, ADC1_CHANNEL_U_CAP, ADC12_TIM15_TRGO, false);
+	// ADC1 (Ucap) читается по DR без DMA: AUTDLY+DMAEN без DMA-канала блокирует обновление.
+	// На STM32F303 TIM7 не умеет аппаратно триггерить ADC1, поэтому софт-старт из TIM7_IRQHandler.
+	INITCFG_GeneralADC(ADC1, ADC1_CHANNEL_U_CAP, ADCxx_SOFT_TRIG, false);
+	ADC1->CFGR |= ADC_CFGR_OVRMOD;
 	INITCFG_GeneralADC(ADC2, ADC2_CHANNEL_IG, ADC12_TIM15_TRGO, true);
 	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_UG, ADC34_TIM15_TRGO, true);
 }

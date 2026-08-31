@@ -42,6 +42,7 @@ void TIM7_IRQHandler()
 	if(TIM_StatusCheck(TIM7))
 	{
 		CONTROL_TimeCounter++;
+		ADC_SamplingStart(ADC1);
 		if(++LED_BlinkTimeCounter > TIME_LED_BLINK)
 		{
 			LL_ToggleBoardLED();

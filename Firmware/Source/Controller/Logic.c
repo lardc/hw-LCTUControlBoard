@@ -34,6 +34,7 @@ void LOGIC_HandleMeasurement()
 {
 	static float UceResult, IcesResult;
 	static float SelfTestExpectedCurrentA = 0.0f;
+	float Ucap = DataTable[REG_U_BAT] = MEASURE_Ucap();
 
 	if(CONTROL_State == DS_InProcess)
 	{
@@ -42,8 +43,6 @@ void LOGIC_HandleMeasurement()
 			if(!CONTROL_IsSafetyOk())
 				return;
 		}
-
-		float Ucap = DataTable[REG_U_BAT] = MEASURE_Ucap();
 
 		switch(CONTROL_SubState)
 		{
@@ -66,13 +65,17 @@ void LOGIC_HandleMeasurement()
 						CONTROL_SetDeviceSubState(SS_None);
 					}
 					else
+					{
+						LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, false);
 						CONTROL_SwitchToFault(DF_CAP_VOLTAGE_LOW);
+					}
 				}
 				break;
 
 			case SS_Init:
 				if(Ucap < DataTable[REG_U_CAP_READY])
 				{
+					LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, false);
 					CONTROL_SwitchToFault(DF_CAP_VOLTAGE_LOW);
 					break;
 				}

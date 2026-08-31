@@ -124,11 +124,8 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			{
 				(void)ADC1->DR;
 				ADC1->ISR |= (EOC | EOS | OVR);
-
-				TIM_Start(TIM15);
 				DELAY_MS(1);
-				DataTable[REG_DBG] = (ADC1->ISR & EOC) ? (Int16U)ADC1->DR : 0;
-				TIM_Stop(TIM15);
+				DataTable[REG_DBG] = (Int16U)ADC1->DR;
 			}
 			break;
 
