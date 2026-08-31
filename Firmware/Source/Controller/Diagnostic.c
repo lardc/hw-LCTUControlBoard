@@ -194,7 +194,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 
 void DIAG_GenerateTrapezoidWave()
 {
-	float PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]) * 0.001f;
+	float PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]);
 	float StartAmplitude = ABS(DataTable[REG_DBG]) * 0.001f;
 	Int32U RiseMs = (Int32U)DataTable[REG_PULSE_RISE_DURATION];
 	Int32U FlatMs = (Int32U)DataTable[REG_PULSE_DURATION];

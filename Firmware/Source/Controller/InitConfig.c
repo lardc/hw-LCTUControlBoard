@@ -4,6 +4,7 @@
 #include "BCCIxParams.h"
 #include "ZwSPI.h"
 #include "Regulator.h"
+#include "Interrupts.h"
 
 // Forward functions
 void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger, bool EnableDMA);
@@ -96,13 +97,16 @@ void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger, bool 
 		ADC_TrigConfig(ADCx, Trigger, RISE);
 
 	ADC_ChannelSeqReset(ADCx);
-	for(int i = 1; i <= ADC_SEQ_LENGTH; i++)
+	Int16U SeqLen = EnableDMA ? ADC_SEQ_LENGTH : 1;
+	for(int i = 1; i <= SeqLen; i++)
 		ADC_ChannelSet_Sequence(ADCx, Channel, i);
-	ADC_ChannelSeqLen(ADCx, ADC_SEQ_LENGTH);
+	ADC_ChannelSeqLen(ADCx, SeqLen);
 
 	ADC_ChannelSet_SampleTime(ADCx, Channel, ADC_SAMPLE_TIME);
 	if (EnableDMA)
 		ADC_DMAConfigWithAutDLY(ADCx);
+	else
+		ADCx->CFGR |= ADC_CFGR_OVRMOD;
 	ADC_SamplingStart(ADCx);
 }
 //------------------------------------------------
@@ -115,9 +119,9 @@ void INITCFG_ADC()
 	// ADC1 (Ucap) читается по DR без DMA: AUTDLY+DMAEN без DMA-канала блокирует обновление.
 	// На STM32F303 TIM7 не умеет аппаратно триггерить ADC1, поэтому софт-старт из TIM7_IRQHandler.
 	INITCFG_GeneralADC(ADC1, ADC1_CHANNEL_U_CAP, ADCxx_SOFT_TRIG, false);
-	ADC1->CFGR |= ADC_CFGR_OVRMOD;
 	INITCFG_GeneralADC(ADC2, ADC2_CHANNEL_IG, ADC12_TIM15_TRGO, true);
 	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_UG, ADC34_TIM15_TRGO, true);
+	INT_UcapAdcReady = true;
 }
 //------------------------------------------------
 

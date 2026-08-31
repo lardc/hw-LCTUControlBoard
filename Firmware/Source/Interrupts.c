@@ -10,6 +10,7 @@
 
 // Variables
 volatile bool UceReady = false, IcesReady = false;
+volatile bool INT_UcapAdcReady = false;
 
 // Forward functions
 void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *Flag);
@@ -42,7 +43,8 @@ void TIM7_IRQHandler()
 	if(TIM_StatusCheck(TIM7))
 	{
 		CONTROL_TimeCounter++;
-		ADC_SamplingStart(ADC1);
+		if(INT_UcapAdcReady)
+			ADC_SamplingStart(ADC1);
 		if(++LED_BlinkTimeCounter > TIME_LED_BLINK)
 		{
 			LL_ToggleBoardLED();

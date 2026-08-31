@@ -12,6 +12,7 @@
 #include "Utils.h"
 #include "Logic.h"
 #include "RingBuffer.h"
+#include "Interrupts.h"
 #include "math.h"
 
 // Variables
@@ -23,6 +24,9 @@ static Int16U FollowingErrorCounter = 0;
 static Int16U MaxCurrentErrCount = 0;
 static Int16U MaxCurrentErrLimit = 0;
 static float PulseAmplitude, RiseRate, MaxCurrentA = 0.0f;
+static Int32U PulseElapsedTicks = 0;
+static Int32U PulseTimeoutTicks = 0;
+static Int32U SyncDelayTicks = 0;
 float RawSetPoint = 0;
 float VoltStep = 0, Qp = 0;
 float RegulatorError = 0;
@@ -45,8 +49,18 @@ void REGLTR_Process()
 			&& CONTROL_SubState != SS_RegulatorProcessSelfTest)
 		return;
 
+	if(PulseElapsedTicks >= PulseTimeoutTicks)
+	{
+		REGLTR_StopProcess();
+		return;
+	}
+
 	Int16U DACSetpoint;
 	Sample = REGLTR_GetSample();
+	PulseElapsedTicks++;
+
+	if (!LL_IsSyncOn() && PulseElapsedTicks >= SyncDelayTicks)
+		LL_SyncOSC(true);
 
 	switch(RegState)
 	{
@@ -67,6 +81,9 @@ void REGLTR_Process()
 			LL_WriteDAC(DACSetpoint,0);
 			break;
 	}
+
+	if(PulseElapsedTicks >= PulseTimeoutTicks)
+		REGLTR_StopProcess();
 }
 //-----------------------------------------
 
@@ -90,7 +107,7 @@ void REGLTR_Init()
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Ices:
-			PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]) * 0.001f;
+			PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]);
 			break;
 
 		case MT_ST_TestLoad:
@@ -99,10 +116,19 @@ void REGLTR_Init()
 	}
 
 	Int32U PulseRiseMs = (Int32U)DataTable[REG_PULSE_RISE_DURATION];
+	Int32U PulseDurMs;
 	if (PulseRiseMs == 0u)
 		PulseRiseMs = 1u;
+	if (CONTROL_MeasureType == MT_ST_TestLoad)
+		PulseDurMs = (Int32U)DataTable[REG_ST_PULSE_DURATION];
+	else
+		PulseDurMs = (Int32U)DataTable[REG_PULSE_DURATION];
+
 	RiseRate = PulseAmplitude / (float)PulseRiseMs;
 	VoltStep = RiseRate * TIMER15_uS * 0.001f;
+	PulseElapsedTicks = 0;
+	PulseTimeoutTicks = ((PulseRiseMs + PulseDurMs) * 1000u) / TIMER15_uS;
+	SyncDelayTicks = ((PulseRiseMs + (Int32U)DataTable[REG_SYNC_DELAY_AFTER_FLAT]) * 1000u) / TIMER15_uS;
 
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];
@@ -264,6 +290,9 @@ Int16U REGLTR_GetScalingCoef()
 
 void REGLTR_StartProcess()
 {
+	INT_UcapAdcReady = false;
+	ADC_SamplingStop(ADC1);
+
 	DMA_ChannelEnable(DMA2_Channel1, true);
 	DMA_ChannelEnable(DMA2_Channel5, true);
 
@@ -278,5 +307,19 @@ void REGLTR_StopProcess()
 
 	DMA_ChannelEnable(DMA2_Channel1, false);
 	DMA_ChannelEnable(DMA2_Channel5, false);
+
+	INT_UcapAdcReady = true;
+}
+//------------------------------------
+
+bool REGLTR_IsPulseElapsed()
+{
+	return PulseElapsedTicks >= PulseTimeoutTicks;
+}
+//------------------------------------
+
+bool REGLTR_IsSyncDelayElapsed()
+{
+	return PulseElapsedTicks >= SyncDelayTicks;
 }
 //------------------------------------
