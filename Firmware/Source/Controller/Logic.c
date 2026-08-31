@@ -37,8 +37,11 @@ void LOGIC_HandleMeasurement()
 
 	if(CONTROL_State == DS_InProcess)
 	{
-		if(!CONTROL_IsSafetyOk())
-			return;
+		if(CONTROL_SubState != SS_Activation && CONTROL_SubState != SS_ActivationProcess)
+		{
+			if(!CONTROL_IsSafetyOk())
+				return;
+		}
 
 		float Ucap = DataTable[REG_U_BAT] = MEASURE_Ucap();
 
@@ -47,13 +50,23 @@ void LOGIC_HandleMeasurement()
 			case SS_Activation:
 				LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, true);
 				LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, true);
+				Timeout = CONTROL_TimeCounter + TIME_ACTIVATION_TIMEOUT;
+				CONTROL_SetDeviceSubState(SS_ActivationProcess);
+				break;
+
+			case SS_ActivationProcess:
 				if(Ucap >= DataTable[REG_U_CAP_ACTIVATE_RSS])
 					LL_LCAU_SoftStart(false);
 
-				if(Ucap >= DataTable[REG_U_CAP_READY])
+				if(CONTROL_TimeCounter > Timeout)
 				{
-					CONTROL_SetDeviceState(DS_Ready);
-					CONTROL_SetDeviceSubState(SS_None);
+					if(Ucap >= DataTable[REG_U_CAP_READY])
+					{
+						CONTROL_SetDeviceState(DS_Ready);
+						CONTROL_SetDeviceSubState(SS_None);
+					}
+					else
+						CONTROL_SwitchToFault(DF_CAP_VOLTAGE_LOW);
 				}
 				break;
 
@@ -79,6 +92,7 @@ void LOGIC_HandleMeasurement()
 					case MT_Ices:
 						if(!LOGIC_SelectIcesChannel())
 						{
+							LOGIC_StopProcess();
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
 						}
@@ -93,6 +107,7 @@ void LOGIC_HandleMeasurement()
 						break;
 
 					default:
+						LOGIC_StopProcess();
 						CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 						return;
 				}
@@ -238,6 +253,8 @@ void LOGIC_StopProcess()
 	REGLTR_StopProcess();
 	LL_SyncOSC(false);
 	LL_SetCurrentChannel(I_CHANNEL_1);
+	LL_SetStateRelay(RELAY_HV_OUT, false);
+	LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
 	DataTable[REG_SELFTEST_STEP] = 0;
 }
 //------------------------------------------

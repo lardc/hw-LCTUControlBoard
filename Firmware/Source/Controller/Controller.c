@@ -181,7 +181,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 			
 		case ACT_DISABLE_POWER:
-			if(CONTROL_State == DS_Ready)
+			if(CONTROL_State == DS_Ready || CONTROL_SubState == SS_Activation || CONTROL_SubState == SS_ActivationProcess)
 			{
 				LOGIC_Deactivate();
 				CONTROL_SetDeviceState(DS_None);
@@ -239,8 +239,6 @@ bool CONTROL_IsSafetyOk()
 		if(CONTROL_State == DS_InProcess)
 		{
 			LOGIC_StopProcess();
-			LL_SetStateRelay(RELAY_HV_OUT, false);
-			LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
 
 			CONTROL_SetDeviceState(DS_Ready);
 			CONTROL_SetDeviceSubState(SS_None);
