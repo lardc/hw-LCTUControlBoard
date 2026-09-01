@@ -56,7 +56,7 @@ void LOGIC_HandleMeasurement()
 			case SS_ActivationProcess:
 				if(Ucap >= DataTable[REG_U_CAP_ACTIVATE_RSS])
 					LL_LCAU_SoftStart(false);
-
+				// Добавить проверку батареи вне timeout
 				if(CONTROL_TimeCounter > Timeout)
 				{
 					if(Ucap >= DataTable[REG_U_CAP_READY])

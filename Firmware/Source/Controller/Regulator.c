@@ -156,7 +156,7 @@ void RGLTR_ErrorCheck()
 			else
 				MaxCurrentErrCount = 0;
 
-			if(VoltageErr < VoltagErrThreshold)
+			if(VoltageErr <= VoltagErrThreshold)
 			{
 				if(CONTROL_MeasureType == MT_Ices)
 					RINGBUF_AddNewSampleIces(Sample.Ices);

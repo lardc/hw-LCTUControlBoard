@@ -55,6 +55,9 @@ void IO_Config()
 	
 	//Выходы
 	GPIO_Config(LED_BLINK_PORT, LED_BLINK_PIN, Output, PushPull, HighSpeed, NoPull);
+	// выключение RCON
+	GPIO_Config(GPIOA, Pin_11, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(GPIOA, Pin_11);
 	
 	//Альтернативные функции портов
 	GPIO_Config(GPIOB, Pin_6, AltFn, PushPull, HighSpeed, NoPull); //PB6(USART1 TX)
