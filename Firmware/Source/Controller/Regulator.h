@@ -38,8 +38,6 @@ void REGLTR_Init();
 float REGLTR_GetSetpoint(Int16U i);
 void REGLTR_StartProcess();
 void REGLTR_StopProcess();
-bool REGLTR_IsPulseElapsed();
-bool REGLTR_IsSyncDelayElapsed();
 SamplingResult REGLTR_GetSample();
 
 #endif // __REGULATOR_H

@@ -16,6 +16,7 @@
 // Variables
 //
 static Int64U Timeout = 0;
+static Int64U SyncDelayTimeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
 static Int16U ForcedCh = 0;
 static Int16U SelfTestStepIdx = 0;
@@ -87,6 +88,7 @@ void LOGIC_HandleMeasurement()
 
 				UceResult = IcesResult = 0.0f;
 				ForcedCh = DataTable[REG_DIAG_FORCE_CHANNEL];
+				SyncDelayTimeout = 0;
 
 				switch(CONTROL_MeasureType)
 				{
@@ -134,15 +136,28 @@ void LOGIC_HandleMeasurement()
 
 			case SS_ConfigPulse:
 				REGLTR_Init();
+				REGLTR_StartProcess();
+				SyncDelayTimeout = CONTROL_TimeCounter + DataTable[REG_PULSE_RISE_DURATION] + DataTable[REG_SYNC_DELAY_AFTER_FLAT];
+				{
+					float TimeoutTime;
+					if (CONTROL_MeasureType == MT_ST_TestLoad)
+						TimeoutTime = DataTable[REG_PULSE_RISE_DURATION] + DataTable[REG_ST_PULSE_DURATION];
+					else
+						TimeoutTime = DataTable[REG_PULSE_RISE_DURATION] + DataTable[REG_PULSE_DURATION];
+					Timeout = CONTROL_TimeCounter + TimeoutTime;
+				}
+
 				if(CONTROL_MeasureType == MT_ST_TestLoad)
 					CONTROL_SetDeviceSubState(SS_RegulatorProcessSelfTest);
 				else
 					CONTROL_SetDeviceSubState(SS_RegulatorProcess);
-				REGLTR_StartProcess();
 				break;
 
 			case SS_RegulatorProcess:
-				if(REGLTR_IsPulseElapsed())
+				if (!LL_IsSyncOn() && CONTROL_TimeCounter > SyncDelayTimeout)
+					LL_SyncOSC(true);
+
+				if(CONTROL_TimeCounter > Timeout)
 				{
 					UceResult = Sample.Uce;
 					IcesResult = Sample.Ices;
@@ -152,7 +167,10 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_RegulatorProcessSelfTest:
-				if(IsMeasureOk && REGLTR_IsPulseElapsed())
+				if (!LL_IsSyncOn() && CONTROL_TimeCounter > SyncDelayTimeout)
+					LL_SyncOSC(true);
+
+				if(IsMeasureOk && CONTROL_TimeCounter > Timeout)
 				{
 					IcesResult = Sample.Ices;
 					if(ABS(ABS(IcesResult) - SelfTestExpectedCurrentA) > (SelfTestExpectedCurrentA * DataTable[REG_ST_CURRENT_ERR_THRESH]))
