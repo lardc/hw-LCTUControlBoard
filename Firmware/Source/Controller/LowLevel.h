@@ -7,8 +7,6 @@
 // Defines
 #define COMMUTATION_TABLE_SIZE 11
 
-#define DAC_CHANNEL_B		BIT15
-
 // Types
 typedef enum IChannel
 {
@@ -50,6 +48,7 @@ void LL_SetStateRelay(RelayId Id, bool State);
 void LL_SetRelaySafeState();
 void LL_SPI_WriteByte(uint16_t Data, bool DACChannel);
 void LL_WriteDAC(Int16U DataA,Int16U DataB);
+void LL_WriteDAC24(Int32U Data24);
 void LL_SetCurrentChannel(IChannel Channel);
 bool LL_IsSafetyOk();
 void LL_ToggleLDAC();

@@ -1,6 +1,8 @@
 ﻿#ifndef __GLOBAL_H
 #define __GLOBAL_H
 
+#include "stdinc.h"
+
 // Definitions
 // 
 #define	SCCI_TIMEOUT_TICKS			1000	// Таймаут интерфейса SCCI (в мс)
@@ -20,5 +22,10 @@
 
 #define VALUES_EXT_INFO_SIZE		300
 #define VALUES_DEBUG_RGLTR_SIZE		600		// Размер отладочного буфера регулятора
+
+#define ADC_RESOLUTION				4095
+#define DAC_RESOLUTION				0xFFFFFF
+#define DAC_CHANNEL_B				BIT15
+#define DAC_DATA_SHIFT				12
 
 #endif //  __GLOBAL_H

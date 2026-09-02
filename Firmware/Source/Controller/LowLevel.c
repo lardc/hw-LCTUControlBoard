@@ -4,6 +4,7 @@
 #include "Board.h"
 #include "Delay.h"
 #include "DataTable.h"
+#include "Global.h"
 #include "ZwSPI.h"
 
 // Variables
@@ -110,6 +111,15 @@ void LL_WriteDAC(Int16U DataA, Int16U DataB)
 	LL_SPI_WriteByte(DataA, false);
 	LL_SPI_WriteByte(DataB, true);
 	LL_ToggleLDAC();
+}
+//-----------------------------
+
+void LL_WriteDAC24(Int32U Data24)
+{
+	Int16U DataA = (Int16U)(Data24 >> DAC_DATA_SHIFT);
+	Int16U DataB = (Int16U)(Data24 & ADC_RESOLUTION);
+
+	LL_WriteDAC(DataA, DataB);
 }
 //-----------------------------
 

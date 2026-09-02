@@ -212,7 +212,7 @@ void DIAG_GenerateTrapezoidWave()
 
 	for(Int32U i = 0; i < StartSteps; ++i)
 	{
-		LL_WriteDAC(MEASURE_ConvertUset(StartAmplitude), 0);
+		LL_WriteDAC24(MEASURE_ConvertUset(StartAmplitude));
 		DELAY_US(TIMER15_uS);
 	}
 
@@ -223,16 +223,16 @@ void DIAG_GenerateTrapezoidWave()
 			setPoint += (PulseAmplitude - StartAmplitude) * ((float)i / (float)(RiseSteps - 1u));
 		else
 			setPoint = PulseAmplitude;
-		LL_WriteDAC(MEASURE_ConvertUset(setPoint),0);
+		LL_WriteDAC24(MEASURE_ConvertUset(setPoint));
 		DELAY_US(TIMER15_uS);
 	}
 
 	for (Int32U i = 0; i < FlatSteps; ++i)
 	{
-		LL_WriteDAC(MEASURE_ConvertUset(PulseAmplitude),0);
+		LL_WriteDAC24(MEASURE_ConvertUset(PulseAmplitude));
 		DELAY_US(TIMER15_uS);
 	}
 
-	LL_WriteDAC(0,0);
+	LL_WriteDAC24(0);
 }
 //------------------------------------------------

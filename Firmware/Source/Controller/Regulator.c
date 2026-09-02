@@ -35,7 +35,7 @@ volatile SamplingResult Sample = {0};
 // Forward functions
 SamplingResult REGLTR_GetSample();
 void REGLTR_StoreRegulatorDebug(float Uce, float Ices, float Setpoint, float Correction, float Error, float DACRaw);
-Int16U REGLTR_CorrectionLogDACPoint();
+Int32U REGLTR_CorrectionLogDACPoint();
 void RGLTR_ErrorCheck();
 Int16U REGLTR_GetScalingCoef();
 
@@ -45,7 +45,7 @@ void REGLTR_Process()
 	if (CONTROL_SubState != SS_RegulatorProcess
 			&& CONTROL_SubState != SS_RegulatorProcessSelfTest)
 		return;
-	Int16U DACSetpoint;
+	Int32U DACSetpoint;
 	Sample = REGLTR_GetSample();
 
 	switch(RegState)
@@ -58,13 +58,13 @@ void REGLTR_Process()
 				RegState = RS_FlatTop;
 			}
 			DACSetpoint = REGLTR_CorrectionLogDACPoint();
-			LL_WriteDAC(DACSetpoint,0);
+			LL_WriteDAC24(DACSetpoint);
 			break;
 
 		case RS_FlatTop:
 		default:
 			DACSetpoint = REGLTR_CorrectionLogDACPoint();
-			LL_WriteDAC(DACSetpoint,0);
+			LL_WriteDAC24(DACSetpoint);
 			break;
 	}
 }
@@ -118,7 +118,7 @@ void REGLTR_Init()
 }
 //-----------------------------------------
 
-Int16U REGLTR_CorrectionLogDACPoint()
+Int32U REGLTR_CorrectionLogDACPoint()
 {
 	RGLTR_ErrorCheck();
 
@@ -126,7 +126,7 @@ Int16U REGLTR_CorrectionLogDACPoint()
 	Qi += RegulatorError * Ki;
 
 	float SetPoint = RawSetPoint + Qp + Qi;
-	Int16U DACPoint = MEASURE_ConvertUset(SetPoint);
+	Int32U DACPoint = MEASURE_ConvertUset(SetPoint);
 
 	REGLTR_StoreRegulatorDebug(Sample.Uce, Sample.Ices, RawSetPoint, Qp + Qi, RegulatorError, (float)DACPoint);
 
@@ -276,7 +276,7 @@ void REGLTR_StartProcess()
 
 void REGLTR_StopProcess()
 {
-	LL_WriteDAC(0,0);
+	LL_WriteDAC24(0);
 	TIM_Stop(TIM15);
 
 	DMA_ChannelEnable(DMA2_Channel1, false);

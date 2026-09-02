@@ -10,8 +10,6 @@
 
 // Definitions
 //
-#define ADC_RESOLUTION 4095
-
 // Forward functions
 float MEASURE_ConvertX(float SampleADC, Int16U RegisterP2, Int16U RegisterP1, Int16U RegisterP0, Int16U RegisterK, Int16U RegisterB, Int16U RegisterRshunt);
 
@@ -78,18 +76,18 @@ float MEASURE_Ices(float SampleADC, IChannel Channel)
 }
 //------------------------------------
 
-Int16U MEASURE_ConvertUset(float Uset)
+Int32U MEASURE_ConvertUset(float Uset)
 {
 	float Result = Uset * Uset * DataTable[REG_U_SET_P2] + Uset * DataTable[REG_U_SET_P1] + DataTable[REG_U_SET_P0];
 	Result = Result * DataTable[REG_U_SET_K] + DataTable[REG_U_SET_B];
-	Result = (Result / DataTable[REG_U_ADC_REF]) * ADC_RESOLUTION;
+	Result = (Result / DataTable[REG_U_ADC_REF]) * DAC_RESOLUTION;
 
 	if(Result < 0)
 		return 0;
-	else if(Result > ADC_RESOLUTION)
-		return ADC_RESOLUTION;
+	else if(Result > DAC_RESOLUTION)
+		return DAC_RESOLUTION;
 	else
-		return (Int16U)Result;
+		return (Int32U)Result;
 }
 //------------------------------------
 
