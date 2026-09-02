@@ -61,11 +61,11 @@
 #define I_ICES_MAX_MAX			300
 #define I_ICES_MAX_DEF			100
 //
-#define COEF_I_CH0_MIN			0.1f	// В А — нижняя граница диапазона канала 0 (100...300 мА)
-#define COEF_I_CH1_MIN			0.01f	// канал 1 (10...100 мА)
-#define COEF_I_CH2_MIN			1e-3f	// канал 2 (1...10 мА)
-#define COEF_I_CH3_MIN			100e-6f	// канал 3 (100...1000 мкА)
-#define COEF_I_CH4_MIN			10e-6f	// канал 4 (10...100 мкА)
+#define COEF_I_CH0_MIN			0.1f	// I_CHANNEL_1 (100...300 мА), в А
+#define COEF_I_CH1_MIN			0.01f	// I_CHANNEL_2 (10...100 мА)
+#define COEF_I_CH2_MIN			1e-3f	// I_CHANNEL_3 (1...10 мА)
+#define COEF_I_CH3_MIN			100e-6f	// I_CHANNEL_4 (100...1000 мкА)
+#define COEF_I_CH4_MIN			10e-6f	// I_CHANNEL_5 (10...100 мкА)
 //
 #define COEF_SWITCH_TIME_MIN		5		// в мс
 #define COEF_SWITCH_TIME_ICES_MIN	20

@@ -10,11 +10,11 @@
 // Types
 typedef enum IChannel
 {
-	I_CHANNEL_1 = 1,
-	I_CHANNEL_2,
-	I_CHANNEL_3,
-	I_CHANNEL_4,
-	I_CHANNEL_5
+	I_CHANNEL_1 = 1,	// 100...300 мА
+	I_CHANNEL_2,		// 10...100 мА
+	I_CHANNEL_3,		// 1...10 мА
+	I_CHANNEL_4,		// 100...1000 мкА
+	I_CHANNEL_5			// 10...100 мкА
 } IChannel;
 
 typedef enum RelayId

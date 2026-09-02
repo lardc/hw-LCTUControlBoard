@@ -113,11 +113,11 @@
 #define REG_WORK_VOLTAGE_ST_TESTLOAD	67	// Номинальное рабочее напряжение для самодиагностики с тестовой нагрузкой, мВ
 // 68
 //
-#define REG_RANGE_I_0					69	// Нижняя граница диапазона канала 0 - 100...300 мА, в А
-#define REG_RANGE_I_1					70	// Нижняя граница диапазона канала 1 - 10...100 мА, в А
-#define REG_RANGE_I_2					71	// Нижняя граница диапазона канала 2 - 1...10 мА, в А
-#define REG_RANGE_I_3					72	// Нижняя граница диапазона канала 3 - 100...1000 мкА, в А
-#define REG_RANGE_I_4					73	// Нижняя граница диапазона канала 4 - 10...100 мкА, в А
+#define REG_RANGE_I_0					69	// I_CHANNEL_1: нижняя граница диапазона 100...300 мА, в А
+#define REG_RANGE_I_1					70	// I_CHANNEL_2: 10...100 мА, в А
+#define REG_RANGE_I_2					71	// I_CHANNEL_3: 1...10 мА, в А
+#define REG_RANGE_I_3					72	// I_CHANNEL_4: 100...1000 мкА, в А
+#define REG_RANGE_I_4					73	// I_CHANNEL_5: 10...100 мкА, в А
 #define REG_U_CAP_ACTIVATE_RSS			74	// Порог включения Rss по Ucap, В
 #define REG_U_CAP_READY					75	// Порог готовности по Ucap, В
 // 76 - 79

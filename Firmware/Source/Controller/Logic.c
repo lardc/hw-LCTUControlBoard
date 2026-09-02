@@ -56,19 +56,15 @@ void LOGIC_HandleMeasurement()
 			case SS_ActivationProcess:
 				if(Ucap >= DataTable[REG_U_CAP_ACTIVATE_RSS])
 					LL_LCAU_SoftStart(false);
-				// Добавить проверку батареи вне timeout
-				if(CONTROL_TimeCounter > Timeout)
+				if(Ucap >= DataTable[REG_U_CAP_READY])
 				{
-					if(Ucap >= DataTable[REG_U_CAP_READY])
-					{
-						CONTROL_SetDeviceState(DS_Ready);
-						CONTROL_SetDeviceSubState(SS_None);
-					}
-					else
-					{
-						LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, false);
-						CONTROL_SwitchToFault(DF_CAP_VOLTAGE_LOW);
-					}
+					CONTROL_SetDeviceState(DS_Ready);
+					CONTROL_SetDeviceSubState(SS_None);
+				}
+				else if(CONTROL_TimeCounter > Timeout)
+				{
+					LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, false);
+					CONTROL_SwitchToFault(DF_CAP_VOLTAGE_LOW);
 				}
 				break;
 
@@ -255,7 +251,7 @@ void LOGIC_StopProcess()
 {
 	REGLTR_StopProcess();
 	LL_SyncOSC(false);
-	LL_SetCurrentChannel(I_CHANNEL_1);
+	LL_SetCurrentChannel(I_CHANNEL_5);
 	LL_SetStateRelay(RELAY_HV_OUT, false);
 	LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
 	DataTable[REG_SELFTEST_STEP] = 0;
@@ -265,14 +261,14 @@ void LOGIC_StopProcess()
 static IChannel LOGIC_SelectChannelByMaxCurrent(float ImaxA)
 {
 	if(ImaxA > DataTable[REG_RANGE_I_0])
-		return I_CHANNEL_5;
+		return I_CHANNEL_1;
 	if(ImaxA > DataTable[REG_RANGE_I_1])
-		return I_CHANNEL_4;
+		return I_CHANNEL_2;
 	if(ImaxA > DataTable[REG_RANGE_I_2])
 		return I_CHANNEL_3;
 	if(ImaxA > DataTable[REG_RANGE_I_3])
-		return I_CHANNEL_2;
-	return I_CHANNEL_1;
+		return I_CHANNEL_4;
+	return I_CHANNEL_5;
 }
 //------------------------------------------
 

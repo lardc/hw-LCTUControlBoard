@@ -55,9 +55,28 @@ void IO_Config()
 	
 	//Выходы
 	GPIO_Config(LED_BLINK_PORT, LED_BLINK_PIN, Output, PushPull, HighSpeed, NoPull);
-	// выключение RCON
+
+	// GPIO_LCAU_INPUT_CONTACTOR
 	GPIO_Config(GPIOA, Pin_11, Output, PushPull, HighSpeed, NoPull);
 	GPIO_Bit_Rst(GPIOA, Pin_11);
+	// GPIO_LCAU_SOFTSTART_DISABLE
+	GPIO_Config(GPIOA, Pin_15, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(GPIOA, Pin_15);
+	// GPIO_LCAU_HV_OUT
+	GPIO_Config(GPIOA, Pin_10, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(GPIOA, Pin_10);
+	// GPIO_LCAU_DISCHARGE_DISABLE (NC)
+	GPIO_Config(GPIOA, Pin_12, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Set(GPIOA, Pin_12);
+	// GPIO_SELFTEST1_7MEG
+	GPIO_Config(GPIOA, Pin_8, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(GPIOA, Pin_8);
+	// GPIO_SELFTEST2_700MEG
+	GPIO_Config(GPIOB, Pin_15, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(GPIOB, Pin_15);
+	// GPIO_HV_OUT
+	GPIO_Config(GPIOA, Pin_9, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(GPIOA, Pin_9);
 	
 	//Альтернативные функции портов
 	GPIO_Config(GPIOB, Pin_6, AltFn, PushPull, HighSpeed, NoPull); //PB6(USART1 TX)
