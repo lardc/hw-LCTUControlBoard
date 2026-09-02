@@ -22,7 +22,8 @@ static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, ScalingCoef, S
 static Int16U FollowingErrorCounter = 0;
 static Int16U MaxCurrentErrCount = 0;
 static Int16U MaxCurrentErrLimit = 0;
-static float PulseAmplitude, RiseRate, MaxCurrentA = 0.0f;
+static float PulseAmplitude, RiseRate, MaxCurrentA = 0;
+static float PreTriggerAmplitude = 0;
 float RawSetPoint = 0;
 float VoltStep = 0, Qp = 0;
 float RegulatorError = 0;
@@ -82,7 +83,8 @@ void REGLTR_Init()
 	VoltagErrLimit = DataTable[REG_VOLTAGE_ERR_COUNT_LIMIT];
 	MaxCurrentErrLimit = (Int16U)DataTable[REG_MAX_CURRENT_ERR_COUNT_LIMIT];
 	MaxCurrentA = DataTable[REG_MAX_CURRENT_ICES] * 0.001f;
-	RawSetPoint = 0;
+	PreTriggerAmplitude = DataTable[REG_PRETRIGGER_VOLTAGE];
+	RawSetPoint = PreTriggerAmplitude;
 	RegState = RS_Rise;
 	RegulatorError = 0;
 
@@ -100,7 +102,8 @@ void REGLTR_Init()
 	Int32U PulseRiseMs = (Int32U)DataTable[REG_PULSE_RISE_DURATION];
 	if (PulseRiseMs == 0u)
 		PulseRiseMs = 1u;
-	RiseRate = PulseAmplitude / (float)PulseRiseMs;
+
+	RiseRate = (PulseAmplitude - PreTriggerAmplitude) / (float)PulseRiseMs;
 	VoltStep = RiseRate * TIMER15_uS * 0.001f;
 
 	Kp = DataTable[REG_RGLTR_Kp];
@@ -238,7 +241,11 @@ Int16U REGLTR_GetScalingCoef()
 	Int16U Coef = 0;
 	Int16U MsToMks = 1000;
 	float RisingPart, SumTicks = 0;
-	RisingPart = PulseAmplitude / RiseRate;
+
+	if(RiseRate > 0.0f)
+		RisingPart = (PulseAmplitude - PreTriggerAmplitude) / RiseRate;
+	else
+		RisingPart = 0;
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Ices:

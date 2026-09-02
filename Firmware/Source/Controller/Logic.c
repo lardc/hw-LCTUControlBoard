@@ -126,8 +126,19 @@ void LOGIC_HandleMeasurement()
 							break;
 						}
 					}
-					CONTROL_SetDeviceSubState(SS_ConfigPulse);
+					CONTROL_SetDeviceSubState(SS_SetPreTrigger);
 				}
+				break;
+
+			case SS_SetPreTrigger:
+				LL_WriteDAC24(MEASURE_ConvertUset(DataTable[REG_PRETRIGGER_VOLTAGE]));
+				Timeout = CONTROL_TimeCounter + DataTable[REG_PRETRIGGER_DURATION];
+				CONTROL_SetDeviceSubState(SS_WaitPreTrigger);
+				break;
+
+			case SS_WaitPreTrigger:
+				if(CONTROL_TimeCounter > Timeout)
+					CONTROL_SetDeviceSubState(SS_ConfigPulse);
 				break;
 
 			case SS_ConfigPulse:

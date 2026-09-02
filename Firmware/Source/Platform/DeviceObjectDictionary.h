@@ -130,7 +130,10 @@
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
 #define REG_PULSE_RISE_DURATION			86	// Длительность фронта импульса, мс
 #define REG_PULSE_DURATION				87	// Длительность импульса, мс
-// 88 - 89
+
+#define REG_PRETRIGGER_VOLTAGE			88 	// Напряжение ступени предварительного включения, В
+#define REG_PRETRIGGER_DURATION			89	// Длительность ступени предварительного включения, мс
+
 #define REG_DEACT_ROUT_DELAY			90	// Задержка на размыкание RoutLCTU, мс
 #define REG_RELAY_SW_TIMER_ICES			91	// Время переключения реле тока при измерении Ices, мс
 #define REG_SYNC_DELAY_AFTER_FLAT		92	// Задержка выдачи SYNC после выхода на полку, мс

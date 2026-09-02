@@ -19,6 +19,8 @@ typedef enum __DeviceSubState
 	SS_None 			= 0,
 	SS_Init,
 	SS_InitialRelayPause,
+	SS_SetPreTrigger,
+	SS_WaitPreTrigger,
 	SS_ConfigPulse,
 	SS_RegulatorProcess,
 	SS_FollowingErr,
