@@ -4,10 +4,10 @@
 #include "BCCIxParams.h"
 #include "ZwSPI.h"
 #include "Regulator.h"
-#include "Interrupts.h"
 
 // Forward functions
-void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger, bool EnableDMA);
+void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger);
+void INITCFG_UcapADC();
 
 // Functions
 //
@@ -87,27 +87,29 @@ void INITCFG_UART()
 }
 //------------------------------------------------
 
-void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger, bool EnableDMA)
+void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger)
 {
 	ADC_Calibration(ADCx);
 	ADC_Enable(ADCx);
-	if(Trigger == ADCxx_SOFT_TRIG)
-		ADC_SoftTrigConfig(ADCx);
-	else
-		ADC_TrigConfig(ADCx, Trigger, RISE);
+	ADC_TrigConfig(ADCx, Trigger, RISE);
 
 	ADC_ChannelSeqReset(ADCx);
-	Int16U SeqLen = EnableDMA ? ADC_SEQ_LENGTH : 1;
-	for(int i = 1; i <= SeqLen; i++)
+	for(int i = 1; i <= ADC_SEQ_LENGTH; i++)
 		ADC_ChannelSet_Sequence(ADCx, Channel, i);
-	ADC_ChannelSeqLen(ADCx, SeqLen);
+	ADC_ChannelSeqLen(ADCx, ADC_SEQ_LENGTH);
 
 	ADC_ChannelSet_SampleTime(ADCx, Channel, ADC_SAMPLE_TIME);
-	if (EnableDMA)
-		ADC_DMAConfigWithAutDLY(ADCx);
-	else
-		ADCx->CFGR |= ADC_CFGR_OVRMOD;
+	ADC_DMAConfigWithAutDLY(ADCx);
 	ADC_SamplingStart(ADCx);
+}
+//------------------------------------------------
+
+void INITCFG_UcapADC()
+{
+	ADC_Calibration(ADC1);
+	ADC_Enable(ADC1);
+	ADC_SoftTrigConfig(ADC1);
+	ADC_ChannelSet_SampleTime(ADC1, ADC1_CHANNEL_U_CAP, ADC_SAMPLE_TIME);
 }
 //------------------------------------------------
 
@@ -116,12 +118,9 @@ void INITCFG_ADC()
 	RCC_ADC_Clk_EN(ADC_12_ClkEN);
 	RCC_ADC_Clk_EN(ADC_34_ClkEN);
 
-	// ADC1 (Ucap) читается по DR без DMA: AUTDLY+DMAEN без DMA-канала блокирует обновление.
-	// На STM32F303 TIM7 не умеет аппаратно триггерить ADC1, поэтому софт-старт из TIM7_IRQHandler.
-	INITCFG_GeneralADC(ADC1, ADC1_CHANNEL_U_CAP, ADCxx_SOFT_TRIG, false);
-	INITCFG_GeneralADC(ADC2, ADC2_CHANNEL_IG, ADC12_TIM15_TRGO, true);
-	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_UG, ADC34_TIM15_TRGO, true);
-	INT_UcapAdcReady = true;
+	INITCFG_UcapADC();
+	INITCFG_GeneralADC(ADC2, ADC2_CHANNEL_IG, ADC12_TIM15_TRGO);
+	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_UG, ADC34_TIM15_TRGO);
 }
 //------------------------------------------------
 

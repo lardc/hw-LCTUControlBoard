@@ -12,7 +12,6 @@
 #include "Utils.h"
 #include "Logic.h"
 #include "RingBuffer.h"
-#include "Interrupts.h"
 #include "math.h"
 
 // Variables
@@ -264,9 +263,6 @@ Int16U REGLTR_GetScalingCoef()
 
 void REGLTR_StartProcess()
 {
-	INT_UcapAdcReady = false;
-	ADC_SamplingStop(ADC1);
-
 	DMA_ChannelEnable(DMA2_Channel1, true);
 	DMA_ChannelEnable(DMA2_Channel5, true);
 
@@ -281,7 +277,5 @@ void REGLTR_StopProcess()
 
 	DMA_ChannelEnable(DMA2_Channel1, false);
 	DMA_ChannelEnable(DMA2_Channel5, false);
-
-	INT_UcapAdcReady = true;
 }
 //------------------------------------

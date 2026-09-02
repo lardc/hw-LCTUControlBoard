@@ -5,6 +5,7 @@
 #include "DataTable.h"
 #include "Board.h"
 #include "Global.h"
+#include "SysConfig.h"
 #include "DeviceObjectDictionary.h"
 #include "LowLevel.h"
 
@@ -62,7 +63,8 @@ float MEASURE_Uce(float SampleADC)
 
 float MEASURE_Ucap()
 {
-	float Result = ((float)ADC1->DR / ADC_RESOLUTION) * DataTable[REG_U_ADC_REF] * DataTable[REG_U_BAT_K] + DataTable[REG_U_BAT_B];
+	float Result = ((float)ADC_Measure(ADC1, ADC1_CHANNEL_U_CAP) / ADC_RESOLUTION)
+			* DataTable[REG_U_ADC_REF] * DataTable[REG_U_BAT_K] + DataTable[REG_U_BAT_B];
 	return (Result > 0) ? Result : 0;
 }
 //------------------------------------

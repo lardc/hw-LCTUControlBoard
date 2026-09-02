@@ -37,7 +37,6 @@
 
 // ADC
 #define ADC_SEQ_LENGTH					10			// Размер выборки за один цикл
-#define ADC_CAP_SEQ_LENGTH				10			// Размер выборки Ucap в фоновом режиме
 #define ADC_SAMPLE_TIME					ADC_SMPL_TIME_1_5	// Время сэмплинга
 #define ADC1_CHANNEL_U_CAP				4
 #define ADC2_CHANNEL_IG					1
