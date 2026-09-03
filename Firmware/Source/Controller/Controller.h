@@ -16,22 +16,22 @@ typedef enum __DeviceState
 
 typedef enum __DeviceSubState
 {
-	SS_None 				= 0,
-	SS_Init					= 1,
-	SS_InitialRelayPause	= 2,
-	SS_ConfigPulse			= 3,
-	SS_RegulatorProcess		= 4,
-	SS_FollowingErr			= 6,
-	SS_VoltageErr			= 7,
-	SS_MaxCurrentErr		= 8,
-	SS_FinishProcess		= 10,
-	SS_GetResults 			= 11,
-	SS_RegulatorProcessSelfTest = 12,
-	SS_Activation			= 13,
-	SS_Preparation			= 14,
-	SS_Deactivation			= 15,
-	SS_DeactivationWaitRout	= 16,
-	SS_DeactivationWaitRcon	= 17,
+	SS_None 			= 0,
+	SS_Init,
+	SS_InitialRelayPause,
+	SS_SetPreTrigger,
+	SS_WaitPreTrigger,
+	SS_ConfigPulse,
+	SS_RegulatorProcess,
+	SS_FollowingErr,
+	SS_VoltageErr,
+	SS_MaxCurrentErr,
+	SS_CurrentErr,
+	SS_FinishProcess,
+	SS_GetResults,
+	SS_RegulatorProcessSelfTest,
+	SS_Activation,
+	SS_ActivationProcess,
 } DeviceSubState;
 
 typedef enum __MeasureType
@@ -65,6 +65,8 @@ void CONTROL_Idle();
 void CONTROL_SetDeviceState(DeviceState NewState);
 void CONTROL_SetDeviceSubState(DeviceSubState NewSubState);
 void CONTROL_SwitchToProblem(Int16U Reason);
+void CONTROL_SwitchToFault(Int16U Reason);
+void CONTROL_StartMeasure(MeasureType Type);
 bool CONTROL_IsSafetyOk();
 void CONTROL_WatchDogUpdate();
 void CONTROL_InitJSONPointers();

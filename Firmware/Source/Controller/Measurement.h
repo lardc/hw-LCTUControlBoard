@@ -12,6 +12,6 @@ float MEASURE_Ices(float SampleADC, IChannel Channel);
 //
 void MEASURE_ConvertIScope(pFloat32 InputArray, Int16U DataLength, IChannel Channel);
 //
-Int16U MEASURE_ConvertUset(float Uset);
+Int32U MEASURE_ConvertUset(float Uset);
 
 #endif // __MEASUREMENT_H

@@ -35,7 +35,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SWITCH_RELAY:
-			for(Int16U i = RELAY_RMES1; i <= RELAY_RMES5; i++)
+			for(Int16U i = RELAY_RMES1_NC; i <= RELAY_RMES5; i++)
 			{
 				LL_SetStateRelay((RelayId)i, true);
 				DELAY_MS(200);
@@ -46,13 +46,9 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_DAC_WRITE:
-			{
-				Int16U DACRaw =(Int16U) DataTable[REG_DBG];
-
-				LL_SPI_WriteByte(DACRaw, false);
-				LL_SPI_WriteByte(0, true);
-				LL_ToggleLDAC();
-			}
+			LL_SPI_WriteByte((Int16U)DataTable[REG_DBG], false);
+			LL_SPI_WriteByte(0, true);
+			LL_ToggleLDAC();
 			break;
 
 		case ACT_DBG_SYNC_OSC:
@@ -63,48 +59,48 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			GPIO_SetState(GPIO_SW_FAN, DataTable[REG_DBG]);
 			break;
 
-		case ACT_DBG_ST:
+		case ACT_DBG_SELF_TEST_RELAY:
 			if(DataTable[REG_DBG] == 0)
 			{
-				LL_SetStateRelay(RELAY_RST1, false);
-				LL_SetStateRelay(RELAY_RST2, false);
+				LL_SetStateRelay(RELAY_SELFTEST1_7MEG, false);
+				LL_SetStateRelay(RELAY_SELFTEST2_700MEG, false);
 			}
 			else if(DataTable[REG_DBG] == 1)
 			{
-				LL_SetStateRelay(RELAY_RST2, false);
-				LL_SetStateRelay(RELAY_RST1, true);
+				LL_SetStateRelay(RELAY_SELFTEST2_700MEG, false);
+				LL_SetStateRelay(RELAY_SELFTEST1_7MEG, true);
 			}
 			else if(DataTable[REG_DBG] == 2)
 			{
-				LL_SetStateRelay(RELAY_RST1, false);
-				LL_SetStateRelay(RELAY_RST2, true);
+				LL_SetStateRelay(RELAY_SELFTEST1_7MEG, false);
+				LL_SetStateRelay(RELAY_SELFTEST2_700MEG, true);
 			}
 			else
 				break;
 			break;
 
-		case ACT_DBG_LCTU_OUT:
-			LL_SetStateRelay(RELAY_ROUT_LCTU, DataTable[REG_DBG]);
+		case ACT_DBG_HV_OUT:
+			LL_SetStateRelay(RELAY_HV_OUT, DataTable[REG_DBG]);
 			break;
 
-		case ACT_DBG_LCAU_OUT:
-			LL_SetStateRelay(RELAY_ROUT_LCAU, DataTable[REG_DBG]);
+		case ACT_DBG_LCAU_HV_OUT:
+			LL_SetStateRelay(RELAY_LCAU_HV_OUT, DataTable[REG_DBG]);
 			break;
 
-		case ACT_DBG_CONT:
-			LL_SetStateRelay(RELAY_RCON, DataTable[REG_DBG]);
+		case ACT_DBG_LCAU_INPUT_CONTACTOR:
+			LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, DataTable[REG_DBG]);
 			break;
 
-		case ACT_DBG_DIS:
-			LL_SetStateRelay(RELAY_RDIS, DataTable[REG_DBG]);
+		case ACT_DBG_LCAU_DISCHARGE:
+			LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, DataTable[REG_DBG]);
 			break;
 
-		case ACT_DBG_SOFT:
-			GPIO_SetState(GPIO_RSS, DataTable[REG_DBG]);
+		case ACT_DBG_LCAU_SOFTSTART:
+			LL_LCAU_SoftStart(!DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_SFTY_READ:
-			DataTable[REG_DBG] = LL_SafetyState();
+			DataTable[REG_DBG] = LL_IsSafetyOk();
 			break;
 
 		case ACT_DBG_V_OUT_ADC_RAW_READ:
@@ -128,11 +124,8 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			{
 				(void)ADC1->DR;
 				ADC1->ISR |= (EOC | EOS | OVR);
-
-				TIM_Start(TIM15);
 				DELAY_MS(1);
-				DataTable[REG_DBG] = (ADC1->ISR & EOC) ? (Int16U)ADC1->DR : 0;
-				TIM_Stop(TIM15);
+				DataTable[REG_DBG] = (Int16U)ADC1->DR;
 			}
 			break;
 
@@ -184,6 +177,13 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			GPIO_InitAltFunction(GPIO_ALT_SPI_MOSI, AltFn_5);
 			break;
 
+		case ACT_DBG_START_SELFTEST_TESTLOAD:
+			if(CONTROL_State == DS_Ready)
+				CONTROL_StartMeasure(MT_ST_TestLoad);
+			else
+				*pUserError = ERR_DEVICE_NOT_READY;
+			break;
+
 		default:
 			return false;
 	}
@@ -194,33 +194,45 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 
 void DIAG_GenerateTrapezoidWave()
 {
-	float PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]) * CONVERSION_REDUC_THOUSAND;
+	float PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]);
+	float StartAmplitude = ABS(DataTable[REG_DBG]);
 	Int32U RiseMs = (Int32U)DataTable[REG_PULSE_RISE_DURATION];
 	Int32U FlatMs = (Int32U)DataTable[REG_PULSE_DURATION];
-	Int32U RiseSteps, FlatSteps;
+	Int32U RiseSteps, FlatSteps, StartSteps;
 
 	if (RiseMs == 0u)
 		RiseMs = 1u;
 
 	RiseSteps = (RiseMs * 1000u) / TIMER15_uS;
 	FlatSteps = (FlatMs * 1000u) / TIMER15_uS;
+	StartSteps = (TIME_START_FLAT * 1000u) / TIMER15_uS;
 
 	if (RiseSteps == 0u)
 		RiseSteps = 1u;
 
-	for (Int32U i = 1; i <= RiseSteps; ++i)
+	for(Int32U i = 0; i < StartSteps; ++i)
 	{
-		float setPoint = PulseAmplitude * ((float)i / (float)RiseSteps);
-		LL_WriteDAC(MEASURE_ConvertUset(setPoint),0);
+		LL_WriteDAC24(MEASURE_ConvertUset(StartAmplitude));
+		DELAY_US(TIMER15_uS);
+	}
+
+	for (Int32U i = 0; i < RiseSteps; ++i)
+	{
+		float setPoint = StartAmplitude;
+		if (RiseSteps > 1u)
+			setPoint += (PulseAmplitude - StartAmplitude) * ((float)i / (float)(RiseSteps - 1u));
+		else
+			setPoint = PulseAmplitude;
+		LL_WriteDAC24(MEASURE_ConvertUset(setPoint));
 		DELAY_US(TIMER15_uS);
 	}
 
 	for (Int32U i = 0; i < FlatSteps; ++i)
 	{
-		LL_WriteDAC(MEASURE_ConvertUset(PulseAmplitude),0);
+		LL_WriteDAC24(MEASURE_ConvertUset(PulseAmplitude));
 		DELAY_US(TIMER15_uS);
 	}
 
-	LL_WriteDAC(0,0);
+	LL_WriteDAC24(0);
 }
 //------------------------------------------------

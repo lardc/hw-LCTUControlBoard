@@ -17,6 +17,7 @@
 #include "Logic.h"
 #include "JSONDescription.h"
 #include "SaveToFlash.h"
+#include "Constraints.h"
 
 // Defines
 //
@@ -37,6 +38,7 @@ volatile MeasureType CONTROL_MeasureType = MT_Ices;
 volatile Int64U CONTROL_TimeCounter = 0;
 static Int64U CT_SaveTimer = 0;					 // Последняя отметка времени автосохранения
 volatile Boolean RequestSaveToFlash = FALSE;
+static Boolean PendingAutoSelfTest = false;
 
 volatile Int16U CONTROL_ExtInfoCounter = 0;
 volatile float CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE] = {0};
@@ -58,7 +60,6 @@ void Delay_mS(uint32_t Delay);
 void CONTROL_WatchDogUpdate();
 void CONTROL_ResetToDefaultState();
 void CONTROL_ResetData();
-void CONTROL_StartMeasure(MeasureType Type);
 bool CONTROL_IsSafetyOk();
 void CONTROL_InitStoragePointers();
 
@@ -98,6 +99,13 @@ void CONTROL_Init()
 
 
 	CONTROL_ResetToDefaultState();
+
+	if(DataTable[REG_USE_SELFTEST] == YES)
+	{
+		PendingAutoSelfTest = true;
+		CONTROL_SetDeviceState(DS_InProcess);
+		CONTROL_SetDeviceSubState(SS_Activation);
+	}
 }
 //------------------------------------------
 
@@ -131,6 +139,12 @@ void CONTROL_Idle()
 	//Обработка логики мастер-команд
 	LOGIC_HandleMeasurement();
 
+	if(PendingAutoSelfTest && CONTROL_State == DS_Ready)
+	{
+		PendingAutoSelfTest = false;
+		CONTROL_StartMeasure(MT_ST_TestLoad);
+	}
+
 	if(CONTROL_State != DS_InProcess)
 	{
 		if(RequestSaveToFlash)
@@ -162,15 +176,16 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				CONTROL_SetDeviceState(DS_InProcess);
 				CONTROL_SetDeviceSubState(SS_Activation);
 			}
-			else
+			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 			
 		case ACT_DISABLE_POWER:
-			if(CONTROL_State == DS_Ready || CONTROL_State == DS_InProcess)
+			if(CONTROL_State == DS_Ready || CONTROL_SubState == SS_Activation || CONTROL_SubState == SS_ActivationProcess)
 			{
-				CONTROL_SetDeviceState(DS_InProcess);
-				CONTROL_SetDeviceSubState(SS_Deactivation);
+				LOGIC_Deactivate();
+				CONTROL_SetDeviceState(DS_None);
+				CONTROL_SetDeviceSubState(SS_None);
 			}
 			else if(CONTROL_State != DS_None)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -195,13 +210,6 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
-		case ACT_START_SELFTEST_TESTLOAD:
-			if(CONTROL_State == DS_Ready)
-				CONTROL_StartMeasure(MT_ST_TestLoad);
-			else
-				*pUserError = ERR_DEVICE_NOT_READY;
-			break;
-
 		default:
 			return DIAG_HandleDiagnosticAction(ActionID, pUserError);
 	}
@@ -214,36 +222,32 @@ void CONTROL_StartMeasure(MeasureType Type)
 {
 	CONTROL_MeasureType = Type;
 	CONTROL_ResetData();
-	if (CONTROL_IsSafetyOk())
+	if(CONTROL_IsSafetyOk())
 	{
 		CONTROL_SetDeviceState(DS_InProcess);
-		CONTROL_SetDeviceSubState(SS_Preparation);
+		CONTROL_SetDeviceSubState(SS_Init);
 	}
 }
 //------------------------------------------
 
 bool CONTROL_IsSafetyOk()
 {
-	if(!DataTable[REG_SAFETY_MUTE])
+	if(LL_IsSafetyOk() || DataTable[REG_SAFETY_MUTE])
+		return true;
+	else
 	{
-		if(LL_SafetyState())
+		if(CONTROL_State == DS_InProcess)
 		{
+			LOGIC_StopProcess();
+
+			CONTROL_SetDeviceState(DS_Ready);
+			CONTROL_SetDeviceSubState(SS_None);
+
 			DataTable[REG_PROBLEM] = PROBLEM_SAFETY;
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-			if (CONTROL_State == DS_InProcess
-					&& CONTROL_SubState != SS_Deactivation
-					&& CONTROL_SubState != SS_DeactivationWaitRout
-					&& CONTROL_SubState != SS_DeactivationWaitRcon)
-			{
-				CONTROL_SetDeviceSubState(SS_Deactivation);
-			}
-			return false;
 		}
-		else
-			return true;
+		return false;
 	}
-	else
-		return true;
 }
 //-----------------------------------------------
 
@@ -304,6 +308,12 @@ void CONTROL_InitStoragePointers()
 	STF_AssignPointer(9, (Int32U)&DataTable[REG_DIAG_VOLTAGE]);
 	STF_AssignPointer(10, (Int32U)&DataTable[REG_SELFTEST_STEP]);
 	STF_AssignPointer(11, (Int32U)&DataTable[REG_DEBUG_SCALING_COEF]);
+	STF_AssignPointer(12, (Int32U)CONTROL_RegulatorIces);
+	STF_AssignPointer(13, (Int32U)CONTROL_RegulatorUce);
+	STF_AssignPointer(14, (Int32U)CONTROL_RegulatorSetpoint);
+	STF_AssignPointer(15, (Int32U)CONTROL_RegulatorCorrection);
+	STF_AssignPointer(16, (Int32U)CONTROL_RegulatorError);
+	STF_AssignPointer(17, (Int32U)CONTROL_DACRaw);
 }
 //------------------------------------------
 
@@ -312,6 +322,7 @@ void CONTROL_SwitchToFault(Int16U Reason)
 	CONTROL_SetDeviceSubState(SS_None);
 	CONTROL_SetDeviceState(DS_Fault);
 	DataTable[REG_FAULT_REASON] = Reason;
+	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 }
 //------------------------------------------
 
