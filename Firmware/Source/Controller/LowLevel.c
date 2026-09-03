@@ -139,13 +139,11 @@ void LL_SetCurrentChannel(IChannel Channel)
 	{
 		case I_CHANNEL_1:
 			LL_SetChannelRelaysOff();
-			LL_SetStateRelay(RELAY_RMES1_NC, true);
-			LL_SetStateRelay(RELAY_RMES5, true);
 			break;
 		case I_CHANNEL_2:
 			LL_SetChannelRelaysOff();
 			LL_SetStateRelay(RELAY_RMES1_NC, true);
-			LL_SetStateRelay(RELAY_RMES4, true);
+			LL_SetStateRelay(RELAY_RMES2, true);
 			break;
 		case I_CHANNEL_3:
 			LL_SetChannelRelaysOff();
@@ -155,10 +153,12 @@ void LL_SetCurrentChannel(IChannel Channel)
 		case I_CHANNEL_4:
 			LL_SetChannelRelaysOff();
 			LL_SetStateRelay(RELAY_RMES1_NC, true);
-			LL_SetStateRelay(RELAY_RMES2, true);
+			LL_SetStateRelay(RELAY_RMES4, true);
 			break;
 		case I_CHANNEL_5:
 			LL_SetChannelRelaysOff();
+			LL_SetStateRelay(RELAY_RMES1_NC, true);
+			LL_SetStateRelay(RELAY_RMES5, true);
 			break;
 		default:
 			LL_SetChannelRelaysOff();

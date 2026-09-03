@@ -67,7 +67,7 @@ void IO_Config()
 	GPIO_Bit_Rst(GPIOA, Pin_10);
 	// GPIO_LCAU_DISCHARGE_DISABLE (NC)
 	GPIO_Config(GPIOA, Pin_12, Output, PushPull, HighSpeed, NoPull);
-	GPIO_Bit_Set(GPIOA, Pin_12);
+	GPIO_Bit_Rst(GPIOA, Pin_12);
 	// GPIO_SELFTEST1_7MEG
 	GPIO_Config(GPIOA, Pin_8, Output, PushPull, HighSpeed, NoPull);
 	GPIO_Bit_Rst(GPIOA, Pin_8);

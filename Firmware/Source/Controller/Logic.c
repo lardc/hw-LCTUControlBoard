@@ -262,7 +262,7 @@ void LOGIC_StopProcess()
 {
 	REGLTR_StopProcess();
 	LL_SyncOSC(false);
-	LL_SetCurrentChannel(I_CHANNEL_5);
+	LL_SetCurrentChannel(I_CHANNEL_1);
 	LL_SetStateRelay(RELAY_HV_OUT, false);
 	LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
 	DataTable[REG_SELFTEST_STEP] = 0;
