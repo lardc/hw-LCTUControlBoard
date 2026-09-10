@@ -6,7 +6,8 @@
 #include "Regulator.h"
 
 // Forward functions
-void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger, bool EnableDMA);
+void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger);
+void INITCFG_UcapADC();
 
 // Functions
 //
@@ -37,14 +38,14 @@ void INITCFG_IO()
 	GPIO_InitPushPullOutput(GPIO_SW_FAN);
 	GPIO_InitPushPullOutput(GPIO_SW_IND);
 	GPIO_InitPushPullOutput(GPIO_SW_SYNC);
-	GPIO_InitPushPullOutput(GPIO_RCON);
-	GPIO_InitPushPullOutput(GPIO_RSS);
-	GPIO_InitPushPullOutput(GPIO_ROUT_LCAU);
-	GPIO_InitPushPullOutput(GPIO_RDIS);
-	GPIO_InitPushPullOutput(GPIO_ROUT_LCTU);
-	GPIO_InitPushPullOutput(GPIO_RST1);
-	GPIO_InitPushPullOutput(GPIO_RST2);
-	GPIO_InitPushPullOutput(GPIO_RMES1);
+	GPIO_InitPushPullOutput(GPIO_LCAU_INPUT_CONTACTOR);
+	GPIO_InitPushPullOutput(GPIO_LCAU_SOFTSTART_DISABLE);
+	GPIO_InitPushPullOutput(GPIO_LCAU_HV_OUT);
+	GPIO_InitPushPullOutput(GPIO_LCAU_DISCHARGE_DISABLE);
+	GPIO_InitPushPullOutput(GPIO_HV_OUT);
+	GPIO_InitPushPullOutput(GPIO_SELFTEST1_7MEG);
+	GPIO_InitPushPullOutput(GPIO_SELFTEST2_700MEG);
+	GPIO_InitPushPullOutput(GPIO_RMES1_NC);
 	GPIO_InitPushPullOutput(GPIO_RMES2);
 	GPIO_InitPushPullOutput(GPIO_RMES3);
 	GPIO_InitPushPullOutput(GPIO_RMES4);
@@ -56,14 +57,14 @@ void INITCFG_IO()
 	GPIO_SetState(GPIO_SW_FAN, false);
 	GPIO_SetState(GPIO_SW_IND, false);
 	GPIO_SetState(GPIO_SW_SYNC, true);
-	GPIO_SetState(GPIO_RCON, false);
-	GPIO_SetState(GPIO_RSS, false);
-	GPIO_SetState(GPIO_ROUT_LCAU, false);
-	GPIO_SetState(GPIO_RDIS, false);
-	GPIO_SetState(GPIO_ROUT_LCTU, false);
-	GPIO_SetState(GPIO_RST1, false);
-	GPIO_SetState(GPIO_RST2, false);
-	GPIO_SetState(GPIO_RMES1, false);
+	GPIO_SetState(GPIO_LCAU_INPUT_CONTACTOR, false);
+	GPIO_SetState(GPIO_LCAU_SOFTSTART_DISABLE, false);
+	GPIO_SetState(GPIO_LCAU_HV_OUT, false);
+	GPIO_SetState(GPIO_LCAU_DISCHARGE_DISABLE, false);
+	GPIO_SetState(GPIO_HV_OUT, false);
+	GPIO_SetState(GPIO_SELFTEST1_7MEG, false);
+	GPIO_SetState(GPIO_SELFTEST2_700MEG, false);
+	GPIO_SetState(GPIO_RMES1_NC, false);
 	GPIO_SetState(GPIO_RMES2, false);
 	GPIO_SetState(GPIO_RMES3, false);
 	GPIO_SetState(GPIO_RMES4, false);
@@ -86,7 +87,7 @@ void INITCFG_UART()
 }
 //------------------------------------------------
 
-void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger, bool EnableDMA)
+void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger)
 {
 	ADC_Calibration(ADCx);
 	ADC_Enable(ADCx);
@@ -98,9 +99,17 @@ void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger, bool 
 	ADC_ChannelSeqLen(ADCx, ADC_SEQ_LENGTH);
 
 	ADC_ChannelSet_SampleTime(ADCx, Channel, ADC_SAMPLE_TIME);
-	if (EnableDMA)
-		ADC_DMAConfigWithAutDLY(ADCx);
+	ADC_DMAConfigWithAutDLY(ADCx);
 	ADC_SamplingStart(ADCx);
+}
+//------------------------------------------------
+
+void INITCFG_UcapADC()
+{
+	ADC_Calibration(ADC1);
+	ADC_Enable(ADC1);
+	ADC_SoftTrigConfig(ADC1);
+	ADC_ChannelSet_SampleTime(ADC1, ADC1_CHANNEL_U_CAP, ADC_SAMPLE_TIME);
 }
 //------------------------------------------------
 
@@ -109,10 +118,9 @@ void INITCFG_ADC()
 	RCC_ADC_Clk_EN(ADC_12_ClkEN);
 	RCC_ADC_Clk_EN(ADC_34_ClkEN);
 
-	// ADC1 (Ucap) читается по DR без DMA: AUTDLY+DMAEN без DMA-канала блокирует обновление
-	INITCFG_GeneralADC(ADC1, ADC1_CHANNEL_U_CAP, ADC12_TIM15_TRGO, false);
-	INITCFG_GeneralADC(ADC2, ADC2_CHANNEL_IG, ADC12_TIM15_TRGO, true);
-	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_UG, ADC34_TIM15_TRGO, true);
+	INITCFG_UcapADC();
+	INITCFG_GeneralADC(ADC2, ADC2_CHANNEL_IG, ADC12_TIM15_TRGO);
+	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_UG, ADC34_TIM15_TRGO);
 }
 //------------------------------------------------
 

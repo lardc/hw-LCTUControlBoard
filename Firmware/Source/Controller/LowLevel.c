@@ -4,13 +4,17 @@
 #include "Board.h"
 #include "Delay.h"
 #include "DataTable.h"
+#include "Global.h"
 #include "ZwSPI.h"
 
 // Variables
 Int32U CycleCounters[COMMUTATION_TABLE_SIZE] = {0};
 static bool RelayState[RELAY_COUNT] = {false};
-const GPIO_PortPinSettingMacro* RelayPins[RELAY_COUNT] = {&GPIO_RCON, &GPIO_ROUT_LCAU, &GPIO_RDIS, &GPIO_ROUT_LCTU, &GPIO_RST1, &GPIO_RST2,
-														  &GPIO_RMES1, &GPIO_RMES2, &GPIO_RMES3, &GPIO_RMES4, &GPIO_RMES5};
+const GPIO_PortPinSettingMacro* RelayPins[RELAY_COUNT] = {
+		&GPIO_LCAU_INPUT_CONTACTOR, &GPIO_LCAU_HV_OUT, &GPIO_LCAU_DISCHARGE_DISABLE,
+		&GPIO_HV_OUT, &GPIO_SELFTEST1_7MEG, &GPIO_SELFTEST2_700MEG,
+		&GPIO_RMES1_NC, &GPIO_RMES2, &GPIO_RMES3, &GPIO_RMES4, &GPIO_RMES5};
+
 // Forward functions
 //
 static void LL_UpdateRelayCounter(RelayId Id, bool NewState);
@@ -33,6 +37,12 @@ void LL_ExtIndication(bool State)
 void LL_SyncOSC(bool State)
 {
 	GPIO_SetState(GPIO_SW_SYNC, !State);
+}
+//-----------------------------
+
+bool LL_IsSyncOn()
+{
+	return !GPIO_GetState(GPIO_SW_SYNC);
 }
 //-----------------------------
 
@@ -63,18 +73,25 @@ void LL_SetStateRelay(RelayId Id, bool State)
 
 void LL_SetRelaySafeState()
 {
-	LL_SetStateRelay(RELAY_RCON, false);
-	LL_SetStateRelay(RELAY_ROUT_LCAU, false);
-	LL_SetStateRelay(RELAY_ROUT_LCTU, false);
-	LL_SetStateRelay(RELAY_RST1, false);
-	LL_SetStateRelay(RELAY_RST2, false);
+	LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, false);
+	LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
+	LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, true);	// NC реле разряда батареи
 
-	LL_SetStateRelay(RELAY_RMES1, false);	//NC реле диапазона 300 мА
+	LL_SetStateRelay(RELAY_HV_OUT, false);
+	LL_SetStateRelay(RELAY_SELFTEST1_7MEG, false);
+	LL_SetStateRelay(RELAY_SELFTEST2_700MEG, false);
+
+	LL_SetStateRelay(RELAY_RMES1_NC, false);				// NC реле канала тока
 	LL_SetStateRelay(RELAY_RMES2, false);
 	LL_SetStateRelay(RELAY_RMES3, false);
 	LL_SetStateRelay(RELAY_RMES4, false);
 	LL_SetStateRelay(RELAY_RMES5, false);
-	LL_SetStateRelay(RELAY_RDIS, true);	 	// NC реле разряда батареи
+}
+//-----------------------------
+
+void LL_LCAU_SoftStart(bool State)
+{
+	GPIO_SetState(GPIO_LCAU_SOFTSTART_DISABLE, !State);
 }
 //-----------------------------
 
@@ -97,9 +114,18 @@ void LL_WriteDAC(Int16U DataA, Int16U DataB)
 }
 //-----------------------------
 
+void LL_WriteDAC24(Int32U Data24)
+{
+	Int16U DataA = (Int16U)(Data24 >> DAC_DATA_SHIFT);
+	Int16U DataB = (Int16U)(Data24 & ADC_RESOLUTION);
+
+	LL_WriteDAC(DataA, DataB);
+}
+//-----------------------------
+
 static void LL_SetChannelRelaysOff()
 {
-	LL_SetStateRelay(RELAY_RMES1, false);
+	LL_SetStateRelay(RELAY_RMES1_NC, false);
 	LL_SetStateRelay(RELAY_RMES2, false);
 	LL_SetStateRelay(RELAY_RMES3, false);
 	LL_SetStateRelay(RELAY_RMES4, false);
@@ -113,33 +139,35 @@ void LL_SetCurrentChannel(IChannel Channel)
 	{
 		case I_CHANNEL_1:
 			LL_SetChannelRelaysOff();
-			LL_SetStateRelay(RELAY_RMES1, true);
 			break;
 		case I_CHANNEL_2:
 			LL_SetChannelRelaysOff();
+			LL_SetStateRelay(RELAY_RMES1_NC, true);
 			LL_SetStateRelay(RELAY_RMES2, true);
 			break;
 		case I_CHANNEL_3:
 			LL_SetChannelRelaysOff();
+			LL_SetStateRelay(RELAY_RMES1_NC, true);
 			LL_SetStateRelay(RELAY_RMES3, true);
 			break;
 		case I_CHANNEL_4:
 			LL_SetChannelRelaysOff();
+			LL_SetStateRelay(RELAY_RMES1_NC, true);
 			LL_SetStateRelay(RELAY_RMES4, true);
 			break;
 		case I_CHANNEL_5:
 			LL_SetChannelRelaysOff();
+			LL_SetStateRelay(RELAY_RMES1_NC, true);
 			LL_SetStateRelay(RELAY_RMES5, true);
 			break;
 		default:
 			LL_SetChannelRelaysOff();
-			LL_SetStateRelay(RELAY_RMES1, true);
 			break;
 	}
 }
 //-----------------------------
 
-bool LL_SafetyState()
+bool LL_IsSafetyOk()
 {
 	return GPIO_GetState(GPIO_SAFETY);
 }

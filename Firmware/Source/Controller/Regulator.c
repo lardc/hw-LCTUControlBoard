@@ -22,7 +22,8 @@ static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, ScalingCoef, S
 static Int16U FollowingErrorCounter = 0;
 static Int16U MaxCurrentErrCount = 0;
 static Int16U MaxCurrentErrLimit = 0;
-static float PulseAmplitude, RiseRate, MaxCurrentA = 0.0f;
+static float PulseAmplitude, RiseRate, MaxCurrentA = 0;
+static float PreTriggerAmplitude = 0;
 float RawSetPoint = 0;
 float VoltStep = 0, Qp = 0;
 float RegulatorError = 0;
@@ -34,7 +35,7 @@ volatile SamplingResult Sample = {0};
 // Forward functions
 SamplingResult REGLTR_GetSample();
 void REGLTR_StoreRegulatorDebug(float Uce, float Ices, float Setpoint, float Correction, float Error, float DACRaw);
-Int16U REGLTR_CorrectionLogDACPoint();
+Int32U REGLTR_CorrectionLogDACPoint();
 void RGLTR_ErrorCheck();
 Int16U REGLTR_GetScalingCoef();
 
@@ -44,8 +45,7 @@ void REGLTR_Process()
 	if (CONTROL_SubState != SS_RegulatorProcess
 			&& CONTROL_SubState != SS_RegulatorProcessSelfTest)
 		return;
-
-	Int16U DACSetpoint;
+	Int32U DACSetpoint;
 	Sample = REGLTR_GetSample();
 
 	switch(RegState)
@@ -58,13 +58,13 @@ void REGLTR_Process()
 				RegState = RS_FlatTop;
 			}
 			DACSetpoint = REGLTR_CorrectionLogDACPoint();
-			LL_WriteDAC(DACSetpoint,0);
+			LL_WriteDAC24(DACSetpoint);
 			break;
 
 		case RS_FlatTop:
 		default:
 			DACSetpoint = REGLTR_CorrectionLogDACPoint();
-			LL_WriteDAC(DACSetpoint,0);
+			LL_WriteDAC24(DACSetpoint);
 			break;
 	}
 }
@@ -82,27 +82,29 @@ void REGLTR_Init()
 	VoltagErrThreshold = DataTable[REG_VOLTAGE_ERR_THRESH];
 	VoltagErrLimit = DataTable[REG_VOLTAGE_ERR_COUNT_LIMIT];
 	MaxCurrentErrLimit = (Int16U)DataTable[REG_MAX_CURRENT_ERR_COUNT_LIMIT];
-	MaxCurrentA = DataTable[REG_MAX_CURRENT_ICES] * CONVERSION_REDUC_THOUSAND;
-	RawSetPoint = 0;
+	MaxCurrentA = DataTable[REG_MAX_CURRENT_ICES] * 0.001f;
+	PreTriggerAmplitude = DataTable[REG_PRETRIGGER_VOLTAGE];
+	RawSetPoint = PreTriggerAmplitude;
 	RegState = RS_Rise;
 	RegulatorError = 0;
 
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Ices:
-			PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]) * CONVERSION_REDUC_THOUSAND;
+			PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]);
 			break;
 
 		case MT_ST_TestLoad:
-			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * CONVERSION_REDUC_THOUSAND;
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001f;
 			break;
 	}
 
 	Int32U PulseRiseMs = (Int32U)DataTable[REG_PULSE_RISE_DURATION];
 	if (PulseRiseMs == 0u)
 		PulseRiseMs = 1u;
-	RiseRate = PulseAmplitude / (float)PulseRiseMs;
-	VoltStep = RiseRate * TIMER15_uS * CONVERSION_REDUC_THOUSAND;
+
+	RiseRate = (PulseAmplitude - PreTriggerAmplitude) / (float)PulseRiseMs;
+	VoltStep = RiseRate * TIMER15_uS * 0.001f;
 
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];
@@ -118,7 +120,7 @@ void REGLTR_Init()
 }
 //-----------------------------------------
 
-Int16U REGLTR_CorrectionLogDACPoint()
+Int32U REGLTR_CorrectionLogDACPoint()
 {
 	RGLTR_ErrorCheck();
 
@@ -126,7 +128,7 @@ Int16U REGLTR_CorrectionLogDACPoint()
 	Qi += RegulatorError * Ki;
 
 	float SetPoint = RawSetPoint + Qp + Qi;
-	Int16U DACPoint = MEASURE_ConvertUset(SetPoint);
+	Int32U DACPoint = MEASURE_ConvertUset(SetPoint);
 
 	REGLTR_StoreRegulatorDebug(Sample.Uce, Sample.Ices, RawSetPoint, Qp + Qi, RegulatorError, (float)DACPoint);
 
@@ -154,11 +156,9 @@ void RGLTR_ErrorCheck()
 				}
 			}
 			else
-			{
 				MaxCurrentErrCount = 0;
-			}
 
-			if(VoltageErr < VoltagErrThreshold)
+			if(VoltageErr <= VoltagErrThreshold)
 			{
 				if(CONTROL_MeasureType == MT_Ices)
 					RINGBUF_AddNewSampleIces(Sample.Ices);
@@ -241,7 +241,11 @@ Int16U REGLTR_GetScalingCoef()
 	Int16U Coef = 0;
 	Int16U MsToMks = 1000;
 	float RisingPart, SumTicks = 0;
-	RisingPart = PulseAmplitude / RiseRate;
+
+	if(RiseRate > 0.0f)
+		RisingPart = (PulseAmplitude - PreTriggerAmplitude) / RiseRate;
+	else
+		RisingPart = 0;
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Ices:
@@ -275,7 +279,7 @@ void REGLTR_StartProcess()
 
 void REGLTR_StopProcess()
 {
-	LL_WriteDAC(0,0);
+	LL_WriteDAC24(0);
 	TIM_Stop(TIM15);
 
 	DMA_ChannelEnable(DMA2_Channel1, false);

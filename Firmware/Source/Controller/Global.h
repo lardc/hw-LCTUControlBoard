@@ -1,6 +1,8 @@
 ﻿#ifndef __GLOBAL_H
 #define __GLOBAL_H
 
+#include "stdinc.h"
+
 // Definitions
 // 
 #define	SCCI_TIMEOUT_TICKS			1000	// Таймаут интерфейса SCCI (в мс)
@@ -15,10 +17,15 @@
 #define TIME_FAULT_LED_BLINK		250		// Мигание светодиодом в состоянии Fault
 #define TIME_SPI_DELAY				5		// Задержка интерфейса SPI
 #define TIME_INIT_48V_TIMER			10		// Время для выставления 48v на плате, в мс
-// Другие параметры
-#define CONVERSION_REDUC_THOUSAND	0.001f	// Коэф уменьшения числа в 1000 раз
+#define TIME_START_FLAT				10		// Время начальной полки перед формированием, в мс
+#define TIME_ACTIVATION_TIMEOUT		10000	// Таймаут заряда накопителя, в мс
 
 #define VALUES_EXT_INFO_SIZE		300
-#define VALUES_DEBUG_RGLTR_SIZE		600	// Размер отладочного буфера регулятора
+#define VALUES_DEBUG_RGLTR_SIZE		600		// Размер отладочного буфера регулятора
+
+#define ADC_RESOLUTION				4095
+#define DAC_RESOLUTION				0xFFFFFF
+#define DAC_CHANNEL_B				BIT15
+#define DAC_DATA_SHIFT				12
 
 #endif //  __GLOBAL_H

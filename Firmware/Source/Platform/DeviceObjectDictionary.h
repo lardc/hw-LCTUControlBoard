@@ -9,13 +9,13 @@
 
 #define ACT_DBG_EXT_INDICATION			10	// Управление внешней индикацией по состоянию отладочного регистра REG_DBG
 #define ACT_DBG_FAN						11	// Управление вентилятором по состоянию отладочного регистра REG_DBG
-#define ACT_DBG_ST						12	// Управление реле самодиагностики по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_SELF_TEST_RELAY			12	// Управление реле самодиагностики по состоянию отладочного регистра REG_DBG
 											// 0 – выключено, 1 – включен ST1, 2 – включен ST2
-#define ACT_DBG_LCTU_OUT				13	// Управление выходным реле LCTU по состоянию отладочного регистра REG_DBG
-#define ACT_DBG_LCAU_OUT				14	// Управление выходным реле LCAU по состоянию отладочного регистра REG_DBG
-#define ACT_DBG_CONT					15	// Управление контактором в LCAU по состоянию отладочного регистра REG_DBG
-#define ACT_DBG_DIS						16	// Управление реле разряда в LCAU по состоянию отладочного регистра REG_DBG
-#define ACT_DBG_SOFT					17	// Управление плавным пуском в LCAU по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_HV_OUT					13	// Управление выходным HV реле по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_LCAU_HV_OUT				14	// Управление выходным реле LCAU по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_LCAU_INPUT_CONTACTOR	15	// Управление входным контактором в LCAU по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_LCAU_DISCHARGE			16	// Управление реле разряда в LCAU по состоянию отладочного регистра REG_DBG
+#define ACT_DBG_LCAU_SOFTSTART			17	// Управление плавным пуском в LCAU по состоянию отладочного регистра REG_DBG
 #define ACT_DBG_SPI_WRITE_TWO_BYTES		18	// Запись двух байтов для отладки SPI
 #define ACT_DBG_PULSE					19	// Запуск импульса в виде трапеции
 #define ACT_DBG_SYNC_OSC				20	// Запуск синхронизации осциллографа
@@ -26,9 +26,10 @@
 #define ACT_DBG_BAT_RAW_READ			25 	// Чтение сырого значения на батарее в LCAU в отладочный регистр REG_DBG
 #define ACT_DBG_I_ADC_RAW_READ			26 	// Чтение сырого значения тока в отладочный регистр REG_DBG
 #define ACT_DBG_OPTIC					27 	// Диагностическое переключение оптопередатчиков
+#define ACT_DBG_START_SELFTEST_TESTLOAD	30	// Запуск процесса самодиагностики с тестовой нагрузкой
 
 #define ACT_START_MEASURE_ICES			101	// Запуск процесса измерения Ices
-#define ACT_START_SELFTEST_TESTLOAD		104 // Запуск процесса самодиагностики с тестовой нагрузкой
+
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
 #define ACT_RESET_TO_DEFAULT			202	// Сброс DataTable в состояние по умолчанию
@@ -60,7 +61,10 @@
 #define REG_U_G_P0						3	// Смещение тонкой подстройки Р0
 #define REG_U_G_K						4	// Коэффициент преобразования K
 #define REG_U_G_B						5	// Коэффициент преобразования B
-// 6 - 10
+//
+#define REG_U_BAT_K						6	// Коэффициент преобразования K
+#define REG_U_BAT_B						7	// Коэффициент преобразования B
+// 8 - 10
 //
 #define REG_I_0_P2						11	// Коэффициент тонкой подстройки Р2
 #define REG_I_0_P1						12	// Коэффициент тонкой подстройки Р1
@@ -109,11 +113,11 @@
 #define REG_WORK_VOLTAGE_ST_TESTLOAD	67	// Номинальное рабочее напряжение для самодиагностики с тестовой нагрузкой, мВ
 // 68
 //
-#define REG_RANGE_I_0					69	// Нижняя граница диапазона канала 0 - 100...300 мА, в А
-#define REG_RANGE_I_1					70	// Нижняя граница диапазона канала 1 - 10...100 мА, в А
-#define REG_RANGE_I_2					71	// Нижняя граница диапазона канала 2 - 1...10 мА, в А
-#define REG_RANGE_I_3					72	// Нижняя граница диапазона канала 3 - 100...1000 мкА, в А
-#define REG_RANGE_I_4					73	// Нижняя граница диапазона канала 4 - 10...100 мкА, в А
+#define REG_RANGE_I_0					69	// I_CHANNEL_1: нижняя граница диапазона 100...300 мА, в А
+#define REG_RANGE_I_1					70	// I_CHANNEL_2: 10...100 мА, в А
+#define REG_RANGE_I_2					71	// I_CHANNEL_3: 1...10 мА, в А
+#define REG_RANGE_I_3					72	// I_CHANNEL_4: 100...1000 мкА, в А
+#define REG_RANGE_I_4					73	// I_CHANNEL_5: 10...100 мкА, в А
 #define REG_U_CAP_ACTIVATE_RSS			74	// Порог включения Rss по Ucap, В
 #define REG_U_CAP_READY					75	// Порог готовности по Ucap, В
 // 76 - 79
@@ -126,24 +130,26 @@
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
 #define REG_PULSE_RISE_DURATION			86	// Длительность фронта импульса, мс
 #define REG_PULSE_DURATION				87	// Длительность импульса, мс
-#define REG_DEACT_RCON_DELAY			88	// Задержка перед Rdis после Rcon OFF, мс
-#define REG_REGLTR_TIMER				89	// Время для выхода регулятора на рабочее напряжение, мс
+
+#define REG_PRETRIGGER_VOLTAGE			88 	// Напряжение ступени предварительного включения, В
+#define REG_PRETRIGGER_DURATION			89	// Длительность ступени предварительного включения, мс
+
 #define REG_DEACT_ROUT_DELAY			90	// Задержка на размыкание RoutLCTU, мс
 #define REG_RELAY_SW_TIMER_ICES			91	// Время переключения реле тока при измерении Ices, мс
 #define REG_SYNC_DELAY_AFTER_FLAT		92	// Задержка выдачи SYNC после выхода на полку, мс
 #define REG_MAX_CURRENT_ERR_COUNT_LIMIT	93	// Лимит счетчика превышения тока перед PROBLEM_MAX_CURRENT_EXCEEDED
-//
-#define REG_SLEW_RATE_ICES				94	// Скорость нарастания для измерения Ices, В\мс
-// 95 - 96
-#define REG_SLEW_RATE_ST_TESTLOAD		97	// Скорость нарастания для самодиагностики с тестовой нагрузкой, В\мс
+// 94 - 97
 #define REG_ST_PULSE_DURATION			98	// Длительность импульса самодиагностики, мс
 #define REG_ST_TL_FLATTOP_DURATION		99	// Длительность полки поддержания напряжения при диагностики с нагрузкой, мс
 #define REG_RGLTR_ST_ERR_THRESH			100	// Порог ошибки напряжения для диаг. потенциальных линий, в частях от 0 до 1
-#define REG_ST_TESTLOAD_RESIS			101	// Сопротивление тестовой нагрузки, Ом
-// 102 - 105
+#define REG_ST_TESTLOAD_RESIS_7MOHM		101	// Сопротивление цепи самотестирования 7 МОм, Ом
+#define REG_ST_TESTLOAD_RESIS_700MOHM	102	// Сопротивление цепи самотестирования 700 МОм, Ом
+#define REG_ST_CURRENT_ERR_THRESH		103	// Порог погрешности тока самодиагностики, в частях от 0 до 1
+// 104 - 105
 #define REG_CNT_ACTIVE					106	// Включение сохранения счетчиков
 #define REG_SCALING_MUTE				107	// Отключение масштабирования значений в EP
-// 108 - 127
+#define REG_USE_SELFTEST				108	// Автозапуск самодиагностики при старте
+// 109 - 127
 
 // Несохраняемы регистры чтения-записи
 #define REG_WORK_VOLTAGE_ICES			128	// Номинальное рабочее напряжение для измерения Ices, В
@@ -174,6 +180,7 @@
 #define REG_DIAG_VOLTAGE				231	// Полученное напряжение
 #define REG_SELFTEST_STEP				232	// Текущий шаг самодиагностики (0 - не активно, 1..6)
 #define REG_DEBUG_SCALING_COEF			233	// Рассчитанный коэф масштабирования
+#define REG_U_BAT						234	// Напряжение на батарее, В
 // -----------------------------
 
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
@@ -189,6 +196,11 @@
 
 //  Fault and disable codes
 #define DF_NONE							0
+#define DF_FOLLOWING_ERROR				1	// Ошибка Following Error при самодиагностике
+#define DF_VOLTAGE_OUT_OF_RANGE			2	// Ошибка по напряжению при самодиагностике
+#define DF_CURRENT_OUT_OF_RANGE			3	// Ошибка по току при самодиагностике
+#define DF_SELFTEST_FAILED				4	// Самодиагностика завершилась с ошибкой
+#define DF_CAP_VOLTAGE_LOW				5	// Недостаточное напряжение накопителя при самодиагностике
 
 // Problem
 #define PROBLEM_NONE					0
@@ -198,7 +210,6 @@
 #define PROBLEM_NEED_MORE_SAMPLES		5 // Недостаточная длина измерения Ices для получения точного значения
 #define PROBLEM_WRONG_SELECTED_RELAY	7 // Выбрано неверное реле для диагностики
 #define PROBLEM_MAX_CURRENT_EXCEEDED	8 // Превышен максимальный ток в процессе измерения
-#define PROBLEM_CAP_VOLTAGE_LOW			9 // Недостаточное напряжение накопителя (Ucap)
 #define PROBLEM_SELFTEST_FAILED			10 // Самодиагностика завершилась с ошибкой
 
 //  Warning

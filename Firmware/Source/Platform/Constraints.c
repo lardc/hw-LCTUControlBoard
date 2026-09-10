@@ -15,8 +15,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 3
 	{COEF_K_MIN, COEF_K_MAX, COEF_K_UG_DEF},									// 4
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 5
-	{0, 0, 0},																	// 6
-	{0, 0, 0},																	// 7
+	{COEF_K_MIN, COEF_K_MAX, COEF_K_UBAT_DEF},									// 6
+	{COEF_B_MIN, COEF_B_MAX, 0},												// 7
 	{0, 0, 0},																	// 8
 	{0, 0, 0},																	// 9
 	{0, 0, 0},																	// 10
@@ -76,7 +76,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_K_MIN, COEF_K_MAX, COEF_K_USET_DEF},									// 64
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 65
 	{0, 0, 0},																	// 66
-	{0, INT16U_MAX, U_SELTTEST_DEF},											// 67
+	{U_SELTTEST_MIN, INT16U_MAX, U_SELTTEST_DEF},								// 67
 	{0, 0, 0},																	// 68
 	{COEF_I_CH0_MIN, INT16U_MAX, COEF_I_CH0_MIN},								// 69
 	{COEF_I_CH1_MIN, INT16U_MAX, COEF_I_CH1_MIN},								// 70
@@ -97,27 +97,27 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{U_ERR_COUNT_MIN, U_ERR_COUNT_MAX, U_ERR_COUNT_DEF},						// 85
 	{PULSE_RISE_TIME_MIN, INT16U_MAX, PULSE_RISE_TIME_DEF},						// 86
 	{PULSE_DURATION_MIN, PULSE_DURATION_DEF, PULSE_DURATION_DEF},				// 87
-	{0, INT16U_MAX, DEACT_RCON_DELAY_DEF},										// 88
-	{REGULATOR_TIME_MIN, REGULATOR_TIME_MAX, REGULATOR_TIME_MIN},				// 89
+	{0, U_ICES_MAX, 0},															// 88
+	{PULSE_DURATION_MIN, PULSE_DURATION_DEF, COEF_FLATTOP_DURATION_DEF},		// 89
 	{0, INT16U_MAX, DEACT_ROUT_DELAY_DEF},										// 90
 	{COEF_SWITCH_TIME_ICES_MIN, INT16U_MAX, COEF_SWITCH_TIME_ICES_MIN},			// 91
 	{0, INT16U_MAX, SYNC_DELAY_AFTER_FLAT_DEF},									// 92
-	{I_ERR_COUNT_MIN, I_ERR_COUNT_MAX, I_ERR_COUNT_DEF},							// 93
-	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 94
+	{I_ERR_COUNT_MIN, I_ERR_COUNT_MAX, I_ERR_COUNT_DEF},						// 93
+	{0, 0, 0},																	// 94
 	{0, 0, 0},																	// 95
 	{0, 0, 0},																	// 96
-	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 97
-	{PULSE_DURATION_MIN, INT16U_MAX, ST_PULSE_DURATION_DEF},						// 98
+	{0, 0, 0},																	// 97
+	{PULSE_DURATION_MIN, INT16U_MAX, ST_PULSE_DURATION_DEF},					// 98
 	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 99
 	{0, COEF_THRESHOLD_MAX, 0},													// 100
-	{R_TESTLOAD_MIN, INT16U_MAX, R_TESTLOAD_DEF},								// 101
-	{0, 0, 0},																	// 102
-	{0, 0, 0},																	// 103
+	{R_ST_TESTLOAD_MIN, R_ST_TESTLOAD_MAX, R_ST_TESTLOAD_7MOHM_DEF},			// 101
+	{R_ST_TESTLOAD_MIN, R_ST_TESTLOAD_MAX, R_ST_TESTLOAD_700MOHM_DEF},			// 102
+	{0, COEF_THRESHOLD_MAX, ST_CURRENT_ERR_THRESH_DEF},							// 103
 	{0, 0, 0},																	// 104
 	{0, 0, 0},																	// 105
 	{NO, YES, NO},																// 106
 	{NO, YES, NO},																// 107
-	{0, 0, 0},																	// 108
+	{NO, YES, NO},																// 108
 	{0, 0, 0},																	// 109
 	{0, 0, 0},																	// 110
 	{0, 0, 0},																	// 111
