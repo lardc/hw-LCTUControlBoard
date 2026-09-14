@@ -221,9 +221,8 @@ void LOGIC_HandleMeasurement()
 				switch(CONTROL_MeasureType)
 				{
 					case MT_Ices:
-						DataTable[REG_DIAG_VOLTAGE] = UceResult;
-						DataTable[REG_ICES_RESULT] = IcesResult;
-						DataTable[REG_DIAG_CURRENT] = IcesResult;
+						DataTable[REG_VOLTAGE_RESULT] = DataTable[REG_DIAG_VOLTAGE] = UceResult;
+						DataTable[REG_ICES_RESULT] = DataTable[REG_DIAG_CURRENT] = IcesResult;
 						DataTable[REG_OP_RESULT] = OPRESULT_OK;
 						break;
 

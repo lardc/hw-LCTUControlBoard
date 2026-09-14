@@ -174,6 +174,7 @@
 #define REG_OP_RESULT					197	// Регистр результата операции
 #define REG_DEV_SUBSTATE				198
 
+#define REG_VOLTAGE_RESULT				200	// Полученное значение напряжения
 #define REG_ICES_RESULT					201	// Полученное значение тока Ices
 //
 #define REG_DIAG_CURRENT				230	// Полученный ток
