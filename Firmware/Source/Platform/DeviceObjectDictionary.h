@@ -28,7 +28,8 @@
 #define ACT_DBG_OPTIC					27 	// Диагностическое переключение оптопередатчиков
 #define ACT_DBG_START_SELFTEST_TESTLOAD	30	// Запуск процесса самодиагностики с тестовой нагрузкой
 
-#define ACT_START_MEASURE_ICES			101	// Запуск процесса измерения Ices
+#define ACT_START_MEASURE_ICES			100	// Запуск процесса измерения Ices
+#define ACT_STOP_MEASURE				101	// Стоп измерения
 
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
@@ -129,7 +130,6 @@
 #define REG_VOLTAGE_ERR_THRESH			84	// Допустимая ошибка напряжения для начала измерения, в частях от 0 до 1
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
 #define REG_PULSE_RISE_DURATION			86	// Длительность фронта импульса, мс
-#define REG_PULSE_DURATION				87	// Длительность импульса, мс
 
 #define REG_PRETRIGGER_VOLTAGE			88 	// Напряжение ступени предварительного включения, В
 #define REG_PRETRIGGER_DURATION			89	// Длительность ступени предварительного включения, мс
@@ -154,16 +154,16 @@
 // Несохраняемы регистры чтения-записи
 #define REG_WORK_VOLTAGE_ICES			128	// Номинальное рабочее напряжение для измерения Ices, В
 #define REG_MAX_CURRENT_ICES			129	// Максимально допустимый ток для выбора диапазона Ices, мА
-//
-#define REG_SAFETY_MUTE					130	// Отключение контура безопасности
+#define REG_PULSE_DURATION				130	// Длительность импульса напряжения, мс
 //
 #define REG_CNT_NUMBER					131	// Номер счетчика, в который будет записано значение
 #define REG_CNT_VALUE					132	// Значение, которое будет записано в счетчик
 //
 #define REG_DBG							150	// Отладочный регистр
-#define REG_DIAG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
+#define REG_DBG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
 #define REG_DBG2						152	// Отладочный регистр 2
-// 152 - 191
+#define REG_DBG_SAFETY_MUTE				153	// Отключение контура безопасности
+// 154 - 191
 
 // Регистры только чтение
 #define REG_DEV_STATE					192	// Регистр состояния
@@ -206,6 +206,7 @@
 #define PROBLEM_NONE					0
 #define PROBLEM_FOLLOWING_ERROR			1
 #define PROBLEM_VOLTAGE_OUT_OF_RANGE	2 // Измеренное напряжение вне рабочего диапозона
+#define PROBLEM_FORCED_STOP				3 // Принудительная остановка измерения
 #define PROBLEM_SAFETY					4 // Сработала система безопасности
 #define PROBLEM_NEED_MORE_SAMPLES		5 // Недостаточная длина измерения Ices для получения точного значения
 #define PROBLEM_WRONG_SELECTED_RELAY	7 // Выбрано неверное реле для диагностики

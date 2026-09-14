@@ -83,7 +83,7 @@ void LOGIC_HandleMeasurement()
 					LL_SetStateRelay(RELAY_HV_OUT, true);
 
 				UceResult = IcesResult = 0.0f;
-				ForcedCh = DataTable[REG_DIAG_FORCE_CHANNEL];
+				ForcedCh = DataTable[REG_DBG_FORCE_CHANNEL];
 				SyncDelayTimeout = 0;
 
 				switch(CONTROL_MeasureType)

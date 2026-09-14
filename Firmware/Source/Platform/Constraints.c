@@ -96,7 +96,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, COEF_THRESHOLD_MAX, 0},													// 84
 	{U_ERR_COUNT_MIN, U_ERR_COUNT_MAX, U_ERR_COUNT_DEF},						// 85
 	{PULSE_RISE_TIME_MIN, INT16U_MAX, PULSE_RISE_TIME_DEF},						// 86
-	{PULSE_DURATION_MIN, PULSE_DURATION_DEF, PULSE_DURATION_DEF},				// 87
+	{0, 0, 0},																	// 87
 	{0, U_ICES_MAX, 0},															// 88
 	{PULSE_DURATION_MIN, PULSE_DURATION_DEF, COEF_FLATTOP_DURATION_DEF},		// 89
 	{0, INT16U_MAX, DEACT_ROUT_DELAY_DEF},										// 90
@@ -143,7 +143,7 @@ const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START]
 {
 	{U_ICES_MIN, U_ICES_MAX, U_ICES_DEF},										// 128
 	{I_ICES_MAX_MIN, I_ICES_MAX_MAX, I_ICES_MAX_DEF},							// 129
-	{NO, YES, NO},																// 130
+	{PULSE_DURATION_MIN, PULSE_DURATION_DEF, PULSE_DURATION_DEF},				// 130
 	{0, (COMMUTATION_TABLE_SIZE - 1), 0},										// 131
 	{0, INT16U_MAX, 0},															// 132
 	{0, 0, 0},																	// 133
@@ -166,7 +166,7 @@ const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START]
 	{0, INT16U_MAX, 0},															// 150
 	{NO, I_CHANNEL_5, NO},														// 151
 	{0, INT16U_MAX, 0},															// 152
-	{0, 0, 0},																	// 153
+	{NO, YES, NO},																// 153
 	{0, 0, 0},																	// 154
 	{0, 0, 0},																	// 155
 	{0, 0, 0},																	// 156
