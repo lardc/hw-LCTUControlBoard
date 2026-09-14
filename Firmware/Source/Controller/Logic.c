@@ -375,6 +375,8 @@ static void LOGIC_ErrorHandler(DeviceSubState SubState)
 			break;
 
 		case SS_MaxCurrentErr:
+			DataTable[REG_DIAG_CURRENT] = Sample.Ices;
+			DataTable[REG_DIAG_VOLTAGE] = RINGBUF_GetUceAvg();
 			LOGIC_StopProcess();
 			CONTROL_SwitchToProblem(PROBLEM_MAX_CURRENT_EXCEEDED);
 			return;
@@ -392,6 +394,10 @@ static void LOGIC_ErrorHandler(DeviceSubState SubState)
 		CONTROL_SwitchToFault(FaultReason);
 	}
 	else
+	{
+		DataTable[REG_DIAG_CURRENT] = Sample.Ices;
+		DataTable[REG_DIAG_VOLTAGE] = RINGBUF_GetUceAvg();
 		CONTROL_SwitchToProblem(ProblemReason);
+	}
 }
 //------------------------------------------

@@ -8,6 +8,11 @@ static Int16U IcesIndex = 0;
 static Int16U IcesCount = 0;
 static float IcesSum = 0.0f;
 
+static float UceBuffer[UCE_AVG_BUF_SIZE];
+static Int16U UceIndex = 0;
+static Int16U UceCount = 0;
+static float UceSum = 0.0f;
+
 // Functions
 //
 void RINGBUF_ResetIcesAvg()
@@ -45,5 +50,43 @@ float RINGBUF_GetIcesAvg()
 Int16U RINGBUF_GetIcesAvgCount()
 {
 	return IcesCount;
+}
+//-----------------------------------------
+
+void RINGBUF_ResetUceAvg()
+{
+	UceIndex = UceCount = 0;
+	UceSum = 0.0f;
+	for(Int16U i = 0; i < UCE_AVG_BUF_SIZE; ++i)
+		UceBuffer[i] = 0.0f;
+}
+//-----------------------------------------
+
+void RINGBUF_AddNewSampleUce(float Uce)
+{
+	if(UceCount >= UCE_AVG_BUF_SIZE)
+		UceSum -= UceBuffer[UceIndex];
+	else
+		UceCount++;
+
+	UceBuffer[UceIndex] = Uce;
+	UceSum += Uce;
+	UceIndex++;
+	if(UceIndex >= UCE_AVG_BUF_SIZE)
+		UceIndex = 0;
+}
+//-----------------------------------------
+
+float RINGBUF_GetUceAvg()
+{
+	if(UceCount == 0)
+		return 0;
+	return UceSum / (float)UceCount;
+}
+//-----------------------------------------
+
+Int16U RINGBUF_GetUceAvgCount()
+{
+	return UceCount;
 }
 //-----------------------------------------
