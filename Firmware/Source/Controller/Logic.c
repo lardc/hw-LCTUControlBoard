@@ -221,9 +221,16 @@ void LOGIC_HandleMeasurement()
 				switch(CONTROL_MeasureType)
 				{
 					case MT_Ices:
-						DataTable[REG_VOLTAGE_RESULT] = DataTable[REG_DIAG_VOLTAGE] = UceResult;
-						DataTable[REG_ICES_RESULT] = DataTable[REG_DIAG_CURRENT] = IcesResult;
-						DataTable[REG_OP_RESULT] = OPRESULT_OK;
+						DataTable[REG_DIAG_VOLTAGE] = UceResult;
+						DataTable[REG_DIAG_CURRENT] = IcesResult;
+						if(RINGBUF_GetIcesAvgCount() >= ICES_AVG_BUF_SIZE)
+						{
+							DataTable[REG_VOLTAGE_RESULT] = RINGBUF_GetUceAvg();
+							DataTable[REG_ICES_RESULT] = RINGBUF_GetIcesAvg();
+							DataTable[REG_OP_RESULT] = OPRESULT_OK;
+						}
+						else
+							CONTROL_SwitchToProblem(PROBLEM_NEED_MORE_SAMPLES);
 						break;
 
 					default:
@@ -375,29 +382,22 @@ static void LOGIC_ErrorHandler(DeviceSubState SubState)
 			break;
 
 		case SS_MaxCurrentErr:
-			DataTable[REG_DIAG_CURRENT] = Sample.Ices;
-			DataTable[REG_DIAG_VOLTAGE] = RINGBUF_GetUceAvg();
-			LOGIC_StopProcess();
-			CONTROL_SwitchToProblem(PROBLEM_MAX_CURRENT_EXCEEDED);
-			return;
+			FaultReason = DF_CURRENT_OUT_OF_RANGE;
+			ProblemReason = PROBLEM_MAX_CURRENT_EXCEEDED;
+			break;
 
 		default:
 			return;
 	}
 
+	DataTable[REG_DIAG_CURRENT] = Sample.Ices;
+	DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
+
 	LOGIC_StopProcess();
 
 	if(CONTROL_MeasureType == MT_ST_TestLoad)
-	{
-		DataTable[REG_DIAG_CURRENT] = Sample.Ices;
-		DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
 		CONTROL_SwitchToFault(FaultReason);
-	}
 	else
-	{
-		DataTable[REG_DIAG_CURRENT] = Sample.Ices;
-		DataTable[REG_DIAG_VOLTAGE] = RINGBUF_GetUceAvg();
 		CONTROL_SwitchToProblem(ProblemReason);
-	}
 }
 //------------------------------------------
