@@ -75,7 +75,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 63
 	{COEF_K_MIN, COEF_K_MAX, COEF_K_USET_DEF},									// 64
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 65
-	{0, 0, 0},																	// 66
+	{0, INT16U_MAX, COEF_BASE_VOLT_DEF},										// 66
 	{U_SELTTEST_MIN, INT16U_MAX, U_SELTTEST_DEF},								// 67
 	{0, 0, 0},																	// 68
 	{COEF_I_CH0_MIN, INT16U_MAX, COEF_I_CH0_MIN},								// 69

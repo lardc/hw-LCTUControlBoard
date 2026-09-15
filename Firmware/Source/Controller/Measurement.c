@@ -80,16 +80,35 @@ float MEASURE_Ices(float SampleADC, IChannel Channel)
 
 Int32U MEASURE_ConvertUset(float Uset)
 {
-	float Result = Uset * Uset * DataTable[REG_U_SET_P2] + Uset * DataTable[REG_U_SET_P1] + DataTable[REG_U_SET_P0];
-	Result = Result * DataTable[REG_U_SET_K] + DataTable[REG_U_SET_B];
-	Result = (Result / DataTable[REG_U_ADC_REF]) * DAC_RESOLUTION;
+	float OutDac = Uset * Uset * DataTable[REG_U_SET_P2] + Uset * DataTable[REG_U_SET_P1] + DataTable[REG_U_SET_P0];
+	OutDac = OutDac * DataTable[REG_U_SET_K] + DataTable[REG_U_SET_B];
 
-	if(Result < 0)
+	float Vref = DataTable[REG_U_DAC_REF];
+	float LSB, dV, DataAf, DataBf;
+	Int16U DataA, DataB;
+
+	if(Vref <= 0 || OutDac <= 0)
 		return 0;
-	else if(Result > DAC_RESOLUTION)
-		return DAC_RESOLUTION;
+
+	LSB = Vref / DAC_RESOLUTION;
+	DataAf = OutDac / LSB;
+
+	if(DataAf >= DAC_RESOLUTION)
+		DataA = DAC_RESOLUTION;
 	else
-		return (Int32U)Result;
+		DataA = (Int16U)DataAf;
+
+	dV = OutDac - (float)DataA * LSB;
+	DataBf = dV / (LSB * DAC_KOEF_B);
+
+	if(DataBf <= 0)
+		DataB = 0;
+	else if(DataBf >= DAC_RESOLUTION)
+		DataB = DAC_RESOLUTION;
+	else
+		DataB = (Int16U)DataBf;
+
+	return ((Int32U)DataA << DAC_DATA_SHIFT) | DataB;
 }
 //------------------------------------
 

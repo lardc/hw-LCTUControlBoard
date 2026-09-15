@@ -24,8 +24,9 @@
 #define VALUES_DEBUG_RGLTR_SIZE		600		// Размер отладочного буфера регулятора
 
 #define ADC_RESOLUTION				4095
-#define DAC_RESOLUTION				0xFFFFFF
+#define DAC_RESOLUTION				4095
 #define DAC_CHANNEL_B				BIT15
 #define DAC_DATA_SHIFT				12
+#define DAC_KOEF_B					0.007
 
 #endif //  __GLOBAL_H
