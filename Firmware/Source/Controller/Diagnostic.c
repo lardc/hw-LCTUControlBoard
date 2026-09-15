@@ -35,15 +35,24 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SWITCH_RELAY:
-			for(Int16U i = RELAY_RMES1_NC; i <= RELAY_RMES5; i++)
+			if(!DataTable[REG_DBG])
 			{
-				LL_SetStateRelay((RelayId)i, true);
-				DELAY_MS(200);
-				LL_SetStateRelay((RelayId)i, false);
-				DELAY_MS(100);
+				for(Int16U i = RELAY_RMES1; i <= RELAY_RMES5; i++)
+				{
+					LL_SetStateRelay((RelayId)i, true);
+					DELAY_MS(200);
+					LL_SetStateRelay((RelayId)i, false);
+					DELAY_MS(100);
+				}
+				LL_SetRelaySafeState();
+				break;
 			}
-			LL_SetRelaySafeState();
-			break;
+			else
+			{
+				Int16U Relay = (Int16U) DataTable[REG_DBG];
+				LL_SetStateRelay((RelayId)Relay, DataTable[REG_DBG2]);
+				break;
+			}
 
 		case ACT_DBG_DAC_WRITE:
 			LL_SPI_WriteByte((Int16U)DataTable[REG_DBG], false);
