@@ -13,12 +13,11 @@ static bool RelayState[RELAY_COUNT] = {false};
 const GPIO_PortPinSettingMacro* RelayPins[RELAY_COUNT] = {
 		&GPIO_LCAU_INPUT_CONTACTOR, &GPIO_LCAU_HV_OUT, &GPIO_LCAU_DISCHARGE_DISABLE,
 		&GPIO_HV_OUT, &GPIO_SELFTEST1_7MEG, &GPIO_SELFTEST2_700MEG,
-		&GPIO_RMES1_NC, &GPIO_RMES2, &GPIO_RMES3, &GPIO_RMES4, &GPIO_RMES5};
+		&GPIO_RMES1, &GPIO_RMES2, &GPIO_RMES3, &GPIO_RMES4, &GPIO_RMES5};
 
 // Forward functions
 //
 static void LL_UpdateRelayCounter(RelayId Id, bool NewState);
-static void LL_SetChannelRelaysOff();
 
 // Functions
 //
@@ -81,7 +80,7 @@ void LL_SetRelaySafeState()
 	LL_SetStateRelay(RELAY_SELFTEST1_7MEG, false);
 	LL_SetStateRelay(RELAY_SELFTEST2_700MEG, false);
 
-	LL_SetStateRelay(RELAY_RMES1_NC, false);				// NC реле канала тока
+	LL_SetStateRelay(RELAY_RMES1, false);
 	LL_SetStateRelay(RELAY_RMES2, false);
 	LL_SetStateRelay(RELAY_RMES3, false);
 	LL_SetStateRelay(RELAY_RMES4, false);
@@ -123,9 +122,9 @@ void LL_WriteDAC24(Int32U Data24)
 }
 //-----------------------------
 
-static void LL_SetChannelRelaysOff()
+void LL_SetChannelRelaysOff()
 {
-	LL_SetStateRelay(RELAY_RMES1_NC, false);
+	LL_SetStateRelay(RELAY_RMES1, false);
 	LL_SetStateRelay(RELAY_RMES2, false);
 	LL_SetStateRelay(RELAY_RMES3, false);
 	LL_SetStateRelay(RELAY_RMES4, false);
@@ -139,25 +138,22 @@ void LL_SetCurrentChannel(IChannel Channel)
 	{
 		case I_CHANNEL_1:
 			LL_SetChannelRelaysOff();
+			LL_SetStateRelay(RELAY_RMES1, true);
 			break;
 		case I_CHANNEL_2:
 			LL_SetChannelRelaysOff();
-			LL_SetStateRelay(RELAY_RMES1_NC, true);
 			LL_SetStateRelay(RELAY_RMES2, true);
 			break;
 		case I_CHANNEL_3:
 			LL_SetChannelRelaysOff();
-			LL_SetStateRelay(RELAY_RMES1_NC, true);
 			LL_SetStateRelay(RELAY_RMES3, true);
 			break;
 		case I_CHANNEL_4:
 			LL_SetChannelRelaysOff();
-			LL_SetStateRelay(RELAY_RMES1_NC, true);
 			LL_SetStateRelay(RELAY_RMES4, true);
 			break;
 		case I_CHANNEL_5:
 			LL_SetChannelRelaysOff();
-			LL_SetStateRelay(RELAY_RMES1_NC, true);
 			LL_SetStateRelay(RELAY_RMES5, true);
 			break;
 		default:

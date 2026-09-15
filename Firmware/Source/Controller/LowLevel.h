@@ -25,7 +25,7 @@ typedef enum RelayId
 	RELAY_HV_OUT,
 	RELAY_SELFTEST1_7MEG,
 	RELAY_SELFTEST2_700MEG,
-	RELAY_RMES1_NC,
+	RELAY_RMES1,
 	RELAY_RMES2,
 	RELAY_RMES3,
 	RELAY_RMES4,
@@ -46,6 +46,7 @@ bool LL_IsSyncOn();
 void LL_ToggleExternalLED();
 void LL_SetStateRelay(RelayId Id, bool State);
 void LL_SetRelaySafeState();
+void LL_SetChannelRelaysOff();
 void LL_SPI_WriteByte(uint16_t Data, bool DACChannel);
 void LL_WriteDAC(Int16U DataA,Int16U DataB);
 void LL_WriteDAC24(Int32U Data24);

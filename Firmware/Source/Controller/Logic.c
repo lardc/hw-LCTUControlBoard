@@ -249,7 +249,7 @@ void LOGIC_Deactivate()
 {
 	LOGIC_StopProcess();
 
-	LL_SetStateRelay(RELAY_RMES1_NC, false);
+	LL_SetStateRelay(RELAY_RMES1, false);
 	LL_SetStateRelay(RELAY_RMES2, false);
 	LL_SetStateRelay(RELAY_RMES3, false);
 	LL_SetStateRelay(RELAY_RMES4, false);
@@ -268,7 +268,7 @@ void LOGIC_StopProcess()
 {
 	REGLTR_StopProcess();
 	LL_SyncOSC(false);
-	LL_SetCurrentChannel(I_CHANNEL_1);
+	LL_SetChannelRelaysOff();
 	LL_SetStateRelay(RELAY_HV_OUT, false);
 	LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
 	DataTable[REG_SELFTEST_STEP] = 0;
