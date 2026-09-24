@@ -51,6 +51,12 @@ void LL_ToggleExternalLED()
 }
 //-----------------------------
 
+void LL_SetStateFan(bool State)
+{
+	GPIO_SetState(GPIO_SW_FAN, State);
+}
+//-----------------------------
+
 static void LL_UpdateRelayCounter(RelayId Id, bool NewState)
 {
 	if (!DataTable[REG_CNT_ACTIVE])

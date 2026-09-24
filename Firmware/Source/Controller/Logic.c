@@ -20,6 +20,8 @@ static Int64U SyncDelayTimeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
 static Int16U ForcedCh = 0;
 static Int16U SelfTestStepIdx = 0;
+static Int16U PendingFaultReason = DF_NONE;
+static Int16U PendingProblemReason = PROBLEM_NONE;
 
 // Forward functions
 //
@@ -76,12 +78,22 @@ void LOGIC_HandleMeasurement()
 					break;
 				}
 
+				PendingFaultReason = DF_NONE;
+				PendingProblemReason = PROBLEM_NONE;
 				LL_SetStateRelay(RELAY_LCAU_HV_OUT, true);
-				if(CONTROL_MeasureType == MT_ST_TestLoad)
-					LL_SetStateRelay(RELAY_HV_OUT, false);
-				else
-					LL_SetStateRelay(RELAY_HV_OUT, true);
+				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
+				CONTROL_SetDeviceSubState(SS_InitHVPause);
+				break;
 
+			case SS_InitHVPause:
+				if(CONTROL_TimeCounter > Timeout)
+				{
+					LL_SetStateFan(true); // Доп реле временно сделано на выходе вентилятора
+					CONTROL_SetDeviceSubState(SS_InitSelectCurrentChannel);
+				}
+				break;
+
+			case SS_InitSelectCurrentChannel:
 				UceResult = IcesResult = 0.0f;
 				ForcedCh = DataTable[REG_DBG_FORCE_CHANNEL];
 				SyncDelayTimeout = 0;
@@ -126,8 +138,19 @@ void LOGIC_HandleMeasurement()
 							break;
 						}
 					}
-					CONTROL_SetDeviceSubState(SS_SetPreTrigger);
+					if(CONTROL_MeasureType == MT_ST_TestLoad)
+						LL_SetStateRelay(RELAY_HV_OUT, false);
+					else
+						LL_SetStateRelay(RELAY_HV_OUT, true);
+
+					Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
+					CONTROL_SetDeviceSubState(SS_WaitHVOut);
 				}
+				break;
+
+			case SS_WaitHVOut:
+				if(CONTROL_TimeCounter > Timeout)
+					CONTROL_SetDeviceSubState(SS_SetPreTrigger);
 				break;
 
 			case SS_SetPreTrigger:
@@ -211,12 +234,12 @@ void LOGIC_HandleMeasurement()
 			case SS_CurrentErr:
 			case SS_MaxCurrentErr:
 				LOGIC_ErrorHandler(CONTROL_SubState);
+				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
+				CONTROL_SetDeviceSubState(SS_WaitFinishFan);
 				break;
 
 			case SS_FinishProcess:
 				LOGIC_StopProcess();
-				CONTROL_SetDeviceState(DS_Ready);
-				CONTROL_SetDeviceSubState(SS_None);
 
 				switch(CONTROL_MeasureType)
 				{
@@ -230,11 +253,51 @@ void LOGIC_HandleMeasurement()
 							DataTable[REG_OP_RESULT] = OPRESULT_OK;
 						}
 						else
-							CONTROL_SwitchToProblem(PROBLEM_NEED_MORE_SAMPLES);
+							PendingProblemReason = PROBLEM_NEED_MORE_SAMPLES;
 						break;
 
 					default:
 						break;
+				}
+				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
+				CONTROL_SetDeviceSubState(SS_WaitFinishFan);
+				break;
+
+			case SS_WaitFinishFan:
+				if(CONTROL_TimeCounter > Timeout)
+				{
+					LL_SetStateFan(false);
+					Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
+					CONTROL_SetDeviceSubState(SS_WaitFinishHVOut);
+				}
+				break;
+
+			case SS_WaitFinishHVOut:
+				if(CONTROL_TimeCounter > Timeout)
+				{
+					LL_SetStateRelay(RELAY_HV_OUT, false);
+					Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
+					CONTROL_SetDeviceSubState(SS_FinishProcessWait);
+				}
+				break;
+
+			case SS_FinishProcessWait:
+				if(CONTROL_TimeCounter > Timeout)
+				{
+					LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
+
+					if(PendingFaultReason != DF_NONE)
+						CONTROL_SwitchToFault(PendingFaultReason);
+					else if(PendingProblemReason != PROBLEM_NONE)
+						CONTROL_SwitchToProblem(PendingProblemReason);
+					else
+					{
+						CONTROL_SetDeviceState(DS_Ready);
+						CONTROL_SetDeviceSubState(SS_None);
+					}
+
+					PendingFaultReason = DF_NONE;
+					PendingProblemReason = PROBLEM_NONE;
 				}
 				break;
 
@@ -269,8 +332,6 @@ void LOGIC_StopProcess()
 	REGLTR_StopProcess();
 	LL_SyncOSC(false);
 	LL_SetChannelRelaysOff();
-	LL_SetStateRelay(RELAY_HV_OUT, false);
-	LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
 	DataTable[REG_SELFTEST_STEP] = 0;
 }
 //------------------------------------------
@@ -396,8 +457,8 @@ static void LOGIC_ErrorHandler(DeviceSubState SubState)
 	LOGIC_StopProcess();
 
 	if(CONTROL_MeasureType == MT_ST_TestLoad)
-		CONTROL_SwitchToFault(FaultReason);
+		PendingFaultReason = FaultReason;
 	else
-		CONTROL_SwitchToProblem(ProblemReason);
+		PendingProblemReason = ProblemReason;
 }
 //------------------------------------------

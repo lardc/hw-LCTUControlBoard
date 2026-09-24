@@ -57,7 +57,7 @@
 #define I_ERR_COUNT_MAX				20
 #define I_ERR_COUNT_DEF				5
 //
-#define I_ICES_MAX_MIN			10		// Макс. допустимый ток Ices, мА
+#define I_ICES_MAX_MIN			0.01f		// Макс. допустимый ток Ices, мА
 #define I_ICES_MAX_MAX			300
 #define I_ICES_MAX_DEF			100
 //
@@ -72,7 +72,8 @@
 #define PULSE_RISE_TIME_MIN			1
 #define PULSE_RISE_TIME_DEF			1
 #define PULSE_DURATION_MIN			1
-#define PULSE_DURATION_DEF			100
+#define PULSE_DURATION_DEF			10
+#define PULSE_DURATION_MAX			100
 #define DEACT_ROUT_DELAY_DEF		20
 #define SYNC_DELAY_AFTER_FLAT_DEF	1
 #define ST_PULSE_DURATION_DEF		100

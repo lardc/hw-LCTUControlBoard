@@ -54,5 +54,6 @@ void LL_SetCurrentChannel(IChannel Channel);
 bool LL_IsSafetyOk();
 void LL_ToggleLDAC();
 void LL_LCAU_SoftStart(bool State);
+void LL_SetStateFan(bool State);
 
 #endif //__LOWLEVEL_H
