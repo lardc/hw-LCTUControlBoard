@@ -19,7 +19,7 @@
 #define TIME_INIT_48V_TIMER			10		// Время для выставления 48v на плате, в мс
 #define TIME_START_FLAT				10		// Время начальной полки перед формированием, в мс
 #define TIME_RELAY_PAUSE			10		// Задержка переключения реле, мс
-#define TIME_ACTIVATION_TIMEOUT		500		// Таймаут заряда накопителя, в мс
+#define TIME_ACTIVATION_TIMEOUT		4000	// Таймаут заряда накопителя, в мс
 
 #define VALUES_EXT_INFO_SIZE		300
 #define VALUES_DEBUG_RGLTR_SIZE		600		// Размер отладочного буфера регулятора
