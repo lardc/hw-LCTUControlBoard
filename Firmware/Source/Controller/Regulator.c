@@ -52,9 +52,10 @@ void REGLTR_Process()
 	{
 		case RS_Rise:
 			RawSetPoint += VoltStep;
-			if(RawSetPoint >= PulseAmplitude)
+			if(RawSetPoint >= (PulseAmplitude - VoltStep))
 			{
 				RawSetPoint = PulseAmplitude;
+				Qi = 0;
 				RegState = RS_FlatTop;
 			}
 			DACSetpoint = REGLTR_CorrectionLogDACPoint();
