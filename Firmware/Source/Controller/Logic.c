@@ -51,6 +51,7 @@ void LOGIC_HandleMeasurement()
 			case SS_Activation:
 				LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, true);
 				LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, true);
+				LL_SetStateRelay(RELAY_LCAU_HV_OUT, true);
 				Timeout = CONTROL_TimeCounter + TIME_ACTIVATION_TIMEOUT;
 				CONTROL_SetDeviceSubState(SS_ActivationProcess);
 				break;
@@ -80,7 +81,7 @@ void LOGIC_HandleMeasurement()
 
 				PendingFaultReason = DF_NONE;
 				PendingProblemReason = PROBLEM_NONE;
-				LL_SetStateRelay(RELAY_LCAU_HV_OUT, true);
+				//LL_SetStateRelay(RELAY_LCAU_HV_OUT, true);
 				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
 				CONTROL_SetDeviceSubState(SS_InitHVPause);
 				break;
@@ -284,7 +285,7 @@ void LOGIC_HandleMeasurement()
 			case SS_FinishProcessWait:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
+					//LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
 
 					if(PendingFaultReason != DF_NONE)
 						CONTROL_SwitchToFault(PendingFaultReason);
