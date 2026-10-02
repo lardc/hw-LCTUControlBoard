@@ -138,7 +138,11 @@
 #define REG_RELAY_SW_TIMER_ICES			91	// Время переключения реле тока при измерении Ices, мс
 #define REG_SYNC_DELAY_AFTER_FLAT		92	// Задержка выдачи SYNC после выхода на полку, мс
 #define REG_MAX_CURRENT_ERR_COUNT_LIMIT	93	// Лимит счетчика превышения тока перед PROBLEM_MAX_CURRENT_EXCEEDED
-// 94 - 97
+
+#define REG_R_SHUNT						94	// Сопротивление шунтирующих резисторов, Ом
+#define REG_TRANSISTOR_AMOUUNT			95	// Количество транзисторов на каскоде
+#define REG_POWER_ALLOWED_DATASHEET		96	// Разрешенная мощность на транзисторах по DT, Вт
+// 97
 #define REG_ST_PULSE_DURATION			98	// Длительность импульса самодиагностики, мс
 #define REG_ST_TL_FLATTOP_DURATION		99	// Длительность полки поддержания напряжения при диагностики с нагрузкой, мс
 #define REG_RGLTR_ST_ERR_THRESH			100	// Порог ошибки напряжения для диаг. потенциальных линий, в частях от 0 до 1

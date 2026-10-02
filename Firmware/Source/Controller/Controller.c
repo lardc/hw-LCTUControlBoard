@@ -207,6 +207,11 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_START_MEASURE_ICES:
 			if(CONTROL_State == DS_Ready)
 				CONTROL_StartMeasure(MT_Ices);
+			else if(CONTROL_State == DS_InProcess && CONTROL_SubState == SS_WaitTransistorCooldown)
+			{
+				LOGIC_PendingStartMeasure = true;
+				LOGIC_PendingMeasureType = MT_Ices;
+			}
 			else
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
