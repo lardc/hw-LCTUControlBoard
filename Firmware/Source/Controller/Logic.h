@@ -8,6 +8,7 @@
 // Variables
 //
 extern Int16U LOGIC_ChannelNumber;
+extern Boolean LOGIC_PendingStartMeasure;
 
 //Functions
 //

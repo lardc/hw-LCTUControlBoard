@@ -22,6 +22,7 @@ static Int16U ForcedCh = 0;
 static Int16U SelfTestStepIdx = 0;
 static Int16U PendingFaultReason = DF_NONE;
 static Int16U PendingProblemReason = PROBLEM_NONE;
+Boolean LOGIC_PendingStartMeasure = false;
 
 // Forward functions
 //
@@ -29,6 +30,7 @@ static IChannel LOGIC_SelectChannelByMaxCurrent(float ImaxA);
 static bool LOGIC_SelectIcesChannel();
 static bool LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA);
 static void LOGIC_ErrorHandler(DeviceSubState SubState);
+Int16U LOGIC_CalcPauseAfterPulse();
 
 // Functions
 //
@@ -81,6 +83,7 @@ void LOGIC_HandleMeasurement()
 
 				PendingFaultReason = DF_NONE;
 				PendingProblemReason = PROBLEM_NONE;
+				LOGIC_PendingStartMeasure = false;
 				//LL_SetStateRelay(RELAY_LCAU_HV_OUT, true);
 				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
 				CONTROL_SetDeviceSubState(SS_InitHVPause);
@@ -286,23 +289,30 @@ void LOGIC_HandleMeasurement()
 				if(CONTROL_TimeCounter > Timeout)
 				{
 					//LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
+					Timeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse();
+					CONTROL_SetDeviceSubState(SS_WaitTransistorCooldown);
+				}
+				break;
 
+			case SS_WaitTransistorCooldown:
+				if(CONTROL_TimeCounter > Timeout)
+				{
 					if(PendingFaultReason != DF_NONE)
 						CONTROL_SwitchToFault(PendingFaultReason);
 					else if(PendingProblemReason != PROBLEM_NONE)
 						CONTROL_SwitchToProblem(PendingProblemReason);
+					else if(LOGIC_PendingStartMeasure)
+						CONTROL_StartMeasure(MT_Ices);
 					else
 					{
 						CONTROL_SetDeviceState(DS_Ready);
 						CONTROL_SetDeviceSubState(SS_None);
 					}
 
+					LOGIC_PendingStartMeasure = false;
 					PendingFaultReason = DF_NONE;
 					PendingProblemReason = PROBLEM_NONE;
 				}
-				break;
-
-			case SS_WaitTransistorCooldown:
 				break;
 
 			default:
@@ -314,6 +324,7 @@ void LOGIC_HandleMeasurement()
 
 void LOGIC_Deactivate()
 {
+	LOGIC_PendingStartMeasure = false;
 	LOGIC_StopProcess();
 
 	LL_SetStateRelay(RELAY_RMES1, false);
@@ -472,7 +483,7 @@ Int16U LOGIC_CalcPauseAfterPulse()
 	Int16U PauseTime;
 	float PowerIndivTrans, PowerCascode, CurrentCascode, VoltageCascode, TotalPulseDuration;
 	CurrentCascode = DataTable[REG_DIAG_CURRENT] + DataTable[REG_WORK_VOLTAGE_ICES] / DataTable[REG_R_SHUNT];
-	VoltageCascode = DataTable[REG_U_BAT] - DataTable[REG_WORK_VOLTAGE_ICES];
+	VoltageCascode = ABS(DataTable[REG_U_BAT] - DataTable[REG_WORK_VOLTAGE_ICES]);
 
 	PowerCascode = VoltageCascode * CurrentCascode;
 	PowerIndivTrans = PowerCascode / DataTable[REG_TRANSISTOR_AMOUUNT];
