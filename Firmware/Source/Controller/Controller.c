@@ -194,6 +194,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_FAULT_CLEAR:
 			if(CONTROL_State == DS_Fault)
 			{
+				LOGIC_Deactivate();
 				CONTROL_SetDeviceState(DS_None);
 				DataTable[REG_FAULT_REASON] = DF_NONE;
 			}
@@ -209,7 +210,13 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			else
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
-
+		case ACT_STOP_MEASURE:
+			if(CONTROL_State == DS_InProcess)
+			{
+				CONTROL_SwitchToProblem(PROBLEM_FORCED_STOP);
+				LOGIC_Deactivate();
+			}
+			break;
 		default:
 			return DIAG_HandleDiagnosticAction(ActionID, pUserError);
 	}
@@ -232,7 +239,7 @@ void CONTROL_StartMeasure(MeasureType Type)
 
 bool CONTROL_IsSafetyOk()
 {
-	if(LL_IsSafetyOk() || DataTable[REG_SAFETY_MUTE])
+	if(LL_IsSafetyOk() || DataTable[REG_DBG_SAFETY_MUTE])
 		return true;
 	else
 	{

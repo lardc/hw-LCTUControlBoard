@@ -52,9 +52,10 @@ void REGLTR_Process()
 	{
 		case RS_Rise:
 			RawSetPoint += VoltStep;
-			if(RawSetPoint >= PulseAmplitude)
+			if(RawSetPoint >= (PulseAmplitude - VoltStep))
 			{
 				RawSetPoint = PulseAmplitude;
+				Qi = 0;
 				RegState = RS_FlatTop;
 			}
 			DACSetpoint = REGLTR_CorrectionLogDACPoint();
@@ -76,6 +77,7 @@ void REGLTR_Init()
 	Qi = FollowingErrorCounter = VoltageErrCount = 0;
 	MaxCurrentErrCount = 0;
 	RINGBUF_ResetIcesAvg();
+	RINGBUF_ResetUceAvg();
 	FollowingErrThreshold = (CONTROL_MeasureType == MT_ST_TestLoad) ?
 								DataTable[REG_RGLTR_ST_ERR_THRESH] : DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH];
 	FollowingErrLimit = DataTable[REG_RGLTR_FOLLOWING_ERR_LIMIT];
@@ -161,7 +163,10 @@ void RGLTR_ErrorCheck()
 			if(VoltageErr <= VoltagErrThreshold)
 			{
 				if(CONTROL_MeasureType == MT_Ices)
+				{
 					RINGBUF_AddNewSampleIces(Sample.Ices);
+					RINGBUF_AddNewSampleUce(Sample.Uce);
+				}
 				IsMeasureOk = true;
 				VoltageErrCount = 0;
 			}

@@ -18,14 +18,16 @@
 #define TIME_SPI_DELAY				5		// Задержка интерфейса SPI
 #define TIME_INIT_48V_TIMER			10		// Время для выставления 48v на плате, в мс
 #define TIME_START_FLAT				10		// Время начальной полки перед формированием, в мс
-#define TIME_ACTIVATION_TIMEOUT		10000	// Таймаут заряда накопителя, в мс
+#define TIME_RELAY_PAUSE			10		// Задержка переключения реле, мс
+#define TIME_ACTIVATION_TIMEOUT		4000	// Таймаут заряда накопителя, в мс
 
 #define VALUES_EXT_INFO_SIZE		300
 #define VALUES_DEBUG_RGLTR_SIZE		600		// Размер отладочного буфера регулятора
 
 #define ADC_RESOLUTION				4095
-#define DAC_RESOLUTION				0xFFFFFF
+#define DAC_RESOLUTION				4095
 #define DAC_CHANNEL_B				BIT15
 #define DAC_DATA_SHIFT				12
+#define DAC_KOEF_B					0.007
 
 #endif //  __GLOBAL_H

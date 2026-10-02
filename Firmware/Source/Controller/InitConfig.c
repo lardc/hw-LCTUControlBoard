@@ -45,7 +45,7 @@ void INITCFG_IO()
 	GPIO_InitPushPullOutput(GPIO_HV_OUT);
 	GPIO_InitPushPullOutput(GPIO_SELFTEST1_7MEG);
 	GPIO_InitPushPullOutput(GPIO_SELFTEST2_700MEG);
-	GPIO_InitPushPullOutput(GPIO_RMES1_NC);
+	GPIO_InitPushPullOutput(GPIO_RMES1);
 	GPIO_InitPushPullOutput(GPIO_RMES2);
 	GPIO_InitPushPullOutput(GPIO_RMES3);
 	GPIO_InitPushPullOutput(GPIO_RMES4);
@@ -64,7 +64,7 @@ void INITCFG_IO()
 	GPIO_SetState(GPIO_HV_OUT, false);
 	GPIO_SetState(GPIO_SELFTEST1_7MEG, false);
 	GPIO_SetState(GPIO_SELFTEST2_700MEG, false);
-	GPIO_SetState(GPIO_RMES1_NC, false);
+	GPIO_SetState(GPIO_RMES1, false);
 	GPIO_SetState(GPIO_RMES2, false);
 	GPIO_SetState(GPIO_RMES3, false);
 	GPIO_SetState(GPIO_RMES4, false);
