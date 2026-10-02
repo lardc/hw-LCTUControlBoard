@@ -103,9 +103,9 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_SWITCH_TIME_ICES_MIN, INT16U_MAX, COEF_SWITCH_TIME_ICES_MIN},			// 91
 	{0, INT16U_MAX, SYNC_DELAY_AFTER_FLAT_DEF},									// 92
 	{I_ERR_COUNT_MIN, I_ERR_COUNT_MAX, I_ERR_COUNT_DEF},						// 93
-	{0, 0, 0},																	// 94
-	{0, 0, 0},																	// 95
-	{0, 0, 0},																	// 96
+	{R_SHUNT_MIN, INT16U_MAX, R_SHUNT_DEF},										// 94
+	{TRANSIS_AMOUNT_MIN, INT16U_MAX, TRANSIS_AMOUNT_DEF},						// 95
+	{POWER_TRANSIS_MIN, INT16U_MAX, POWER_TRANSIS_DEF},							// 96
 	{0, 0, 0},																	// 97
 	{PULSE_DURATION_MIN, INT16U_MAX, ST_PULSE_DURATION_DEF},					// 98
 	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 99

@@ -302,6 +302,9 @@ void LOGIC_HandleMeasurement()
 				}
 				break;
 
+			case SS_WaitTransistorCooldown:
+				break;
+
 			default:
 				break;
 		}
@@ -461,5 +464,21 @@ static void LOGIC_ErrorHandler(DeviceSubState SubState)
 		PendingFaultReason = FaultReason;
 	else
 		PendingProblemReason = ProblemReason;
+}
+//------------------------------------------
+
+Int16U LOGIC_CalcPauseAfterPulse()
+{
+	Int16U PauseTime;
+	float PowerIndivTrans, PowerCascode, CurrentCascode, VoltageCascode, TotalPulseDuration;
+	CurrentCascode = DataTable[REG_DIAG_CURRENT] + DataTable[REG_WORK_VOLTAGE_ICES] / DataTable[REG_R_SHUNT];
+	VoltageCascode = DataTable[REG_U_BAT] - DataTable[REG_WORK_VOLTAGE_ICES];
+
+	PowerCascode = VoltageCascode * CurrentCascode;
+	PowerIndivTrans = PowerCascode / DataTable[REG_TRANSISTOR_AMOUUNT];
+
+	TotalPulseDuration = DataTable[REG_PULSE_DURATION] + DataTable[REG_PULSE_RISE_DURATION];
+	PauseTime = PowerIndivTrans * TotalPulseDuration / DataTable[REG_POWER_ALLOWED_DATASHEET];
+	return PauseTime;
 }
 //------------------------------------------

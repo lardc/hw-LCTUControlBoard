@@ -30,13 +30,15 @@
 #define COEF_B_MIN					INT16S_MIN
 #define COEF_B_MAX					INT16S_MAX
 //
-#define COEF_RSH_MIN				0
+#define COEF_RSH_MIN				0	// Ом
 #define COEF_RSH_MAX				100e+6
 #define COEF_RSH_CH0_DEF			2
 #define COEF_RSH_CH1_DEF			22
 #define COEF_RSH_CH2_DEF			220
 #define COEF_RSH_CH3_DEF			2200
 #define COEF_RSH_CH4_DEF			22000
+#define	R_SHUNT_DEF					1000
+#define R_SHUNT_MIN					1
 //
 #define U_ICES_MIN					500
 #define U_ICES_MAX					7000 // в В
@@ -56,6 +58,12 @@
 #define I_ERR_COUNT_MIN				1		// в шт
 #define I_ERR_COUNT_MAX				20
 #define I_ERR_COUNT_DEF				5
+//
+#define TRANSIS_AMOUNT_MIN			1
+#define TRANSIS_AMOUNT_DEF			26
+//
+#define POWER_TRANSIS_MIN			1		// в Вт
+#define POWER_TRANSIS_DEF			140
 //
 #define I_ICES_MAX_MIN			0.01f		// Макс. допустимый ток Ices, мА
 #define I_ICES_MAX_MAX			300
