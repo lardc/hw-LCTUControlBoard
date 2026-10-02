@@ -32,7 +32,7 @@ static IChannel LOGIC_SelectChannelByMaxCurrent(float ImaxA);
 static bool LOGIC_SelectIcesChannel();
 static void LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA);
 static void LOGIC_ErrorHandler(DeviceSubState SubState);
-Int16U LOGIC_CalcPauseAfterPulse();
+Int32U LOGIC_CalcPauseAfterPulse();
 
 // Functions
 //
@@ -475,9 +475,9 @@ static void LOGIC_ErrorHandler(DeviceSubState SubState)
 }
 //------------------------------------------
 
-Int16U LOGIC_CalcPauseAfterPulse()
+Int32U LOGIC_CalcPauseAfterPulse()
 {
-	Int16U PauseTime;
+	Int32U PauseTime;
 	float PowerIndivTrans, PowerCascode, CurrentCascode, VoltageCascode, TotalPulseDuration;
 	float WorkVoltage, FlatTopDuration;
 
