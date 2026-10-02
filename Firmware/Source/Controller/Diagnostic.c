@@ -8,6 +8,7 @@
 #include "DataTable.h"
 #include "DeviceObjectDictionary.h"
 #include "Controller.h"
+#include "Logic.h"
 #include "Measurement.h"
 #include "Regulator.h"
 #include "SysConfig.h"
@@ -189,6 +190,11 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 		case ACT_DBG_START_SELFTEST_TESTLOAD:
 			if(CONTROL_State == DS_Ready)
 				CONTROL_StartMeasure(MT_ST_TestLoad);
+			else if(CONTROL_State == DS_InProcess && CONTROL_SubState == SS_WaitTransistorCooldown)
+			{
+				LOGIC_PendingStartMeasure = true;
+				LOGIC_PendingMeasureType = MT_ST_TestLoad;
+			}
 			else
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
