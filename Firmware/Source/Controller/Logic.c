@@ -486,14 +486,14 @@ Int32U LOGIC_CalcPauseAfterPulse()
 	FlatTopDuration = (CONTROL_MeasureType == MT_ST_TestLoad) ?
 			DataTable[REG_ST_PULSE_DURATION] : DataTable[REG_PULSE_DURATION];
 
-	CurrentCascode = DataTable[REG_DIAG_CURRENT] + WorkVoltage / DataTable[REG_R_SHUNT];
+	CurrentCascode = DataTable[REG_DIAG_CURRENT] + WorkVoltage / DataTable[REG_R_INTERNAL_LOAD];
 	VoltageCascode = ABS(DataTable[REG_U_BAT] - WorkVoltage);
 
 	PowerCascode = VoltageCascode * CurrentCascode;
-	PowerIndivTrans = PowerCascode / DataTable[REG_TRANSISTOR_AMOUUNT];
+	PowerIndivTrans = PowerCascode / DataTable[REG_TRANSISTOR_AMOUNT];
 
 	TotalPulseDuration = FlatTopDuration + DataTable[REG_PULSE_RISE_DURATION];
-	PauseTime = PowerIndivTrans * TotalPulseDuration / DataTable[REG_POWER_ALLOWED_DATASHEET];
+	PauseTime = PowerIndivTrans * TotalPulseDuration / DataTable[REG_TRANSIST_POWER_ALLOWED];
 	return PauseTime;
 }
 //------------------------------------------

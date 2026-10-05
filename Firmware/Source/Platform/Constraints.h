@@ -30,18 +30,19 @@
 #define COEF_B_MIN					INT16S_MIN
 #define COEF_B_MAX					INT16S_MAX
 //
-#define COEF_RSH_MIN				0	// Ом
+#define COEF_RSH_MIN				0		// Ом
 #define COEF_RSH_MAX				100e+6
 #define COEF_RSH_CH0_DEF			2
 #define COEF_RSH_CH1_DEF			22
 #define COEF_RSH_CH2_DEF			220
 #define COEF_RSH_CH3_DEF			2200
 #define COEF_RSH_CH4_DEF			22000
-#define	R_SHUNT_DEF					1000
-#define R_SHUNT_MIN					1
+#define R_INTERNAL_LOAD_MIN			1e3f	// Ом
+#define R_INTERNAL_LOAD_MAX			1e8f
+#define R_INTERNAL_LOAD_DEF			1e5f
 //
 #define U_ICES_MIN					500
-#define U_ICES_MAX					7000 // в В
+#define U_ICES_MAX					7000	// в В
 #define U_ICES_DEF					500
 #define U_SELTTEST_MIN				1		// мВ
 #define U_SELTTEST_DEF				7000
@@ -59,21 +60,24 @@
 #define I_ERR_COUNT_MAX				20
 #define I_ERR_COUNT_DEF				5
 //
-#define TRANSIS_AMOUNT_MIN			1
-#define TRANSIS_AMOUNT_DEF			26
+#define TRANSIS_AMOUNT_MIN			5
+#define TRANSIS_AMOUNT_MAX			40
+#define TRANSIS_AMOUNT_DEF			25
 //
-#define POWER_TRANSIS_MIN			1		// в Вт
-#define POWER_TRANSIS_DEF			140
+#define POWER_TRANSIS_MIN			0.1f	// в Вт
+#define POWER_TRANSIS_MAX			10
+#define POWER_TRANSIS_DEF			1
 //
-#define I_ICES_MAX_MIN			0.01f		// Макс. допустимый ток Ices, мА
-#define I_ICES_MAX_MAX			300
-#define I_ICES_MAX_DEF			100
+// Допустимый ток Ices, мА
+#define I_ICES_MAX_MIN				0.01f
+#define I_ICES_MAX_MAX				300
+#define I_ICES_MAX_DEF				100
 //
-#define COEF_I_CH0_MIN			0.1f	// I_CHANNEL_1 (100...300 мА), в А
-#define COEF_I_CH1_MIN			0.01f	// I_CHANNEL_2 (10...100 мА)
-#define COEF_I_CH2_MIN			1e-3f	// I_CHANNEL_3 (1...10 мА)
-#define COEF_I_CH3_MIN			100e-6f	// I_CHANNEL_4 (100...1000 мкА)
-#define COEF_I_CH4_MIN			10e-6f	// I_CHANNEL_5 (10...100 мкА)
+#define COEF_I_CH0_MIN				0.1f	// I_CHANNEL_1 (100...300 мА), в А
+#define COEF_I_CH1_MIN				0.01f	// I_CHANNEL_2 (10...100 мА)
+#define COEF_I_CH2_MIN				1e-3f	// I_CHANNEL_3 (1...10 мА)
+#define COEF_I_CH3_MIN				100e-6f	// I_CHANNEL_4 (100...1000 мкА)
+#define COEF_I_CH4_MIN				10e-6f	// I_CHANNEL_5 (10...100 мкА)
 //
 #define COEF_SWITCH_TIME_MIN		5		// в мс
 #define COEF_SWITCH_TIME_ICES_MIN	20
