@@ -18,14 +18,13 @@
 //
 static Int64U Timeout = 0;
 static Int64U SyncDelayTimeout = 0;
+static Int64U CooldownTimeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
 static Int16U ForcedCh = 0;
 static Int16U SelfTestStepIdx = 0;
 static Int16U PendingFaultReason = DF_NONE;
 static Int16U PendingProblemReason = PROBLEM_NONE;
 static Boolean SelfTestNextStep = false;
-Boolean LOGIC_PendingStartMeasure = false;
-MeasureType LOGIC_PendingMeasureType = MT_Ices;
 
 // Forward functions
 //
@@ -77,6 +76,13 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_Init:
+				if(CONTROL_TimeCounter < CooldownTimeout)
+				{
+					Timeout = CooldownTimeout;
+					CONTROL_SetDeviceSubState(SS_WaitTransistorCooldown);
+					break;
+				}
+
 				if(Ucap < DataTable[REG_U_CAP_READY])
 				{
 					LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, false);
@@ -86,7 +92,6 @@ void LOGIC_HandleMeasurement()
 
 				PendingFaultReason = DF_NONE;
 				PendingProblemReason = PROBLEM_NONE;
-				LOGIC_PendingStartMeasure = false;
 				SelfTestNextStep = false;
 				//LL_SetStateRelay(RELAY_LCAU_HV_OUT, true);
 				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
@@ -209,12 +214,11 @@ void LOGIC_HandleMeasurement()
 						break;
 					}
 					if(SelfTestStepIdx >= 5)
-					{
-						DataTable[REG_OP_RESULT] = OPRESULT_OK;
 						CONTROL_SetDeviceSubState(SS_FinishProcess);
-					}
 					else
 					{
+						REGLTR_StopProcess();
+						LL_SyncOSC(false);
 						DataTable[REG_DIAG_CURRENT] = IcesResult;
 						SelfTestNextStep = true;
 						Timeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse();
@@ -244,10 +248,13 @@ void LOGIC_HandleMeasurement()
 						{
 							DataTable[REG_VOLTAGE_RESULT] = RINGBUF_GetUceAvg();
 							DataTable[REG_ICES_RESULT] = RINGBUF_GetIcesAvg();
-							DataTable[REG_OP_RESULT] = OPRESULT_OK;
 						}
 						else
 							PendingProblemReason = PROBLEM_NEED_MORE_SAMPLES;
+						break;
+
+					case MT_ST_TestLoad:
+						DataTable[REG_DIAG_CURRENT] = IcesResult;
 						break;
 
 					default:
@@ -278,38 +285,37 @@ void LOGIC_HandleMeasurement()
 			case SS_FinishProcessWait:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					//LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
-					Timeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse();
-					CONTROL_SetDeviceSubState(SS_WaitTransistorCooldown);
+					CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse();
+
+					if(PendingFaultReason != DF_NONE)
+						CONTROL_SwitchToFault(PendingFaultReason);
+					else if(PendingProblemReason != PROBLEM_NONE)
+						CONTROL_SwitchToProblem(PendingProblemReason);
+					else
+					{
+						DataTable[REG_OP_RESULT] = OPRESULT_OK;
+						CONTROL_SetDeviceState(DS_Ready);
+						CONTROL_SetDeviceSubState(SS_None);
+					}
+
+					PendingFaultReason = DF_NONE;
+					PendingProblemReason = PROBLEM_NONE;
+					SelfTestNextStep = false;
 				}
 				break;
 
 			case SS_WaitTransistorCooldown:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					if(PendingFaultReason != DF_NONE)
-						CONTROL_SwitchToFault(PendingFaultReason);
-					else if(PendingProblemReason != PROBLEM_NONE)
-						CONTROL_SwitchToProblem(PendingProblemReason);
-					else if(SelfTestNextStep)
+					if(SelfTestNextStep)
 					{
+						SelfTestNextStep = false;
 						SelfTestStepIdx++;
 						LOGIC_SetupSelfTestStep(SelfTestStepIdx, &SelfTestExpectedCurrentA);
 						CONTROL_SetDeviceSubState(SS_ConfigPulse);
 					}
-					else if(LOGIC_PendingStartMeasure)
-						CONTROL_StartMeasure(LOGIC_PendingMeasureType);
 					else
-					{
-						CONTROL_SetDeviceState(DS_Ready);
-						CONTROL_SetDeviceSubState(SS_None);
-					}
-
-					if(!SelfTestNextStep)
-						LOGIC_PendingStartMeasure = false;
-					SelfTestNextStep = false;
-					PendingFaultReason = DF_NONE;
-					PendingProblemReason = PROBLEM_NONE;
+						CONTROL_SetDeviceSubState(SS_Init);
 				}
 				break;
 
@@ -322,7 +328,6 @@ void LOGIC_HandleMeasurement()
 
 void LOGIC_Deactivate()
 {
-	LOGIC_PendingStartMeasure = false;
 	SelfTestNextStep = false;
 	LOGIC_StopProcess();
 
@@ -480,14 +485,16 @@ Int32U LOGIC_CalcPauseAfterPulse()
 {
 	Int32U PauseTime;
 	float PowerIndivTrans, PowerCascode, CurrentCascode, VoltageCascode, TotalPulseDuration;
-	float WorkVoltage, FlatTopDuration;
+	float WorkVoltage, FlatTopDuration, PulseCurrent;
 
 	WorkVoltage = (CONTROL_MeasureType == MT_ST_TestLoad) ?
 			DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] : DataTable[REG_WORK_VOLTAGE_ICES];
 	FlatTopDuration = (CONTROL_MeasureType == MT_ST_TestLoad) ?
 			DataTable[REG_ST_PULSE_DURATION] : DataTable[REG_PULSE_DURATION];
+	PulseCurrent = (CONTROL_MeasureType == MT_ST_TestLoad) ?
+			DataTable[REG_DIAG_CURRENT] : DataTable[REG_ICES_RESULT];
 
-	CurrentCascode = DataTable[REG_DIAG_CURRENT] + WorkVoltage / DataTable[REG_R_INTERNAL_LOAD];
+	CurrentCascode = PulseCurrent + WorkVoltage / DataTable[REG_R_INTERNAL_LOAD];
 	VoltageCascode = (DataTable[REG_U_BAT] > WorkVoltage) ? (DataTable[REG_U_BAT] - WorkVoltage) : 0;
 
 	PowerCascode = VoltageCascode * CurrentCascode;
