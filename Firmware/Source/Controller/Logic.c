@@ -427,7 +427,7 @@ static void LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA)
 			break;
 	}
 
-	*ExpectedCurrentA = (DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001f) / Resistance;
+	*ExpectedCurrentA = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] / Resistance;
 
 	LL_SetCurrentChannel(LOGIC_ChannelNumber);
 }
@@ -482,7 +482,7 @@ Int32U LOGIC_CalcPauseAfterPulse()
 	float WorkVoltage, FlatTopDuration;
 
 	WorkVoltage = (CONTROL_MeasureType == MT_ST_TestLoad) ?
-			DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001f : DataTable[REG_WORK_VOLTAGE_ICES];
+			DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] : DataTable[REG_WORK_VOLTAGE_ICES];
 	FlatTopDuration = (CONTROL_MeasureType == MT_ST_TestLoad) ?
 			DataTable[REG_ST_PULSE_DURATION] : DataTable[REG_PULSE_DURATION];
 

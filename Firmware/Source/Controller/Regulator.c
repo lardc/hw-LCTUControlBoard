@@ -97,7 +97,7 @@ void REGLTR_Init()
 			break;
 
 		case MT_ST_TestLoad:
-			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001f;
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD];
 			break;
 	}
 

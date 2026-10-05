@@ -44,7 +44,8 @@
 #define U_ICES_MIN					500
 #define U_ICES_MAX					7000	// в В
 #define U_ICES_DEF					500
-#define U_SELTTEST_MIN				1		// мВ
+#define U_SELTTEST_MIN				1		// В
+#define U_SELTTEST_MAX				7000
 #define U_SELTTEST_DEF				7000
 #define U_CAP_ACTIVATE_RSS_MIN		0
 #define U_CAP_ACTIVATE_RSS_MAX		INT16U_MAX
