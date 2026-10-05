@@ -4,11 +4,6 @@
 // Include
 #include "stdinc.h"
 
-
-// Macro
-//
-#define ABS(a)				(((a) < 0) ? -(a) : (a))
-
 // Types
 //
 typedef enum __RegulatorState

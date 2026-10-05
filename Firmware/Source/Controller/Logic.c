@@ -12,6 +12,7 @@
 #include "Regulator.h"
 #include "RingBuffer.h"
 #include "Measurement.h"
+#include "math.h"
 
 // Variables
 //
@@ -202,7 +203,7 @@ void LOGIC_HandleMeasurement()
 				if(IsMeasureOk && CONTROL_TimeCounter > Timeout)
 				{
 					IcesResult = Sample.Ices;
-					if(ABS(ABS(IcesResult) - SelfTestExpectedCurrentA) > (SelfTestExpectedCurrentA * DataTable[REG_ST_CURRENT_ERR_THRESH]))
+					if(fabsf(IcesResult - SelfTestExpectedCurrentA) > (SelfTestExpectedCurrentA * DataTable[REG_ST_CURRENT_ERR_THRESH]))
 					{
 						CONTROL_SetDeviceSubState(SS_CurrentErr);
 						break;
@@ -487,7 +488,7 @@ Int32U LOGIC_CalcPauseAfterPulse()
 			DataTable[REG_ST_PULSE_DURATION] : DataTable[REG_PULSE_DURATION];
 
 	CurrentCascode = DataTable[REG_DIAG_CURRENT] + WorkVoltage / DataTable[REG_R_INTERNAL_LOAD];
-	VoltageCascode = ABS(DataTable[REG_U_BAT] - WorkVoltage);
+	VoltageCascode = (DataTable[REG_U_BAT] > WorkVoltage) ? (DataTable[REG_U_BAT] - WorkVoltage) : 0;
 
 	PowerCascode = VoltageCascode * CurrentCascode;
 	PowerIndivTrans = PowerCascode / DataTable[REG_TRANSISTOR_AMOUNT];

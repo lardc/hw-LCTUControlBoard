@@ -93,7 +93,7 @@ void REGLTR_Init()
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Ices:
-			PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]);
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ICES];
 			break;
 
 		case MT_ST_TestLoad:
@@ -140,15 +140,13 @@ Int32U REGLTR_CorrectionLogDACPoint()
 
 void RGLTR_ErrorCheck()
 {
-	float VoltageErr;
-
 	switch(RegState)
 	{
 		case RS_FlatTop:
 			RegulatorError = RawSetPoint - Sample.Uce;
-			VoltageErr = ABS(PulseAmplitude - Sample.Uce) / PulseAmplitude;
+			float RelativeAmplitudeAbsErr = fabsf(PulseAmplitude - Sample.Uce) / PulseAmplitude;
 
-			if (CONTROL_MeasureType == MT_Ices && ABS(Sample.Ices) > MaxCurrentA)
+			if (CONTROL_MeasureType == MT_Ices && Sample.Ices > MaxCurrentA)
 			{
 				MaxCurrentErrCount++;
 				if (MaxCurrentErrCount > MaxCurrentErrLimit)
@@ -160,7 +158,7 @@ void RGLTR_ErrorCheck()
 			else
 				MaxCurrentErrCount = 0;
 
-			if(VoltageErr <= VoltagErrThreshold)
+			if(RelativeAmplitudeAbsErr <= VoltagErrThreshold)
 			{
 				if(CONTROL_MeasureType == MT_Ices)
 				{
@@ -186,8 +184,8 @@ void RGLTR_ErrorCheck()
 
 	if(RawSetPoint > 0.0f)
 	{
-		float absError = ABS(RegulatorError) / RawSetPoint;
-		if(absError > FollowingErrThreshold)
+		float RegulatorRelativeAbsError = fabsf(RegulatorError) / RawSetPoint;
+		if(RegulatorRelativeAbsError > FollowingErrThreshold)
 		{
 			if(FollowingErrorCounter < FollowingErrLimit)
 				FollowingErrorCounter++;
