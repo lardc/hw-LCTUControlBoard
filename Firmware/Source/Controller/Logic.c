@@ -485,7 +485,7 @@ Int32U LOGIC_CalcPauseAfterPulse()
 {
 	Int32U PauseTime;
 	float PowerIndivTrans, PowerCascode, CurrentCascode, VoltageCascode, TotalPulseDuration;
-	float WorkVoltage, FlatTopDuration, PulseCurrent;
+	float WorkVoltage, FlatTopDuration;
 
 	WorkVoltage = (CONTROL_MeasureType == MT_ST_TestLoad) ?
 			DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] : DataTable[REG_WORK_VOLTAGE_ICES];
