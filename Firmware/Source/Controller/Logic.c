@@ -32,7 +32,7 @@ static IChannel LOGIC_SelectChannelByMaxCurrent(float ImaxA);
 static bool LOGIC_SelectIcesChannel();
 static void LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA);
 static void LOGIC_ErrorHandler(DeviceSubState SubState);
-Int32U LOGIC_CalcPauseAfterPulse();
+Int32U LOGIC_CalcPauseAfterPulse(float UceVoltage);
 
 // Functions
 //
@@ -219,9 +219,10 @@ void LOGIC_HandleMeasurement()
 					{
 						REGLTR_StopProcess();
 						LL_SyncOSC(false);
+						UceResult = Sample.Uce;
 						DataTable[REG_DIAG_CURRENT] = IcesResult;
 						SelfTestNextStep = true;
-						Timeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse();
+						Timeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse(UceResult);
 						CONTROL_SetDeviceSubState(SS_WaitTransistorCooldown);
 					}
 				}
@@ -231,6 +232,8 @@ void LOGIC_HandleMeasurement()
 			case SS_VoltageErr:
 			case SS_CurrentErr:
 			case SS_MaxCurrentErr:
+				UceResult = Sample.Uce;
+				IcesResult = Sample.Ices;
 				LOGIC_ErrorHandler(CONTROL_SubState);
 				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
 				CONTROL_SetDeviceSubState(SS_WaitFinishFan);
@@ -254,6 +257,8 @@ void LOGIC_HandleMeasurement()
 						break;
 
 					case MT_ST_TestLoad:
+						UceResult = Sample.Uce;
+						DataTable[REG_DIAG_VOLTAGE] = UceResult;
 						DataTable[REG_DIAG_CURRENT] = IcesResult;
 						break;
 
@@ -285,7 +290,7 @@ void LOGIC_HandleMeasurement()
 			case SS_FinishProcessWait:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse();
+					CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse(UceResult);
 
 					if(PendingFaultReason != DF_NONE)
 						CONTROL_SwitchToFault(PendingFaultReason);
@@ -481,25 +486,39 @@ static void LOGIC_ErrorHandler(DeviceSubState SubState)
 }
 //------------------------------------------
 
-Int32U LOGIC_CalcPauseAfterPulse()
+Int32U LOGIC_CalcPauseAfterPulse(float UceVoltage)
 {
-	Int32U PauseTime;
-	float PowerIndivTrans, PowerCascode, CurrentCascode, VoltageCascode, TotalPulseDuration;
-	float WorkVoltage, FlatTopDuration;
+	float Ubat = DataTable[REG_U_BAT];
 
-	WorkVoltage = (CONTROL_MeasureType == MT_ST_TestLoad) ?
-			DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] : DataTable[REG_WORK_VOLTAGE_ICES];
-	FlatTopDuration = (CONTROL_MeasureType == MT_ST_TestLoad) ?
+	if(Ubat <= UceVoltage || UceVoltage < 100.0f)
+		return 0;
+
+	float FlatTopDuration = (CONTROL_MeasureType == MT_ST_TestLoad) ?
 			DataTable[REG_ST_PULSE_DURATION] : DataTable[REG_PULSE_DURATION];
 
-	CurrentCascode = DataTable[REG_DIAG_CURRENT]  + WorkVoltage / DataTable[REG_R_INTERNAL_LOAD];
-	VoltageCascode = (DataTable[REG_U_BAT] > WorkVoltage) ? (DataTable[REG_U_BAT] - WorkVoltage) : 0;
+	float VoltageCascode = Ubat - UceVoltage;
+	float CurrentCascode = DataTable[REG_DIAG_CURRENT] + UceVoltage / DataTable[REG_R_INTERNAL_LOAD];
+	float CurrentIndivTrans = CurrentCascode / DataTable[REG_TRANSISTOR_AMOUNT];
 
-	PowerCascode = VoltageCascode * CurrentCascode;
-	PowerIndivTrans = PowerCascode / DataTable[REG_TRANSISTOR_AMOUNT];
+	// Энергия на плоском участке
+	float EnergyFlattop = (FlatTopDuration * 0.001f) * VoltageCascode * CurrentIndivTrans;
 
-	TotalPulseDuration = FlatTopDuration + DataTable[REG_PULSE_RISE_DURATION];
-	PauseTime = PowerIndivTrans * TotalPulseDuration / DataTable[REG_TRANSIST_POWER_ALLOWED];
-	return PauseTime;
+	// Энергия на фронте нарастания - интеграл произведения U(t) * I(t)
+	// U(t) = Ubat - Utr = Ubat - Urate * t
+	// I(t) = Irate * t = CurrentIndivTrans / RiseTime * t
+	float EnergyRise = 0.0f;
+	float RiseTime = DataTable[REG_PULSE_RISE_DURATION] * 0.001f;
+	if(RiseTime > 0.0f)
+	{
+		float Urate = UceVoltage / RiseTime;
+		float Irate = CurrentIndivTrans / RiseTime;
+
+		EnergyRise = Irate * RiseTime * RiseTime *
+				(Ubat / 2.0f - Urate * RiseTime / 3.0f);
+	}
+
+	// Время паузы в миллисекундах
+	Int32U Pause = (EnergyRise + EnergyFlattop) / DataTable[REG_TRANSIST_POWER_ALLOWED] * 1000.0f;
+	return Pause;
 }
 //------------------------------------------
