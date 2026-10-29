@@ -310,7 +310,11 @@ Int16U REGLTR_GetScalingCoef()
 		FallingPart = RisingPart + DataTable[REG_PULSE_FALL_HOLD_DURATION];
 	}
 	else
-		RisingPart = FallingPart = 0;
+	{
+		RisingPart = 0;
+		FallingPart = DataTable[REG_PULSE_FALL_HOLD_DURATION];
+	}
+
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Ices:
