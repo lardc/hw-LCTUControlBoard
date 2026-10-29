@@ -32,6 +32,8 @@ static IChannel LOGIC_SelectChannelByMaxCurrent(float ImaxA);
 static bool LOGIC_SelectIcesChannel();
 static void LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA);
 static void LOGIC_ErrorHandler(DeviceSubState SubState);
+static bool LOGIC_IsPulseSubState();
+static bool LOGIC_TryHandleForcedStopAfterFall();
 Int32U LOGIC_CalcPauseAfterPulse(float UceVoltage);
 
 // Functions
@@ -194,6 +196,8 @@ void LOGIC_HandleMeasurement()
 
 				if(RegState == RS_Fall)
 				{
+					if(LOGIC_TryHandleForcedStopAfterFall())
+						break;
 					if(REGLTR_IsFallDone())
 						CONTROL_SetDeviceSubState(SS_FinishProcess);
 				}
@@ -218,7 +222,10 @@ void LOGIC_HandleMeasurement()
 						UceResult = Sample.Uce;
 						if(fabsf(IcesResult - SelfTestExpectedCurrentA) > (SelfTestExpectedCurrentA * DataTable[REG_ST_CURRENT_ERR_THRESH]))
 						{
+							DataTable[REG_DIAG_CURRENT] = IcesResult;
+							DataTable[REG_DIAG_VOLTAGE] = UceResult;
 							CONTROL_SetDeviceSubState(SS_CurrentErr);
+							REGLTR_StartFall();
 							break;
 						}
 						REGLTR_StartFall();
@@ -226,6 +233,8 @@ void LOGIC_HandleMeasurement()
 				}
 				else if(REGLTR_IsFallDone())
 				{
+					if(LOGIC_TryHandleForcedStopAfterFall())
+						break;
 					if(SelfTestStepIdx >= 5)
 						CONTROL_SetDeviceSubState(SS_FinishProcess);
 					else
@@ -244,8 +253,16 @@ void LOGIC_HandleMeasurement()
 			case SS_VoltageErr:
 			case SS_CurrentErr:
 			case SS_MaxCurrentErr:
-				UceResult = Sample.Uce;
-				IcesResult = Sample.Ices;
+				if(RegState != RS_Fall)
+					REGLTR_StartFall();
+				if(!REGLTR_IsFallDone())
+					break;
+
+				if(LOGIC_TryHandleForcedStopAfterFall())
+					break;
+
+				UceResult = DataTable[REG_DIAG_VOLTAGE];
+				IcesResult = DataTable[REG_DIAG_CURRENT];
 				LOGIC_ErrorHandler(CONTROL_SubState);
 				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
 				CONTROL_SetDeviceSubState(SS_WaitFinishFan);
@@ -264,7 +281,7 @@ void LOGIC_HandleMeasurement()
 							DataTable[REG_VOLTAGE_RESULT] = RINGBUF_GetUceAvg();
 							DataTable[REG_ICES_RESULT] = RINGBUF_GetIcesAvg();
 						}
-						else
+						else if(PendingProblemReason == PROBLEM_NONE)
 							PendingProblemReason = PROBLEM_NEED_MORE_SAMPLES;
 						break;
 
@@ -368,6 +385,43 @@ void LOGIC_StopProcess()
 	LL_SyncOSC(false);
 	LL_SetChannelRelaysOff();
 	DataTable[REG_SELFTEST_STEP] = 0;
+}
+//------------------------------------------
+
+void LOGIC_RequestForcedStop()
+{
+	if(LOGIC_IsPulseSubState())
+	{
+		PendingProblemReason = PROBLEM_FORCED_STOP;
+		if(RegState != RS_Fall)
+			REGLTR_StartFall();
+		return;
+	}
+
+	CONTROL_SwitchToProblem(PROBLEM_FORCED_STOP);
+	LOGIC_Deactivate();
+}
+//------------------------------------------
+
+static bool LOGIC_IsPulseSubState()
+{
+	return CONTROL_SubState == SS_RegulatorProcess
+			|| CONTROL_SubState == SS_RegulatorProcessSelfTest
+			|| CONTROL_SubState == SS_FollowingErr
+			|| CONTROL_SubState == SS_VoltageErr
+			|| CONTROL_SubState == SS_CurrentErr
+			|| CONTROL_SubState == SS_MaxCurrentErr;
+}
+//------------------------------------------
+
+static bool LOGIC_TryHandleForcedStopAfterFall()
+{
+	if(!REGLTR_IsFallDone() || PendingProblemReason != PROBLEM_FORCED_STOP)
+		return false;
+
+	CONTROL_SwitchToProblem(PROBLEM_FORCED_STOP);
+	LOGIC_Deactivate();
+	return true;
 }
 //------------------------------------------
 
@@ -485,14 +539,11 @@ static void LOGIC_ErrorHandler(DeviceSubState SubState)
 			return;
 	}
 
-	DataTable[REG_DIAG_CURRENT] = Sample.Ices;
-	DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
-
 	LOGIC_StopProcess();
 
 	if(CONTROL_MeasureType == MT_ST_TestLoad)
 		PendingFaultReason = FaultReason;
-	else
+	else if(PendingProblemReason == PROBLEM_NONE)
 		PendingProblemReason = ProblemReason;
 }
 //------------------------------------------

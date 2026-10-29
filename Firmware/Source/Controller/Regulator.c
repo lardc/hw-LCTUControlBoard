@@ -39,12 +39,13 @@ void REGLTR_StoreRegulatorDebug(float Uce, float Ices, float Setpoint, float Cor
 Int32U REGLTR_CorrectionLogDACPoint();
 void RGLTR_ErrorCheck();
 Int16U REGLTR_GetScalingCoef();
+static bool REGLTR_IsPulseSubState();
+static void REGLTR_AbortWithFall(DeviceSubState ErrorSubState);
 
 // Functions
 void REGLTR_Process()
 {
-	if (CONTROL_SubState != SS_RegulatorProcess
-			&& CONTROL_SubState != SS_RegulatorProcessSelfTest)
+	if (!REGLTR_IsPulseSubState())
 		return;
 	Int32U DACSetpoint;
 	Sample = REGLTR_GetSample();
@@ -162,6 +163,9 @@ Int32U REGLTR_CorrectionLogDACPoint()
 {
 	RGLTR_ErrorCheck();
 
+	if(RegState == RS_Fall)
+		return MEASURE_ConvertUset(RawSetPoint);
+
 	Qp = RegulatorError * Kp;
 	Qi += RegulatorError * Ki;
 
@@ -187,7 +191,7 @@ void RGLTR_ErrorCheck()
 				MaxCurrentErrCount++;
 				if (MaxCurrentErrCount > MaxCurrentErrLimit)
 				{
-					CONTROL_SetDeviceSubState(SS_MaxCurrentErr);
+					REGLTR_AbortWithFall(SS_MaxCurrentErr);
 					break;
 				}
 			}
@@ -208,7 +212,7 @@ void RGLTR_ErrorCheck()
 			{
 				VoltageErrCount++;
 				if(VoltageErrCount > VoltagErrLimit)
-					CONTROL_SetDeviceSubState(SS_VoltageErr);
+					REGLTR_AbortWithFall(SS_VoltageErr);
 			}
 			break;
 
@@ -218,6 +222,9 @@ void RGLTR_ErrorCheck()
 			break;
 	}
 
+	if(RegState == RS_Fall)
+		return;
+
 	if(RawSetPoint > 0.0f)
 	{
 		float RegulatorRelativeAbsError = fabsf(RegulatorError) / RawSetPoint;
@@ -226,7 +233,7 @@ void RGLTR_ErrorCheck()
 			if(FollowingErrorCounter < FollowingErrLimit)
 				FollowingErrorCounter++;
 			else
-				CONTROL_SetDeviceSubState(SS_FollowingErr);
+				REGLTR_AbortWithFall(SS_FollowingErr);
 		}
 		else
 			FollowingErrorCounter = 0;
@@ -308,6 +315,27 @@ Int16U REGLTR_GetScalingCoef()
 		Coef = 1;
 	ScalingCounter = Coef;
 	return Coef;
+}
+//-----------------------------------------
+
+static bool REGLTR_IsPulseSubState()
+{
+	return CONTROL_SubState == SS_RegulatorProcess
+			|| CONTROL_SubState == SS_RegulatorProcessSelfTest
+			|| CONTROL_SubState == SS_FollowingErr
+			|| CONTROL_SubState == SS_VoltageErr
+			|| CONTROL_SubState == SS_CurrentErr
+			|| CONTROL_SubState == SS_MaxCurrentErr;
+}
+//-----------------------------------------
+
+static void REGLTR_AbortWithFall(DeviceSubState ErrorSubState)
+{
+	DataTable[REG_DIAG_CURRENT] = Sample.Ices;
+	DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
+	CONTROL_SetDeviceSubState(ErrorSubState);
+	if(RegState != RS_Fall)
+		REGLTR_StartFall();
 }
 //-----------------------------------------
 

@@ -213,10 +213,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 		case ACT_STOP_MEASURE:
 			if(CONTROL_State == DS_InProcess)
-			{
-				CONTROL_SwitchToProblem(PROBLEM_FORCED_STOP);
-				LOGIC_Deactivate();
-			}
+				LOGIC_RequestForcedStop();
 			break;
 		default:
 			return DIAG_HandleDiagnosticAction(ActionID, pUserError);
