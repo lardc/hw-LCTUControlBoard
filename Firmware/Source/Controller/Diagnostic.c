@@ -248,11 +248,11 @@ void DIAG_GenerateTrapezoidWave()
 	float setPoint = PulseAmplitude;
 	if (FallStep > 0.0f)
 	{
-		while (setPoint > FallStep)
+		for (Int32U i = 1u; i <= RiseSteps; ++i)
 		{
-			setPoint -= FallStep;
+			setPoint = PulseAmplitude * (float)(RiseSteps - i) / (float)RiseSteps;
 			LL_WriteDAC24(MEASURE_ConvertUset(setPoint));
-			DELAY_US(TIMER15_uS);
+				DELAY_US(TIMER15_uS);
 		}
 	}
 
