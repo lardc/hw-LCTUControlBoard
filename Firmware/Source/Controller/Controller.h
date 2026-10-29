@@ -17,24 +17,32 @@ typedef enum __DeviceState
 typedef enum __DeviceSubState
 {
 	SS_None 			= 0,
+
 	SS_Init,
 	SS_InitHVPause,
 	SS_InitSelectCurrentChannel,
 	SS_InitialRelayPause,
 	SS_WaitHVOut,
+
 	SS_SetPreTrigger,
 	SS_WaitPreTrigger,
+
 	SS_ConfigPulse,
 	SS_RegulatorProcess,
+
 	SS_FollowingErr,
 	SS_VoltageErr,
 	SS_MaxCurrentErr,
 	SS_CurrentErr,
+
 	SS_FinishProcess,
 	SS_WaitFinishFan,
 	SS_WaitFinishHVOut,
 	SS_FinishProcessWait,
+	SS_WaitTransistorCooldown,
+
 	SS_RegulatorProcessSelfTest,
+
 	SS_Activation,
 	SS_ActivationProcess,
 } DeviceSubState;

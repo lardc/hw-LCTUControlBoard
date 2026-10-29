@@ -203,8 +203,8 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 
 void DIAG_GenerateTrapezoidWave()
 {
-	float PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]);
-	float StartAmplitude = ABS(DataTable[REG_DBG]);
+	float PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ICES];
+	float StartAmplitude = DataTable[REG_DBG];
 	Int32U RiseMs = (Int32U)DataTable[REG_PULSE_RISE_DURATION];
 	Int32U FlatMs = (Int32U)DataTable[REG_PULSE_DURATION];
 	Int32U RiseSteps, FlatSteps, StartSteps;
@@ -240,6 +240,20 @@ void DIAG_GenerateTrapezoidWave()
 	{
 		LL_WriteDAC24(MEASURE_ConvertUset(PulseAmplitude));
 		DELAY_US(TIMER15_uS);
+	}
+
+	// Спад до нуля с тем же наклоном, что и у фронта
+	float FallStep = (RiseSteps > 1u) ? (PulseAmplitude - StartAmplitude) / (float)(RiseSteps - 1u) :
+										(PulseAmplitude - StartAmplitude);
+	float setPoint = PulseAmplitude;
+	if (FallStep > 0.0f)
+	{
+		for (Int32U i = 1u; i <= RiseSteps; ++i)
+		{
+			setPoint = PulseAmplitude * (float)(RiseSteps - i) / (float)RiseSteps;
+			LL_WriteDAC24(MEASURE_ConvertUset(setPoint));
+				DELAY_US(TIMER15_uS);
+		}
 	}
 
 	LL_WriteDAC24(0);

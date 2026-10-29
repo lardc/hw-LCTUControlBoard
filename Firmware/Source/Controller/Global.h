@@ -17,9 +17,12 @@
 #define TIME_FAULT_LED_BLINK		250		// Мигание светодиодом в состоянии Fault
 #define TIME_SPI_DELAY				5		// Задержка интерфейса SPI
 #define TIME_INIT_48V_TIMER			10		// Время для выставления 48v на плате, в мс
-#define TIME_START_FLAT				10		// Время начальной полки перед формированием, в мс
+#define TIME_START_FLAT				20		// Время начальной полки перед формированием, в мс
 #define TIME_RELAY_PAUSE			10		// Задержка переключения реле, мс
 #define TIME_ACTIVATION_TIMEOUT		4000	// Таймаут заряда накопителя, в мс
+
+// Пауза между импульсами, если регистры не заданы (в мс)
+#define TIME_DEFAULT_PULSE2PULSE_PAUSE_MS		10000
 
 #define VALUES_EXT_INFO_SIZE		300
 #define VALUES_DEBUG_RGLTR_SIZE		600		// Размер отладочного буфера регулятора

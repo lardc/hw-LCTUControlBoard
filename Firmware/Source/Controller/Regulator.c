@@ -28,6 +28,7 @@ float RawSetPoint = 0;
 float VoltStep = 0, Qp = 0;
 float RegulatorError = 0;
 RegulatorState RegState = RS_None;
+static volatile bool FallDone = false;
 volatile bool IsMeasureOk = false;
 
 volatile SamplingResult Sample = {0};
@@ -62,12 +63,46 @@ void REGLTR_Process()
 			LL_WriteDAC24(DACSetpoint);
 			break;
 
+		case RS_Fall:
+			// Спад без участия регулятора: линейное снижение от уровня начала спада
+			if(!FallDone)
+			{
+				float FallStep = (VoltStep > 0.0f) ? VoltStep : RawSetPoint;
+				RawSetPoint -= FallStep;
+				if(RawSetPoint <= FallStep)
+				{
+					RawSetPoint = 0;
+					FallDone = true;
+				}
+			}
+			RegulatorError = 0;
+			DACSetpoint = (RawSetPoint > 0.0f) ? MEASURE_ConvertUset(RawSetPoint) : 0;
+			REGLTR_StoreRegulatorDebug(Sample.Uce, Sample.Ices, RawSetPoint, 0, 0, (float)DACSetpoint);
+			LL_WriteDAC24(DACSetpoint);
+			break;
+
 		case RS_FlatTop:
 		default:
 			DACSetpoint = REGLTR_CorrectionLogDACPoint();
 			LL_WriteDAC24(DACSetpoint);
 			break;
 	}
+}
+//-----------------------------------------
+
+void REGLTR_StartFall()
+{
+	// Уровень начала спада с учётом накопленной коррекции, чтобы не было скачка на выходе
+	float Level = RawSetPoint + Qp + Qi;
+	RawSetPoint = (Level > 0.0f) ? Level : 0.0f;
+	FallDone = false;
+	RegState = RS_Fall;
+}
+//-----------------------------------------
+
+bool REGLTR_IsFallDone()
+{
+	return (RegState == RS_Fall) && FallDone;
 }
 //-----------------------------------------
 
@@ -88,16 +123,17 @@ void REGLTR_Init()
 	PreTriggerAmplitude = DataTable[REG_PRETRIGGER_VOLTAGE];
 	RawSetPoint = PreTriggerAmplitude;
 	RegState = RS_Rise;
+	FallDone = false;
 	RegulatorError = 0;
 
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Ices:
-			PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_ICES]);
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ICES];
 			break;
 
 		case MT_ST_TestLoad:
-			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001f;
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD];
 			break;
 	}
 
@@ -140,15 +176,13 @@ Int32U REGLTR_CorrectionLogDACPoint()
 
 void RGLTR_ErrorCheck()
 {
-	float VoltageErr;
-
 	switch(RegState)
 	{
 		case RS_FlatTop:
 			RegulatorError = RawSetPoint - Sample.Uce;
-			VoltageErr = ABS(PulseAmplitude - Sample.Uce) / PulseAmplitude;
+			float RelativeAmplitudeAbsErr = fabsf(PulseAmplitude - Sample.Uce) / PulseAmplitude;
 
-			if (CONTROL_MeasureType == MT_Ices && ABS(Sample.Ices) > MaxCurrentA)
+			if (CONTROL_MeasureType == MT_Ices && Sample.Ices > MaxCurrentA)
 			{
 				MaxCurrentErrCount++;
 				if (MaxCurrentErrCount > MaxCurrentErrLimit)
@@ -160,7 +194,7 @@ void RGLTR_ErrorCheck()
 			else
 				MaxCurrentErrCount = 0;
 
-			if(VoltageErr <= VoltagErrThreshold)
+			if(RelativeAmplitudeAbsErr <= VoltagErrThreshold)
 			{
 				if(CONTROL_MeasureType == MT_Ices)
 				{
@@ -186,8 +220,8 @@ void RGLTR_ErrorCheck()
 
 	if(RawSetPoint > 0.0f)
 	{
-		float absError = ABS(RegulatorError) / RawSetPoint;
-		if(absError > FollowingErrThreshold)
+		float RegulatorRelativeAbsError = fabsf(RegulatorError) / RawSetPoint;
+		if(RegulatorRelativeAbsError > FollowingErrThreshold)
 		{
 			if(FollowingErrorCounter < FollowingErrLimit)
 				FollowingErrorCounter++;
@@ -247,18 +281,22 @@ Int16U REGLTR_GetScalingCoef()
 	Int16U MsToMks = 1000;
 	float RisingPart, SumTicks = 0;
 
+	float FallingPart;
 	if(RiseRate > 0.0f)
+	{
 		RisingPart = (PulseAmplitude - PreTriggerAmplitude) / RiseRate;
+		FallingPart = PulseAmplitude / RiseRate;
+	}
 	else
-		RisingPart = 0;
+		RisingPart = FallingPart = 0;
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Ices:
-			SumTicks = (RisingPart + DataTable[REG_PULSE_DURATION]) * MsToMks / TIMER15_uS;
+			SumTicks = (RisingPart + FallingPart + DataTable[REG_PULSE_DURATION]) * MsToMks / TIMER15_uS;
 			break;
 
 		case MT_ST_TestLoad:
-			SumTicks = (RisingPart + DataTable[REG_ST_TL_FLATTOP_DURATION]) * MsToMks / TIMER15_uS;
+			SumTicks = (RisingPart + FallingPart + DataTable[REG_ST_TL_FLATTOP_DURATION]) * MsToMks / TIMER15_uS;
 			break;
 
 		default:

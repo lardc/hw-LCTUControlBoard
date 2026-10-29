@@ -15,6 +15,7 @@
 #include "InitConfig.h"
 #include "Diagnostic.h"
 #include "Logic.h"
+#include "Regulator.h"
 #include "JSONDescription.h"
 #include "SaveToFlash.h"
 #include "Constraints.h"
@@ -245,6 +246,15 @@ bool CONTROL_IsSafetyOk()
 	{
 		if(CONTROL_State == DS_InProcess)
 		{
+			// Если импульс формируется, сначала плавно снимаем напряжение
+			if(CONTROL_SubState == SS_RegulatorProcess || CONTROL_SubState == SS_RegulatorProcessSelfTest)
+			{
+				if(RegState != RS_Fall)
+					REGLTR_StartFall();
+				if(!REGLTR_IsFallDone())
+					return false;
+			}
+
 			LOGIC_StopProcess();
 
 			CONTROL_SetDeviceState(DS_Ready);

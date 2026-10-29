@@ -111,7 +111,7 @@
 #define REG_U_SET_B						65	// Коэффициент преобразования B
 #define REG_U_DAC_REF					66	// Опорное напряжение DAC, в В
 //
-#define REG_WORK_VOLTAGE_ST_TESTLOAD	67	// Номинальное рабочее напряжение для самодиагностики с тестовой нагрузкой, мВ
+#define REG_WORK_VOLTAGE_ST_TESTLOAD	67	// Номинальное рабочее напряжение для самодиагностики с тестовой нагрузкой, В
 // 68
 //
 #define REG_RANGE_I_0					69	// I_CHANNEL_1: нижняя граница диапазона 100...300 мА, в А
@@ -138,7 +138,11 @@
 #define REG_RELAY_SW_TIMER_ICES			91	// Время переключения реле тока при измерении Ices, мс
 #define REG_SYNC_DELAY_AFTER_FLAT		92	// Задержка выдачи SYNC после выхода на полку, мс
 #define REG_MAX_CURRENT_ERR_COUNT_LIMIT	93	// Лимит счетчика превышения тока перед PROBLEM_MAX_CURRENT_EXCEEDED
-// 94 - 97
+
+#define REG_R_INTERNAL_LOAD				94	// Сопротивление резисторов внутренней нагрузки, Ом
+#define REG_TRANSISTOR_AMOUNT			95	// Количество транзисторов на каскоде
+#define REG_TRANSIST_POWER_ALLOWED		96	// Разрешенная мощность на транзисторах, Вт
+// 97
 #define REG_ST_PULSE_DURATION			98	// Длительность импульса самодиагностики, мс
 #define REG_ST_TL_FLATTOP_DURATION		99	// Длительность полки поддержания напряжения при диагностики с нагрузкой, мс
 #define REG_RGLTR_ST_ERR_THRESH			100	// Порог ошибки напряжения для диаг. потенциальных линий, в частях от 0 до 1
