@@ -67,8 +67,9 @@ void REGLTR_Process()
 			// Спад без участия регулятора: линейное снижение от уровня начала спада
 			if(!FallDone)
 			{
-				RawSetPoint -= VoltStep;
-				if(RawSetPoint <= VoltStep)
+				float FallStep = (VoltStep > 0.0f) ? VoltStep : RawSetPoint;
+				RawSetPoint -= FallStep;
+				if(RawSetPoint <= FallStep)
 				{
 					RawSetPoint = 0;
 					FallDone = true;
