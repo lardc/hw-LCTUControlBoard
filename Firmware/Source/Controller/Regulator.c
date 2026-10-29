@@ -77,8 +77,7 @@ void REGLTR_Process()
 					RawSetPoint -= FallStep;
 					if(RawSetPoint <= (PreTriggerAmplitude + FallStep))
 					{
-						if(RawSetPoint > PreTriggerAmplitude || VoltStep <= 0.0f)
-							RawSetPoint = PreTriggerAmplitude;
+						RawSetPoint = PreTriggerAmplitude;
 						FallRampDone = true;
 					}
 				}
