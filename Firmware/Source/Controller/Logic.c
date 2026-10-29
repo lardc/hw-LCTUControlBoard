@@ -499,9 +499,12 @@ static void LOGIC_ErrorHandler(DeviceSubState SubState)
 
 Int32U LOGIC_CalcPauseAfterPulse(float UceVoltage)
 {
-	float Ubat = DataTable[REG_U_BAT];
+	if(DataTable[REG_TRANSISTOR_AMOUNT] == 0 || DataTable[REG_R_INTERNAL_LOAD] == 0
+			|| DataTable[REG_TRANSIST_POWER_ALLOWED] == 0)
+		return TIME_DEFAULT_PULSE2PULSE_PAUSE_MS;
 
-	if(Ubat <= UceVoltage || UceVoltage < 100.0f)
+	float Ubat = DataTable[REG_U_BAT];
+	if(Ubat <= UceVoltage)
 		return 0;
 
 	float FlatTopDuration = (CONTROL_MeasureType == MT_ST_TestLoad) ?

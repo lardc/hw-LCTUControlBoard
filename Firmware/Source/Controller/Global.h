@@ -21,6 +21,9 @@
 #define TIME_RELAY_PAUSE			10		// Задержка переключения реле, мс
 #define TIME_ACTIVATION_TIMEOUT		4000	// Таймаут заряда накопителя, в мс
 
+// Пауза между импульсами, если регистры не заданы (в мс)
+#define TIME_DEFAULT_PULSE2PULSE_PAUSE_MS		10000
+
 #define VALUES_EXT_INFO_SIZE		300
 #define VALUES_DEBUG_RGLTR_SIZE		600		// Размер отладочного буфера регулятора
 
