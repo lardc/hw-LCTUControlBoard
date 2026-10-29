@@ -529,7 +529,8 @@ Int32U LOGIC_CalcPauseAfterPulse(float UceVoltage)
 	}
 
 	// Время паузы в миллисекундах
-	Int32U Pause = (EnergyRise + EnergyFlattop) / DataTable[REG_TRANSIST_POWER_ALLOWED] * 1000.0f;
+	// Энергия на фронте спада такая же, как на фронте нарастания
+	Int32U Pause = (2 * EnergyRise + EnergyFlattop) / DataTable[REG_TRANSIST_POWER_ALLOWED] * 1000.0f;
 	return Pause;
 }
 //------------------------------------------
