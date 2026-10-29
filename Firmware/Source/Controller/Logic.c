@@ -192,12 +192,17 @@ void LOGIC_HandleMeasurement()
 				if (!LL_IsSyncOn() && CONTROL_TimeCounter > SyncDelayTimeout)
 					LL_SyncOSC(true);
 
-				if(CONTROL_TimeCounter > Timeout)
+				if(RegState == RS_Fall)
+				{
+					if(REGLTR_IsFallDone())
+						CONTROL_SetDeviceSubState(SS_FinishProcess);
+				}
+				else if(CONTROL_TimeCounter > Timeout)
 				{
 					UceResult = Sample.Uce;
 					IcesResult = Sample.Ices;
 					if(IsMeasureOk)
-						CONTROL_SetDeviceSubState(SS_FinishProcess);
+						REGLTR_StartFall();
 				}
 				break;
 
@@ -205,21 +210,28 @@ void LOGIC_HandleMeasurement()
 				if (!LL_IsSyncOn() && CONTROL_TimeCounter > SyncDelayTimeout)
 					LL_SyncOSC(true);
 
-				if(IsMeasureOk && CONTROL_TimeCounter > Timeout)
+				if(RegState != RS_Fall)
 				{
-					IcesResult = Sample.Ices;
-					if(fabsf(IcesResult - SelfTestExpectedCurrentA) > (SelfTestExpectedCurrentA * DataTable[REG_ST_CURRENT_ERR_THRESH]))
+					if(IsMeasureOk && CONTROL_TimeCounter > Timeout)
 					{
-						CONTROL_SetDeviceSubState(SS_CurrentErr);
-						break;
+						IcesResult = Sample.Ices;
+						UceResult = Sample.Uce;
+						if(fabsf(IcesResult - SelfTestExpectedCurrentA) > (SelfTestExpectedCurrentA * DataTable[REG_ST_CURRENT_ERR_THRESH]))
+						{
+							CONTROL_SetDeviceSubState(SS_CurrentErr);
+							break;
+						}
+						REGLTR_StartFall();
 					}
+				}
+				else if(REGLTR_IsFallDone())
+				{
 					if(SelfTestStepIdx >= 5)
 						CONTROL_SetDeviceSubState(SS_FinishProcess);
 					else
 					{
 						REGLTR_StopProcess();
 						LL_SyncOSC(false);
-						UceResult = Sample.Uce;
 						DataTable[REG_DIAG_CURRENT] = IcesResult;
 						SelfTestNextStep = true;
 						Timeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse(UceResult);
@@ -257,7 +269,6 @@ void LOGIC_HandleMeasurement()
 						break;
 
 					case MT_ST_TestLoad:
-						UceResult = Sample.Uce;
 						DataTable[REG_DIAG_VOLTAGE] = UceResult;
 						DataTable[REG_DIAG_CURRENT] = IcesResult;
 						break;

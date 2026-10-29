@@ -242,6 +242,20 @@ void DIAG_GenerateTrapezoidWave()
 		DELAY_US(TIMER15_uS);
 	}
 
+	// Спад до нуля с тем же наклоном, что и у фронта
+	float FallStep = (RiseSteps > 1u) ? (PulseAmplitude - StartAmplitude) / (float)(RiseSteps - 1u) :
+										(PulseAmplitude - StartAmplitude);
+	float setPoint = PulseAmplitude;
+	if (FallStep > 0.0f)
+	{
+		while (setPoint > FallStep)
+		{
+			setPoint -= FallStep;
+			LL_WriteDAC24(MEASURE_ConvertUset(setPoint));
+			DELAY_US(TIMER15_uS);
+		}
+	}
+
 	LL_WriteDAC24(0);
 }
 //------------------------------------------------
