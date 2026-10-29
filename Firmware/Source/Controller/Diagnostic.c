@@ -242,18 +242,22 @@ void DIAG_GenerateTrapezoidWave()
 		DELAY_US(TIMER15_uS);
 	}
 
-	// Спад до нуля с тем же наклоном, что и у фронта
-	float FallStep = (RiseSteps > 1u) ? (PulseAmplitude - StartAmplitude) / (float)(RiseSteps - 1u) :
-										(PulseAmplitude - StartAmplitude);
-	float setPoint = PulseAmplitude;
-	if (FallStep > 0.0f)
+	// Спад до уровня начала импульса с теми же параметрами, что и у фронта
+	for (Int32U i = 0; i < RiseSteps; ++i)
 	{
-		for (Int32U i = 1u; i <= RiseSteps; ++i)
-		{
-			setPoint = PulseAmplitude * (float)(RiseSteps - i) / (float)RiseSteps;
-			LL_WriteDAC24(MEASURE_ConvertUset(setPoint));
-				DELAY_US(TIMER15_uS);
-		}
+		float setPoint = StartAmplitude;
+		if (RiseSteps > 1u)
+			setPoint += (PulseAmplitude - StartAmplitude) * ((float)(RiseSteps - 1u - i) / (float)(RiseSteps - 1u));
+		LL_WriteDAC24(MEASURE_ConvertUset(setPoint));
+		DELAY_US(TIMER15_uS);
+	}
+
+	// Выдержка на этом уровне, затем перевод в 0
+	Int32U HoldSteps = ((Int32U)DataTable[REG_PULSE_FALL_HOLD_DURATION] * 1000u) / TIMER15_uS;
+	for (Int32U i = 0; i < HoldSteps; ++i)
+	{
+		LL_WriteDAC24(MEASURE_ConvertUset(StartAmplitude));
+		DELAY_US(TIMER15_uS);
 	}
 
 	LL_WriteDAC24(0);
