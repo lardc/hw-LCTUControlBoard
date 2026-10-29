@@ -253,13 +253,8 @@ void DIAG_GenerateTrapezoidWave()
 	}
 
 	// Выдержка на этом уровне, затем перевод в 0
-	Int32U HoldSteps = ((Int32U)DataTable[REG_PULSE_FALL_HOLD_DURATION] * 1000u) / TIMER15_uS;
-	for (Int32U i = 0; i < HoldSteps; ++i)
-	{
-		LL_WriteDAC24(MEASURE_ConvertUset(StartAmplitude));
-		DELAY_US(TIMER15_uS);
-	}
-
+	LL_WriteDAC24(MEASURE_ConvertUset(StartAmplitude));
+	DELAY_MS((Int32U)DataTable[REG_PULSE_FALL_HOLD_DURATION]);
 	LL_WriteDAC24(0);
 }
 //------------------------------------------------
