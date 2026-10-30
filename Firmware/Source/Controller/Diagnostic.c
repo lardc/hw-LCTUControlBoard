@@ -205,6 +205,7 @@ void DIAG_GenerateTrapezoidWave()
 {
 	float PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ICES];
 	float StartAmplitude = DataTable[REG_DBG];
+	float VoltPerStep, setPoint;
 	Int32U RiseMs = (Int32U)DataTable[REG_PULSE_RISE_DURATION];
 	Int32U FlatMs = (Int32U)DataTable[REG_PULSE_DURATION];
 	Int32U RiseSteps, FlatSteps, StartSteps;
@@ -242,19 +243,20 @@ void DIAG_GenerateTrapezoidWave()
 		DELAY_US(TIMER15_uS);
 	}
 
-	// Спад до уровня начала импульса с теми же параметрами, что и у фронта
-	for (Int32U i = 0; i < RiseSteps; ++i)
+	// Спад до 0 с той же скоростью, что и фронт
+	VoltPerStep = (RiseSteps > 1u) ? ((PulseAmplitude - StartAmplitude) / (float)(RiseSteps - 1u)) : PulseAmplitude;
+	if(VoltPerStep <= 0.0f)
+		VoltPerStep = PulseAmplitude;
+
+	setPoint = PulseAmplitude;
+	while(setPoint > 0.0f)
 	{
-		float setPoint = StartAmplitude;
-		if (RiseSteps > 1u)
-			setPoint += (PulseAmplitude - StartAmplitude) * ((float)(RiseSteps - 1u - i) / (float)(RiseSteps - 1u));
 		LL_WriteDAC24(MEASURE_ConvertUset(setPoint));
 		DELAY_US(TIMER15_uS);
+		setPoint -= VoltPerStep;
 	}
 
-	// Выдержка на этом уровне, затем перевод в 0
-	LL_WriteDAC24(MEASURE_ConvertUset(StartAmplitude));
-	DELAY_MS((Int32U)DataTable[REG_PULSE_FALL_HOLD_DURATION]);
 	LL_WriteDAC24(0);
+	DELAY_MS((Int32U)DataTable[REG_PULSE_FALL_HOLD_DURATION]);
 }
 //------------------------------------------------

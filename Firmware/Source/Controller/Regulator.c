@@ -67,27 +67,24 @@ void REGLTR_Process()
 			break;
 
 		case RS_Fall:
-			// Спад без участия регулятора: линейное снижение от уровня начала спада до уровня предимпульса,
-			// выдержка на этом уровне, затем перевод в 0
+			// Спад без участия регулятора: линейное снижение до 0 со скоростью нарастания,
+			// затем выдержка на нуле
 			if(!FallDone)
 			{
 				if(!FallRampDone)
 				{
 					float FallStep = (VoltStep > 0.0f) ? VoltStep : RawSetPoint;
 					RawSetPoint -= FallStep;
-					if(RawSetPoint <= (PreTriggerAmplitude + FallStep))
+					if(RawSetPoint <= 0.0f)
 					{
-						RawSetPoint = PreTriggerAmplitude;
+						RawSetPoint = 0;
 						FallRampDone = true;
 					}
 				}
 				else if(FallHoldTicks > 0)
 					--FallHoldTicks;
 				else
-				{
-					RawSetPoint = 0;
 					FallDone = true;
-				}
 			}
 			RegulatorError = 0;
 			DACSetpoint = (RawSetPoint > 0.0f) ? MEASURE_ConvertUset(RawSetPoint) : 0;
@@ -109,7 +106,7 @@ void REGLTR_StartFall()
 	// Уровень начала спада с учётом накопленной коррекции, чтобы не было скачка на выходе
 	float Level = RawSetPoint + Qp + Qi;
 	RawSetPoint = (Level > 0.0f) ? Level : 0.0f;
-	FallRampDone = (RawSetPoint <= PreTriggerAmplitude);
+	FallRampDone = (RawSetPoint <= 0.0f);
 	FallHoldTicks = ((Int32U)DataTable[REG_PULSE_FALL_HOLD_DURATION] * 1000u) / TIMER15_uS;
 	FallDone = false;
 	RegState = RS_Fall;
@@ -140,6 +137,8 @@ void REGLTR_Init()
 	RawSetPoint = PreTriggerAmplitude;
 	RegState = RS_Rise;
 	FallDone = false;
+	FallRampDone = false;
+	FallHoldTicks = 0;
 	RegulatorError = 0;
 
 	switch(CONTROL_MeasureType)
@@ -307,7 +306,7 @@ Int16U REGLTR_GetScalingCoef()
 	if(RiseRate > 0.0f)
 	{
 		RisingPart = (PulseAmplitude - PreTriggerAmplitude) / RiseRate;
-		FallingPart = RisingPart + DataTable[REG_PULSE_FALL_HOLD_DURATION];
+		FallingPart = PulseAmplitude / RiseRate + DataTable[REG_PULSE_FALL_HOLD_DURATION];
 	}
 	else
 	{

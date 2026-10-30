@@ -72,7 +72,7 @@
 // Допустимый ток Ices, мА
 #define I_ICES_MAX_MIN				0.01f
 #define I_ICES_MAX_MAX				300
-#define I_ICES_MAX_DEF				100
+#define I_ICES_MAX_DEF				300
 //
 #define COEF_I_CH0_MIN				0.1f	// I_CHANNEL_1 (100...300 мА), в А
 #define COEF_I_CH1_MIN				0.01f	// I_CHANNEL_2 (10...100 мА)
