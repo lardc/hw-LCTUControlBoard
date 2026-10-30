@@ -29,6 +29,8 @@ float VoltStep = 0, Qp = 0;
 float RegulatorError = 0;
 RegulatorState RegState = RS_None;
 static volatile bool FallDone = false;
+static bool FallRampDone = false;
+static Int32U FallHoldTicks = 0;
 volatile bool IsMeasureOk = false;
 
 volatile SamplingResult Sample = {0};
@@ -39,12 +41,13 @@ void REGLTR_StoreRegulatorDebug(float Uce, float Ices, float Setpoint, float Cor
 Int32U REGLTR_CorrectionLogDACPoint();
 void RGLTR_ErrorCheck();
 Int16U REGLTR_GetScalingCoef();
+static bool REGLTR_IsPulseSubState();
+static void REGLTR_AbortWithFall(DeviceSubState ErrorSubState);
 
 // Functions
 void REGLTR_Process()
 {
-	if (CONTROL_SubState != SS_RegulatorProcess
-			&& CONTROL_SubState != SS_RegulatorProcessSelfTest)
+	if (!REGLTR_IsPulseSubState())
 		return;
 	Int32U DACSetpoint;
 	Sample = REGLTR_GetSample();
@@ -64,16 +67,24 @@ void REGLTR_Process()
 			break;
 
 		case RS_Fall:
-			// Спад без участия регулятора: линейное снижение от уровня начала спада
+			// Спад без участия регулятора: линейное снижение до 0 со скоростью нарастания,
+			// затем выдержка на нуле
 			if(!FallDone)
 			{
-				float FallStep = (VoltStep > 0.0f) ? VoltStep : RawSetPoint;
-				RawSetPoint -= FallStep;
-				if(RawSetPoint <= FallStep)
+				if(!FallRampDone)
 				{
-					RawSetPoint = 0;
-					FallDone = true;
+					float FallStep = (VoltStep > 0.0f) ? VoltStep : RawSetPoint;
+					RawSetPoint -= FallStep;
+					if(RawSetPoint <= 0.0f)
+					{
+						RawSetPoint = 0;
+						FallRampDone = true;
+					}
 				}
+				else if(FallHoldTicks > 0)
+					--FallHoldTicks;
+				else
+					FallDone = true;
 			}
 			RegulatorError = 0;
 			DACSetpoint = (RawSetPoint > 0.0f) ? MEASURE_ConvertUset(RawSetPoint) : 0;
@@ -95,6 +106,8 @@ void REGLTR_StartFall()
 	// Уровень начала спада с учётом накопленной коррекции, чтобы не было скачка на выходе
 	float Level = RawSetPoint + Qp + Qi;
 	RawSetPoint = (Level > 0.0f) ? Level : 0.0f;
+	FallRampDone = (RawSetPoint <= 0.0f);
+	FallHoldTicks = ((Int32U)DataTable[REG_PULSE_FALL_HOLD_DURATION] * 1000u) / TIMER15_uS;
 	FallDone = false;
 	RegState = RS_Fall;
 }
@@ -124,6 +137,8 @@ void REGLTR_Init()
 	RawSetPoint = PreTriggerAmplitude;
 	RegState = RS_Rise;
 	FallDone = false;
+	FallRampDone = false;
+	FallHoldTicks = 0;
 	RegulatorError = 0;
 
 	switch(CONTROL_MeasureType)
@@ -162,6 +177,9 @@ Int32U REGLTR_CorrectionLogDACPoint()
 {
 	RGLTR_ErrorCheck();
 
+	if(RegState == RS_Fall)
+		return MEASURE_ConvertUset(RawSetPoint);
+
 	Qp = RegulatorError * Kp;
 	Qi += RegulatorError * Ki;
 
@@ -187,7 +205,7 @@ void RGLTR_ErrorCheck()
 				MaxCurrentErrCount++;
 				if (MaxCurrentErrCount > MaxCurrentErrLimit)
 				{
-					CONTROL_SetDeviceSubState(SS_MaxCurrentErr);
+					REGLTR_AbortWithFall(SS_MaxCurrentErr);
 					break;
 				}
 			}
@@ -208,7 +226,7 @@ void RGLTR_ErrorCheck()
 			{
 				VoltageErrCount++;
 				if(VoltageErrCount > VoltagErrLimit)
-					CONTROL_SetDeviceSubState(SS_VoltageErr);
+					REGLTR_AbortWithFall(SS_VoltageErr);
 			}
 			break;
 
@@ -218,6 +236,9 @@ void RGLTR_ErrorCheck()
 			break;
 	}
 
+	if(RegState == RS_Fall)
+		return;
+
 	if(RawSetPoint > 0.0f)
 	{
 		float RegulatorRelativeAbsError = fabsf(RegulatorError) / RawSetPoint;
@@ -226,7 +247,7 @@ void RGLTR_ErrorCheck()
 			if(FollowingErrorCounter < FollowingErrLimit)
 				FollowingErrorCounter++;
 			else
-				CONTROL_SetDeviceSubState(SS_FollowingErr);
+				REGLTR_AbortWithFall(SS_FollowingErr);
 		}
 		else
 			FollowingErrorCounter = 0;
@@ -285,10 +306,14 @@ Int16U REGLTR_GetScalingCoef()
 	if(RiseRate > 0.0f)
 	{
 		RisingPart = (PulseAmplitude - PreTriggerAmplitude) / RiseRate;
-		FallingPart = PulseAmplitude / RiseRate;
+		FallingPart = PulseAmplitude / RiseRate + DataTable[REG_PULSE_FALL_HOLD_DURATION];
 	}
 	else
-		RisingPart = FallingPart = 0;
+	{
+		RisingPart = 0;
+		FallingPart = DataTable[REG_PULSE_FALL_HOLD_DURATION];
+	}
+
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Ices:
@@ -308,6 +333,27 @@ Int16U REGLTR_GetScalingCoef()
 		Coef = 1;
 	ScalingCounter = Coef;
 	return Coef;
+}
+//-----------------------------------------
+
+static bool REGLTR_IsPulseSubState()
+{
+	return CONTROL_SubState == SS_RegulatorProcess
+			|| CONTROL_SubState == SS_RegulatorProcessSelfTest
+			|| CONTROL_SubState == SS_FollowingErr
+			|| CONTROL_SubState == SS_VoltageErr
+			|| CONTROL_SubState == SS_CurrentErr
+			|| CONTROL_SubState == SS_MaxCurrentErr;
+}
+//-----------------------------------------
+
+static void REGLTR_AbortWithFall(DeviceSubState ErrorSubState)
+{
+	DataTable[REG_DIAG_CURRENT] = Sample.Ices;
+	DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
+	CONTROL_SetDeviceSubState(ErrorSubState);
+	if(RegState != RS_Fall)
+		REGLTR_StartFall();
 }
 //-----------------------------------------
 
