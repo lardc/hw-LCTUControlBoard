@@ -7,6 +7,7 @@
 #include "DataTable.h"
 #include "DeviceObjectDictionary.h"
 #include "Controller.h"
+#include "Constraints.h"
 #include "Board.h"
 #include "LowLevel.h"
 #include "Regulator.h"
@@ -547,9 +548,22 @@ Int32U LOGIC_CalcPauseAfterPulse(float UceVoltage)
 	float FlatTopDuration = (CONTROL_MeasureType == MT_ST_TestLoad) ?
 			DataTable[REG_ST_PULSE_DURATION] : DataTable[REG_PULSE_DURATION];
 
+	// При превышении максимального тока считаем, что ток был максимальным и постоянным
+	// на всём импульсе (предимпульс, фронт, полка, спад), а напряжение Uce - постоянным
+	bool MaxCurrentExceeded = (PendingProblemReason == PROBLEM_MAX_CURRENT_EXCEEDED);
+	float Current = MaxCurrentExceeded ? (I_ICES_MAX_MAX * 0.001f) : DataTable[REG_DIAG_CURRENT];
+
 	float VoltageCascode = Ubat - UceVoltage;
-	float CurrentCascode = DataTable[REG_DIAG_CURRENT] + UceVoltage / DataTable[REG_R_INTERNAL_LOAD];
+	float CurrentCascode = Current + UceVoltage / DataTable[REG_R_INTERNAL_LOAD];
 	float CurrentIndivTrans = CurrentCascode / DataTable[REG_TRANSISTOR_AMOUNT];
+
+	if(MaxCurrentExceeded)
+	{
+		// Упрощённо время спада равно времени нарастания
+		float RiseFallMs = DataTable[REG_PULSE_RISE_DURATION];
+		float TotalMs = DataTable[REG_PRETRIGGER_DURATION] + 2.0f * RiseFallMs + FlatTopDuration;
+		return (TotalMs * 0.001f) * VoltageCascode * CurrentIndivTrans / DataTable[REG_TRANSIST_POWER_ALLOWED] * 1000.0f;
+	}
 
 	// Энергия на плоском участке
 	float EnergyFlattop = (FlatTopDuration * 0.001f) * VoltageCascode * CurrentIndivTrans;
