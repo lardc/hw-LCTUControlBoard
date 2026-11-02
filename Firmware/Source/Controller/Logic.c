@@ -32,7 +32,6 @@ static IChannel LOGIC_SelectChannelByMaxCurrent(float ImaxA);
 static bool LOGIC_SelectIcesChannel();
 static void LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA);
 static void LOGIC_ErrorHandler(DeviceSubState SubState);
-static bool LOGIC_IsPulseSubState();
 static bool LOGIC_TryHandleForcedStopAfterFall();
 Int32U LOGIC_CalcPauseAfterPulse(float UceVoltage);
 
@@ -389,7 +388,7 @@ void LOGIC_StopProcess()
 
 void LOGIC_RequestForcedStop()
 {
-	if(LOGIC_IsPulseSubState())
+	if(CONTROL_IsPulseSubState())
 	{
 		PendingProblemReason = PROBLEM_FORCED_STOP;
 		REGLTR_StartFall();
@@ -398,17 +397,6 @@ void LOGIC_RequestForcedStop()
 
 	CONTROL_SwitchToProblem(PROBLEM_FORCED_STOP);
 	LOGIC_Deactivate();
-}
-//------------------------------------------
-
-static bool LOGIC_IsPulseSubState()
-{
-	return CONTROL_SubState == SS_RegulatorProcess
-			|| CONTROL_SubState == SS_RegulatorProcessSelfTest
-			|| CONTROL_SubState == SS_FollowingErr
-			|| CONTROL_SubState == SS_VoltageErr
-			|| CONTROL_SubState == SS_CurrentErr
-			|| CONTROL_SubState == SS_MaxCurrentErr;
 }
 //------------------------------------------
 

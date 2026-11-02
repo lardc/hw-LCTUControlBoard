@@ -41,13 +41,12 @@ void REGLTR_StoreRegulatorDebug(float Uce, float Ices, float Setpoint, float Cor
 Int32U REGLTR_CorrectionLogDACPoint();
 void RGLTR_ErrorCheck();
 Int16U REGLTR_GetScalingCoef();
-static bool REGLTR_IsPulseSubState();
 static void REGLTR_AbortWithFall(DeviceSubState ErrorSubState);
 
 // Functions
 void REGLTR_Process()
 {
-	if (!REGLTR_IsPulseSubState())
+	if (!CONTROL_IsPulseSubState())
 		return;
 	Int32U DACSetpoint;
 	Sample = REGLTR_GetSample();
@@ -337,17 +336,6 @@ Int16U REGLTR_GetScalingCoef()
 		Coef = 1;
 	ScalingCounter = Coef;
 	return Coef;
-}
-//-----------------------------------------
-
-static bool REGLTR_IsPulseSubState()
-{
-	return CONTROL_SubState == SS_RegulatorProcess
-			|| CONTROL_SubState == SS_RegulatorProcessSelfTest
-			|| CONTROL_SubState == SS_FollowingErr
-			|| CONTROL_SubState == SS_VoltageErr
-			|| CONTROL_SubState == SS_CurrentErr
-			|| CONTROL_SubState == SS_MaxCurrentErr;
 }
 //-----------------------------------------
 

@@ -235,6 +235,17 @@ void CONTROL_StartMeasure(MeasureType Type)
 }
 //------------------------------------------
 
+bool CONTROL_IsPulseSubState()
+{
+	return CONTROL_SubState == SS_RegulatorProcess
+			|| CONTROL_SubState == SS_RegulatorProcessSelfTest
+			|| CONTROL_SubState == SS_FollowingErr
+			|| CONTROL_SubState == SS_VoltageErr
+			|| CONTROL_SubState == SS_CurrentErr
+			|| CONTROL_SubState == SS_MaxCurrentErr;
+}
+//-----------------------------------------------
+
 bool CONTROL_IsSafetyOk()
 {
 	if(LL_IsSafetyOk() || DataTable[REG_DBG_SAFETY_MUTE])
@@ -244,7 +255,7 @@ bool CONTROL_IsSafetyOk()
 		if(CONTROL_State == DS_InProcess)
 		{
 			// Если импульс формируется, сначала плавно снимаем напряжение
-			if(CONTROL_SubState == SS_RegulatorProcess || CONTROL_SubState == SS_RegulatorProcessSelfTest)
+			if(CONTROL_IsPulseSubState())
 			{
 				REGLTR_StartFall();
 				if(!REGLTR_IsFallDone())

@@ -81,6 +81,7 @@ void CONTROL_SwitchToProblem(Int16U Reason);
 void CONTROL_SwitchToFault(Int16U Reason);
 void CONTROL_StartMeasure(MeasureType Type);
 bool CONTROL_IsSafetyOk();
+bool CONTROL_IsPulseSubState();
 void CONTROL_WatchDogUpdate();
 void CONTROL_InitJSONPointers();
 
