@@ -130,6 +130,7 @@
 #define REG_VOLTAGE_ERR_THRESH			84	// Допустимая ошибка напряжения для начала измерения, в частях от 0 до 1
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
 #define REG_PULSE_RISE_DURATION			86	// Длительность фронта импульса, мс
+#define REG_PULSE_FALL_HOLD_DURATION	87	// Выдержка на 0 после спада, мс
 
 #define REG_PRETRIGGER_VOLTAGE			88 	// Напряжение ступени предварительного включения, В
 #define REG_PRETRIGGER_DURATION			89	// Длительность ступени предварительного включения, мс
@@ -167,7 +168,8 @@
 #define REG_DBG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
 #define REG_DBG2						152	// Отладочный регистр 2
 #define REG_DBG_SAFETY_MUTE				153	// Отключение контура безопасности
-// 154 - 191
+#define REG_DBG_REGULATOR_MUTE			154	// Отключение регулятора: 1 - Qp и Qi не рассчитываются, PROBLEM_FOLLOWING_ERROR не выставляется
+// 155 - 191
 
 // Регистры только чтение
 #define REG_DEV_STATE					192	// Регистр состояния

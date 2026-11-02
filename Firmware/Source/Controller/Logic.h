@@ -14,5 +14,6 @@ extern Int16U LOGIC_ChannelNumber;
 void LOGIC_HandleMeasurement();
 void LOGIC_Deactivate();
 void LOGIC_StopProcess();
+void LOGIC_RequestForcedStop();
 
 #endif // CONTROLLER_LOGIC_H_
