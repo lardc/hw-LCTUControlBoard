@@ -122,7 +122,7 @@ bool REGLTR_IsFallDone()
 void REGLTR_Init()
 {
 	IsMeasureOk = false;
-	Qi = FollowingErrorCounter = VoltageErrCount = 0;
+	Qp = Qi = FollowingErrorCounter = VoltageErrCount = 0;
 	MaxCurrentErrCount = 0;
 	RINGBUF_ResetIcesAvg();
 	RINGBUF_ResetUceAvg();
