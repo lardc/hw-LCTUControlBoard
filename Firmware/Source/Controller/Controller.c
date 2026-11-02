@@ -246,8 +246,7 @@ bool CONTROL_IsSafetyOk()
 			// Если импульс формируется, сначала плавно снимаем напряжение
 			if(CONTROL_SubState == SS_RegulatorProcess || CONTROL_SubState == SS_RegulatorProcessSelfTest)
 			{
-				if(RegState != RS_Fall)
-					REGLTR_StartFall();
+				REGLTR_StartFall();
 				if(!REGLTR_IsFallDone())
 					return false;
 			}

@@ -253,8 +253,7 @@ void LOGIC_HandleMeasurement()
 			case SS_VoltageErr:
 			case SS_CurrentErr:
 			case SS_MaxCurrentErr:
-				if(RegState != RS_Fall)
-					REGLTR_StartFall();
+				REGLTR_StartFall();
 				if(!REGLTR_IsFallDone())
 					break;
 
@@ -393,8 +392,7 @@ void LOGIC_RequestForcedStop()
 	if(LOGIC_IsPulseSubState())
 	{
 		PendingProblemReason = PROBLEM_FORCED_STOP;
-		if(RegState != RS_Fall)
-			REGLTR_StartFall();
+		REGLTR_StartFall();
 		return;
 	}
 

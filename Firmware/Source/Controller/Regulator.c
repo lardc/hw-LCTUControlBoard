@@ -103,6 +103,10 @@ void REGLTR_Process()
 
 void REGLTR_StartFall()
 {
+	// Повторный запуск не должен менять уровень начала спада
+	if(RegState == RS_Fall)
+		return;
+
 	// Уровень начала спада с учётом накопленной коррекции, чтобы не было скачка на выходе
 	float Level = RawSetPoint + Qp + Qi;
 	RawSetPoint = (Level > 0.0f) ? Level : 0.0f;
@@ -352,8 +356,7 @@ static void REGLTR_AbortWithFall(DeviceSubState ErrorSubState)
 	DataTable[REG_DIAG_CURRENT] = Sample.Ices;
 	DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
 	CONTROL_SetDeviceSubState(ErrorSubState);
-	if(RegState != RS_Fall)
-		REGLTR_StartFall();
+	REGLTR_StartFall();
 }
 //-----------------------------------------
 
