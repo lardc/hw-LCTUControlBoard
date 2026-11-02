@@ -168,7 +168,8 @@
 #define REG_DBG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
 #define REG_DBG2						152	// Отладочный регистр 2
 #define REG_DBG_SAFETY_MUTE				153	// Отключение контура безопасности
-// 154 - 191
+#define REG_DBG_REGULATOR_MUTE			154	// Отключение регулятора: 1 - Qp и Qi не рассчитываются, PROBLEM_FOLLOWING_ERROR не выставляется
+// 155 - 191
 
 // Регистры только чтение
 #define REG_DEV_STATE					192	// Регистр состояния

@@ -167,7 +167,7 @@ const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START]
 	{NO, I_CHANNEL_5, NO},														// 151
 	{0, INT16U_MAX, 0},															// 152
 	{NO, YES, NO},																// 153
-	{0, 0, 0},																	// 154
+	{NO, YES, NO},																// 154
 	{0, 0, 0},																	// 155
 	{0, 0, 0},																	// 156
 	{0, 0, 0},																	// 157

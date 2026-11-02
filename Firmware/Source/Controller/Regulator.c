@@ -29,6 +29,8 @@ float VoltStep = 0, Qp = 0;
 float RegulatorError = 0;
 RegulatorState RegState = RS_None;
 static volatile bool FallDone = false;
+static bool RegulatorEnabled = true;
+static bool FollowingErrCheckEnabled = true;
 static bool FallRampDone = false;
 static Int32U FallHoldTicks = 0;
 volatile bool IsMeasureOk = false;
@@ -164,6 +166,8 @@ void REGLTR_Init()
 
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];
+	RegulatorEnabled = !DataTable[REG_DBG_REGULATOR_MUTE];
+	FollowingErrCheckEnabled = RegulatorEnabled && (Kp != 0.0f || Ki != 0.0f);
 
 	for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
 	{
@@ -183,8 +187,11 @@ Int32U REGLTR_CorrectionLogDACPoint()
 	if(RegState == RS_Fall)
 		return MEASURE_ConvertUset(RawSetPoint);
 
-	Qp = RegulatorError * Kp;
-	Qi += RegulatorError * Ki;
+	if(RegulatorEnabled)
+	{
+		Qp = RegulatorError * Kp;
+		Qi += RegulatorError * Ki;
+	}
 
 	float SetPoint = RawSetPoint + Qp + Qi;
 	Int32U DACPoint = MEASURE_ConvertUset(SetPoint);
@@ -242,7 +249,7 @@ void RGLTR_ErrorCheck()
 	if(RegState == RS_Fall)
 		return;
 
-	if(RawSetPoint > 0.0f)
+	if(FollowingErrCheckEnabled && RawSetPoint > 0.0f)
 	{
 		float RegulatorRelativeAbsError = fabsf(RegulatorError) / RawSetPoint;
 		if(RegulatorRelativeAbsError > FollowingErrThreshold)
