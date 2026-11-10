@@ -67,8 +67,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, 0, 0},																	// 55
 	{0, 0, 0},																	// 56
 	{0, 0, 0},																	// 57
-	{0, 0, 0},																	// 58
-	{0, 0, 0},																	// 59
+	{FAN_OPERATE_PERIOD_MIN, FAN_OPERATE_PERIOD_MAX, FAN_OPERATE_PERIOD_DEF},	// 58
+	{FAN_OPERATE_TIME_MIN, FAN_OPERATE_TIME_MAX, FAN_OPERATE_TIME_DEF},			// 59
 	{0, INT16U_MAX, 0},															// 60
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 61
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 62

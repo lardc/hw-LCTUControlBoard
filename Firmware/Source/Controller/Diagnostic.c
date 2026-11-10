@@ -92,16 +92,8 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			LL_SetStateRelay(RELAY_HV_OUT, DataTable[REG_DBG]);
 			break;
 
-		case ACT_DBG_LCAU_HV_OUT:
-			LL_SetStateRelay(RELAY_LCAU_HV_OUT, DataTable[REG_DBG]);
-			break;
-
 		case ACT_DBG_LCAU_INPUT_CONTACTOR:
 			LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, DataTable[REG_DBG]);
-			break;
-
-		case ACT_DBG_LCAU_DISCHARGE:
-			LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, DataTable[REG_DBG]);
 			break;
 
 		case ACT_DBG_LCAU_SOFTSTART:

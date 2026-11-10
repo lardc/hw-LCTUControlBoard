@@ -36,7 +36,6 @@ typedef enum __DeviceSubState
 	SS_CurrentErr,
 
 	SS_FinishProcess,
-	SS_WaitFinishFan,
 	SS_WaitFinishHVOut,
 	SS_FinishProcessWait,
 	SS_WaitTransistorCooldown,
@@ -84,5 +83,6 @@ bool CONTROL_IsSafetyOk();
 bool CONTROL_IsPulseSubState();
 void CONTROL_WatchDogUpdate();
 void CONTROL_InitJSONPointers();
+void CONTROL_HandleFanLogic(bool IsImpulse);
 
 #endif // __CONTROLLER_H

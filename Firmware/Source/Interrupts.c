@@ -47,6 +47,7 @@ void TIM7_IRQHandler()
 			LL_ToggleBoardLED();
 			LED_BlinkTimeCounter = 0;
 		}
+		CONTROL_HandleFanLogic(false);
 		TIM_StatusClear(TIM7);
 	}
 }

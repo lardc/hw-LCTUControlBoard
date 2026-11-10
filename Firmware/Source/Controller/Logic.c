@@ -55,9 +55,7 @@ void LOGIC_HandleMeasurement()
 		switch(CONTROL_SubState)
 		{
 			case SS_Activation:
-				LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, true);
 				LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, true);
-				LL_SetStateRelay(RELAY_LCAU_HV_OUT, true);
 				Timeout = CONTROL_TimeCounter + TIME_ACTIVATION_TIMEOUT;
 				CONTROL_SetDeviceSubState(SS_ActivationProcess);
 				break;
@@ -78,6 +76,7 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_Init:
+				CONTROL_HandleFanLogic(true);
 				if(CONTROL_TimeCounter < CooldownTimeout)
 				{
 					Timeout = CooldownTimeout;
@@ -95,17 +94,13 @@ void LOGIC_HandleMeasurement()
 				PendingFaultReason = DF_NONE;
 				PendingProblemReason = PROBLEM_NONE;
 				SelfTestNextStep = false;
-				//LL_SetStateRelay(RELAY_LCAU_HV_OUT, true);
 				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
 				CONTROL_SetDeviceSubState(SS_InitHVPause);
 				break;
 
 			case SS_InitHVPause:
 				if(CONTROL_TimeCounter > Timeout)
-				{
-					LL_SetStateFan(true); // Доп реле временно сделано на выходе вентилятора
 					CONTROL_SetDeviceSubState(SS_InitSelectCurrentChannel);
-				}
 				break;
 
 			case SS_InitSelectCurrentChannel:
@@ -264,7 +259,7 @@ void LOGIC_HandleMeasurement()
 				IcesResult = DataTable[REG_DIAG_CURRENT];
 				LOGIC_ErrorHandler(CONTROL_SubState);
 				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
-				CONTROL_SetDeviceSubState(SS_WaitFinishFan);
+				CONTROL_SetDeviceSubState(SS_WaitFinishHVOut);
 				break;
 
 			case SS_FinishProcess:
@@ -293,16 +288,7 @@ void LOGIC_HandleMeasurement()
 						break;
 				}
 				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
-				CONTROL_SetDeviceSubState(SS_WaitFinishFan);
-				break;
-
-			case SS_WaitFinishFan:
-				if(CONTROL_TimeCounter > Timeout)
-				{
-					LL_SetStateFan(false);
-					Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
-					CONTROL_SetDeviceSubState(SS_WaitFinishHVOut);
-				}
+				CONTROL_SetDeviceSubState(SS_WaitFinishHVOut);
 				break;
 
 			case SS_WaitFinishHVOut:
@@ -370,10 +356,8 @@ void LOGIC_Deactivate()
 	LL_SetStateRelay(RELAY_RMES5, false);
 
 	LL_SetStateRelay(RELAY_HV_OUT, false);
-	LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
 	LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, false);
 
-	LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, false);
 	LL_LCAU_SoftStart(true);
 }
 //------------------------------------------

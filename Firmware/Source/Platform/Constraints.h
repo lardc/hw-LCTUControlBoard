@@ -103,6 +103,14 @@
 #define R_ST_TESTLOAD_700MOHM_DEF	700e6f	// 700 МОм
 #define ST_CURRENT_ERR_THRESH_DEF	0.1f
 //
+#define FAN_OPERATE_PERIOD_MIN			60			// с
+#define FAN_OPERATE_PERIOD_MAX			2000
+#define FAN_OPERATE_PERIOD_DEF			300
+//
+#define FAN_OPERATE_TIME_MIN			10			// с
+#define FAN_OPERATE_TIME_MAX			2000
+#define FAN_OPERATE_TIME_DEF			60
+//
 #define NO						0
 #define YES						1
 #define COEF_THRESHOLD_MAX		1

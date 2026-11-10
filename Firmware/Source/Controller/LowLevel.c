@@ -11,7 +11,7 @@
 Int32U CycleCounters[COMMUTATION_TABLE_SIZE] = {0};
 static bool RelayState[RELAY_COUNT] = {false};
 const GPIO_PortPinSettingMacro* RelayPins[RELAY_COUNT] = {
-		&GPIO_LCAU_INPUT_CONTACTOR, &GPIO_LCAU_HV_OUT, &GPIO_LCAU_DISCHARGE_DISABLE,
+		&GPIO_LCAU_INPUT_CONTACTOR,
 		&GPIO_HV_OUT, &GPIO_SELFTEST1_7MEG, &GPIO_SELFTEST2_700MEG,
 		&GPIO_RMES1, &GPIO_RMES2, &GPIO_RMES3, &GPIO_RMES4, &GPIO_RMES5};
 
@@ -79,8 +79,6 @@ void LL_SetStateRelay(RelayId Id, bool State)
 void LL_SetRelaySafeState()
 {
 	LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, false);
-	LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
-	LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, true);	// NC реле разряда батареи
 
 	LL_SetStateRelay(RELAY_HV_OUT, false);
 	LL_SetStateRelay(RELAY_SELFTEST1_7MEG, false);

@@ -373,6 +373,35 @@ void CONTROL_SetDeviceSubState(DeviceSubState NewSubState)
 }
 //------------------------------------------
 
+void CONTROL_HandleFanLogic(bool IsImpulse)
+{
+	static uint32_t IncrementCounter = 0;
+	static uint64_t FanOnTimeout = 0;
+
+	if(CONTROL_State != DS_None)
+	{
+		// Увеличение счётчика в простое
+		if(!IsImpulse)
+			IncrementCounter++;
+
+		// Включение вентилятора
+		if((IncrementCounter > ((uint32_t)DataTable[REG_FAN_OPERATE_PERIOD] * 1000)) || IsImpulse)
+		{
+			IncrementCounter = 0;
+			FanOnTimeout = CONTROL_TimeCounter + ((uint32_t)DataTable[REG_FAN_OPERATE_TIME] * 1000);
+			LL_SetStateFan(true);
+		}
+
+		// Отключение вентилятора
+		if(FanOnTimeout && (CONTROL_TimeCounter > FanOnTimeout))
+		{
+			FanOnTimeout = 0;
+			LL_SetStateFan(false);
+		}
+	}
+}
+//-----------------------------------------------
+
 void Delay_mS(uint32_t Delay)
 {
 	uint64_t Counter = (uint64_t)CONTROL_TimeCounter + Delay;
