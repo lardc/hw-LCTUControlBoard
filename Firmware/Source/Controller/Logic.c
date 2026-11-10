@@ -391,6 +391,7 @@ void LOGIC_RequestForcedStop()
 {
 	if(CONTROL_IsPulseSubState())
 	{
+		CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse(Sample.Uce);
 		PendingProblemReason = PROBLEM_FORCED_STOP;
 		REGLTR_StartFall();
 		return;
