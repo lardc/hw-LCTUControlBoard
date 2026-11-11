@@ -156,19 +156,28 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_SetPreTrigger:
+				REGLTR_StartProcess();
 				LL_WriteDAC24(MEASURE_ConvertUset(DataTable[REG_PRETRIGGER_VOLTAGE]));
 				Timeout = CONTROL_TimeCounter + DataTable[REG_PRETRIGGER_DURATION];
 				CONTROL_SetDeviceSubState(SS_WaitPreTrigger);
 				break;
 
 			case SS_WaitPreTrigger:
-				if(CONTROL_TimeCounter > Timeout)
+				Sample = REGLTR_GetSample();
+				if(Sample.Ices > DataTable[REG_MAX_CURRENT_ICES] * 0.001f)
+				{
+					IcesResult = Sample.Ices;
+					UceResult = Sample.Uce;
+					REGLTR_StopProcess();
+					REGLTR_MarkFallComplete();
+					CONTROL_SetDeviceSubState(SS_MaxCurrentErr);
+				}
+				else if(CONTROL_TimeCounter > Timeout)
 					CONTROL_SetDeviceSubState(SS_ConfigPulse);
 				break;
 
 			case SS_ConfigPulse:
 				REGLTR_Init();
-				REGLTR_StartProcess();
 				SyncDelayTimeout = CONTROL_TimeCounter + DataTable[REG_PULSE_RISE_DURATION] + DataTable[REG_SYNC_DELAY_AFTER_FLAT];
 				{
 					float TimeoutTime;

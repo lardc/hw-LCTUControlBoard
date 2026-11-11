@@ -35,6 +35,7 @@ void REGLTR_Init();
 float REGLTR_GetSetpoint(Int16U i);
 void REGLTR_StartFall();
 bool REGLTR_IsFallDone();
+void REGLTR_MarkFallComplete();
 void REGLTR_StartProcess();
 void REGLTR_StopProcess();
 SamplingResult REGLTR_GetSample();

@@ -210,18 +210,6 @@ void RGLTR_ErrorCheck()
 			RegulatorError = RawSetPoint - Sample.Uce;
 			float RelativeAmplitudeAbsErr = fabsf(PulseAmplitude - Sample.Uce) / PulseAmplitude;
 
-			if (CONTROL_MeasureType == MT_Ices && Sample.Ices > MaxCurrentA)
-			{
-				MaxCurrentErrCount++;
-				if (MaxCurrentErrCount > MaxCurrentErrLimit)
-				{
-					REGLTR_AbortWithFall(SS_MaxCurrentErr);
-					break;
-				}
-			}
-			else
-				MaxCurrentErrCount = 0;
-
 			if(RelativeAmplitudeAbsErr <= VoltagErrThreshold)
 			{
 				if(CONTROL_MeasureType == MT_Ices)
@@ -248,6 +236,18 @@ void RGLTR_ErrorCheck()
 
 	if(RegState == RS_Fall)
 		return;
+
+	if (CONTROL_MeasureType == MT_Ices && Sample.Ices > MaxCurrentA)
+	{
+		MaxCurrentErrCount++;
+		if (MaxCurrentErrCount > MaxCurrentErrLimit)
+		{
+			REGLTR_AbortWithFall(SS_MaxCurrentErr);
+			return;
+		}
+	}
+	else
+		MaxCurrentErrCount = 0;
 
 	if(FollowingErrCheckEnabled && RawSetPoint > 0.0f)
 	{
@@ -343,6 +343,15 @@ Int16U REGLTR_GetScalingCoef()
 		Coef = 1;
 	ScalingCounter = Coef;
 	return Coef;
+}
+//-----------------------------------------
+
+void REGLTR_MarkFallComplete()
+{
+	RawSetPoint = 0;
+	FallRampDone = true;
+	FallDone = true;
+	RegState = RS_Fall;
 }
 //-----------------------------------------
 
