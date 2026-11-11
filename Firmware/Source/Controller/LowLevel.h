@@ -5,7 +5,7 @@
 #include "stdinc.h"
 
 // Defines
-#define COMMUTATION_TABLE_SIZE 11
+#define COMMUTATION_TABLE_SIZE 9
 
 // Types
 typedef enum IChannel
@@ -20,8 +20,6 @@ typedef enum IChannel
 typedef enum RelayId
 {
 	RELAY_LCAU_INPUT_CONTACTOR = 0,
-	RELAY_LCAU_HV_OUT,
-	RELAY_LCAU_DISCHARGE_DISABLE,
 	RELAY_HV_OUT,
 	RELAY_SELFTEST1_7MEG,
 	RELAY_SELFTEST2_700MEG,

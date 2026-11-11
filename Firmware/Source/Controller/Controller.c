@@ -213,10 +213,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 		case ACT_STOP_MEASURE:
 			if(CONTROL_State == DS_InProcess)
-			{
-				CONTROL_SwitchToProblem(PROBLEM_FORCED_STOP);
-				LOGIC_Deactivate();
-			}
+				LOGIC_RequestForcedStop();
 			break;
 		default:
 			return DIAG_HandleDiagnosticAction(ActionID, pUserError);
@@ -238,6 +235,17 @@ void CONTROL_StartMeasure(MeasureType Type)
 }
 //------------------------------------------
 
+bool CONTROL_IsPulseSubState()
+{
+	return CONTROL_SubState == SS_RegulatorProcess
+			|| CONTROL_SubState == SS_RegulatorProcessSelfTest
+			|| CONTROL_SubState == SS_FollowingErr
+			|| CONTROL_SubState == SS_VoltageErr
+			|| CONTROL_SubState == SS_CurrentErr
+			|| CONTROL_SubState == SS_MaxCurrentErr;
+}
+//-----------------------------------------------
+
 bool CONTROL_IsSafetyOk()
 {
 	if(LL_IsSafetyOk() || DataTable[REG_DBG_SAFETY_MUTE])
@@ -247,10 +255,9 @@ bool CONTROL_IsSafetyOk()
 		if(CONTROL_State == DS_InProcess)
 		{
 			// Если импульс формируется, сначала плавно снимаем напряжение
-			if(CONTROL_SubState == SS_RegulatorProcess || CONTROL_SubState == SS_RegulatorProcessSelfTest)
+			if(CONTROL_IsPulseSubState())
 			{
-				if(RegState != RS_Fall)
-					REGLTR_StartFall();
+				REGLTR_StartFall();
 				if(!REGLTR_IsFallDone())
 					return false;
 			}
@@ -365,6 +372,35 @@ void CONTROL_SetDeviceSubState(DeviceSubState NewSubState)
 	DataTable[REG_DEV_SUBSTATE] = NewSubState;
 }
 //------------------------------------------
+
+void CONTROL_HandleFanLogic(bool IsImpulse)
+{
+	static uint32_t IncrementCounter = 0;
+	static uint64_t FanOnTimeout = 0;
+
+	if(CONTROL_State != DS_None)
+	{
+		// Увеличение счётчика в простое
+		if(!IsImpulse)
+			IncrementCounter++;
+
+		// Включение вентилятора
+		if((IncrementCounter > ((uint32_t)DataTable[REG_FAN_OPERATE_PERIOD] * 1000)) || IsImpulse)
+		{
+			IncrementCounter = 0;
+			FanOnTimeout = CONTROL_TimeCounter + ((uint32_t)DataTable[REG_FAN_OPERATE_TIME] * 1000);
+			LL_SetStateFan(true);
+		}
+
+		// Отключение вентилятора
+		if(FanOnTimeout && (CONTROL_TimeCounter > FanOnTimeout))
+		{
+			FanOnTimeout = 0;
+			LL_SetStateFan(false);
+		}
+	}
+}
+//-----------------------------------------------
 
 void Delay_mS(uint32_t Delay)
 {

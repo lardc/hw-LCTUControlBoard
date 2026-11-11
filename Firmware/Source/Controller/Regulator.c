@@ -29,6 +29,10 @@ float VoltStep = 0, Qp = 0;
 float RegulatorError = 0;
 RegulatorState RegState = RS_None;
 static volatile bool FallDone = false;
+static bool RegulatorEnabled = true;
+static bool FollowingErrCheckEnabled = true;
+static bool FallRampDone = false;
+static Int32U FallHoldTicks = 0;
 volatile bool IsMeasureOk = false;
 
 volatile SamplingResult Sample = {0};
@@ -39,12 +43,12 @@ void REGLTR_StoreRegulatorDebug(float Uce, float Ices, float Setpoint, float Cor
 Int32U REGLTR_CorrectionLogDACPoint();
 void RGLTR_ErrorCheck();
 Int16U REGLTR_GetScalingCoef();
+static void REGLTR_AbortWithFall(DeviceSubState ErrorSubState);
 
 // Functions
 void REGLTR_Process()
 {
-	if (CONTROL_SubState != SS_RegulatorProcess
-			&& CONTROL_SubState != SS_RegulatorProcessSelfTest)
+	if (!CONTROL_IsPulseSubState())
 		return;
 	Int32U DACSetpoint;
 	Sample = REGLTR_GetSample();
@@ -64,16 +68,24 @@ void REGLTR_Process()
 			break;
 
 		case RS_Fall:
-			// Спад без участия регулятора: линейное снижение от уровня начала спада
+			// Спад без участия регулятора: линейное снижение до 0 со скоростью нарастания,
+			// затем выдержка на нуле
 			if(!FallDone)
 			{
-				float FallStep = (VoltStep > 0.0f) ? VoltStep : RawSetPoint;
-				RawSetPoint -= FallStep;
-				if(RawSetPoint <= FallStep)
+				if(!FallRampDone)
 				{
-					RawSetPoint = 0;
-					FallDone = true;
+					float FallStep = (VoltStep > 0.0f) ? VoltStep : RawSetPoint;
+					RawSetPoint -= FallStep;
+					if(RawSetPoint <= 0.0f)
+					{
+						RawSetPoint = 0;
+						FallRampDone = true;
+					}
 				}
+				else if(FallHoldTicks > 0)
+					--FallHoldTicks;
+				else
+					FallDone = true;
 			}
 			RegulatorError = 0;
 			DACSetpoint = (RawSetPoint > 0.0f) ? MEASURE_ConvertUset(RawSetPoint) : 0;
@@ -92,9 +104,15 @@ void REGLTR_Process()
 
 void REGLTR_StartFall()
 {
+	// Повторный запуск не должен менять уровень начала спада
+	if(RegState == RS_Fall)
+		return;
+
 	// Уровень начала спада с учётом накопленной коррекции, чтобы не было скачка на выходе
 	float Level = RawSetPoint + Qp + Qi;
 	RawSetPoint = (Level > 0.0f) ? Level : 0.0f;
+	FallRampDone = (RawSetPoint <= 0.0f);
+	FallHoldTicks = ((Int32U)DataTable[REG_PULSE_FALL_HOLD_DURATION] * 1000u) / TIMER15_uS;
 	FallDone = false;
 	RegState = RS_Fall;
 }
@@ -109,7 +127,7 @@ bool REGLTR_IsFallDone()
 void REGLTR_Init()
 {
 	IsMeasureOk = false;
-	Qi = FollowingErrorCounter = VoltageErrCount = 0;
+	Qp = Qi = FollowingErrorCounter = VoltageErrCount = 0;
 	MaxCurrentErrCount = 0;
 	RINGBUF_ResetIcesAvg();
 	RINGBUF_ResetUceAvg();
@@ -124,6 +142,8 @@ void REGLTR_Init()
 	RawSetPoint = PreTriggerAmplitude;
 	RegState = RS_Rise;
 	FallDone = false;
+	FallRampDone = false;
+	FallHoldTicks = 0;
 	RegulatorError = 0;
 
 	switch(CONTROL_MeasureType)
@@ -146,6 +166,8 @@ void REGLTR_Init()
 
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];
+	RegulatorEnabled = !DataTable[REG_DBG_REGULATOR_MUTE];
+	FollowingErrCheckEnabled = RegulatorEnabled && (Kp != 0.0f || Ki != 0.0f);
 
 	for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
 	{
@@ -162,8 +184,14 @@ Int32U REGLTR_CorrectionLogDACPoint()
 {
 	RGLTR_ErrorCheck();
 
-	Qp = RegulatorError * Kp;
-	Qi += RegulatorError * Ki;
+	if(RegState == RS_Fall)
+		return MEASURE_ConvertUset(RawSetPoint);
+
+	if(RegulatorEnabled)
+	{
+		Qp = RegulatorError * Kp;
+		Qi += RegulatorError * Ki;
+	}
 
 	float SetPoint = RawSetPoint + Qp + Qi;
 	Int32U DACPoint = MEASURE_ConvertUset(SetPoint);
@@ -182,18 +210,6 @@ void RGLTR_ErrorCheck()
 			RegulatorError = RawSetPoint - Sample.Uce;
 			float RelativeAmplitudeAbsErr = fabsf(PulseAmplitude - Sample.Uce) / PulseAmplitude;
 
-			if (CONTROL_MeasureType == MT_Ices && Sample.Ices > MaxCurrentA)
-			{
-				MaxCurrentErrCount++;
-				if (MaxCurrentErrCount > MaxCurrentErrLimit)
-				{
-					CONTROL_SetDeviceSubState(SS_MaxCurrentErr);
-					break;
-				}
-			}
-			else
-				MaxCurrentErrCount = 0;
-
 			if(RelativeAmplitudeAbsErr <= VoltagErrThreshold)
 			{
 				if(CONTROL_MeasureType == MT_Ices)
@@ -208,7 +224,7 @@ void RGLTR_ErrorCheck()
 			{
 				VoltageErrCount++;
 				if(VoltageErrCount > VoltagErrLimit)
-					CONTROL_SetDeviceSubState(SS_VoltageErr);
+					REGLTR_AbortWithFall(SS_VoltageErr);
 			}
 			break;
 
@@ -218,7 +234,22 @@ void RGLTR_ErrorCheck()
 			break;
 	}
 
-	if(RawSetPoint > 0.0f)
+	if(RegState == RS_Fall)
+		return;
+
+	if (CONTROL_MeasureType == MT_Ices && Sample.Ices > MaxCurrentA)
+	{
+		MaxCurrentErrCount++;
+		if (MaxCurrentErrCount > MaxCurrentErrLimit)
+		{
+			REGLTR_AbortWithFall(SS_MaxCurrentErr);
+			return;
+		}
+	}
+	else
+		MaxCurrentErrCount = 0;
+
+	if(FollowingErrCheckEnabled && RawSetPoint > 0.0f)
 	{
 		float RegulatorRelativeAbsError = fabsf(RegulatorError) / RawSetPoint;
 		if(RegulatorRelativeAbsError > FollowingErrThreshold)
@@ -226,7 +257,7 @@ void RGLTR_ErrorCheck()
 			if(FollowingErrorCounter < FollowingErrLimit)
 				FollowingErrorCounter++;
 			else
-				CONTROL_SetDeviceSubState(SS_FollowingErr);
+				REGLTR_AbortWithFall(SS_FollowingErr);
 		}
 		else
 			FollowingErrorCounter = 0;
@@ -285,10 +316,14 @@ Int16U REGLTR_GetScalingCoef()
 	if(RiseRate > 0.0f)
 	{
 		RisingPart = (PulseAmplitude - PreTriggerAmplitude) / RiseRate;
-		FallingPart = PulseAmplitude / RiseRate;
+		FallingPart = PulseAmplitude / RiseRate + DataTable[REG_PULSE_FALL_HOLD_DURATION];
 	}
 	else
-		RisingPart = FallingPart = 0;
+	{
+		RisingPart = 0;
+		FallingPart = DataTable[REG_PULSE_FALL_HOLD_DURATION];
+	}
+
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Ices:
@@ -308,6 +343,24 @@ Int16U REGLTR_GetScalingCoef()
 		Coef = 1;
 	ScalingCounter = Coef;
 	return Coef;
+}
+//-----------------------------------------
+
+void REGLTR_MarkFallComplete()
+{
+	RawSetPoint = 0;
+	FallRampDone = true;
+	FallDone = true;
+	RegState = RS_Fall;
+}
+//-----------------------------------------
+
+static void REGLTR_AbortWithFall(DeviceSubState ErrorSubState)
+{
+	DataTable[REG_DIAG_CURRENT] = Sample.Ices;
+	DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
+	CONTROL_SetDeviceSubState(ErrorSubState);
+	REGLTR_StartFall();
 }
 //-----------------------------------------
 

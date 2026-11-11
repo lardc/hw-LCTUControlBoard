@@ -67,8 +67,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, 0, 0},																	// 55
 	{0, 0, 0},																	// 56
 	{0, 0, 0},																	// 57
-	{0, 0, 0},																	// 58
-	{0, 0, 0},																	// 59
+	{FAN_OPERATE_PERIOD_MIN, FAN_OPERATE_PERIOD_MAX, FAN_OPERATE_PERIOD_DEF},	// 58
+	{FAN_OPERATE_TIME_MIN, FAN_OPERATE_TIME_MAX, FAN_OPERATE_TIME_DEF},			// 59
 	{0, INT16U_MAX, 0},															// 60
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 61
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 62
@@ -96,7 +96,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, COEF_THRESHOLD_MAX, 0},													// 84
 	{U_ERR_COUNT_MIN, U_ERR_COUNT_MAX, U_ERR_COUNT_DEF},						// 85
 	{PULSE_RISE_TIME_MIN, INT16U_MAX, PULSE_RISE_TIME_DEF},						// 86
-	{0, 0, 0},																	// 87
+	{FALL_HOLD_TIME_MIN, FALL_HOLD_TIME_MAX, FALL_HOLD_TIME_DEF},				// 87
 	{0, U_ICES_MAX, 0},															// 88
 	{PULSE_DURATION_MIN, PULSE_DURATION_MAX, COEF_FLATTOP_DURATION_DEF},		// 89
 	{0, INT16U_MAX, DEACT_ROUT_DELAY_DEF},										// 90
@@ -167,7 +167,7 @@ const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START]
 	{NO, I_CHANNEL_5, NO},														// 151
 	{0, INT16U_MAX, 0},															// 152
 	{NO, YES, NO},																// 153
-	{0, 0, 0},																	// 154
+	{NO, YES, NO},																// 154
 	{0, 0, 0},																	// 155
 	{0, 0, 0},																	// 156
 	{0, 0, 0},																	// 157

@@ -7,6 +7,7 @@
 #include "DataTable.h"
 #include "DeviceObjectDictionary.h"
 #include "Controller.h"
+#include "Constraints.h"
 #include "Board.h"
 #include "LowLevel.h"
 #include "Regulator.h"
@@ -32,6 +33,8 @@ static IChannel LOGIC_SelectChannelByMaxCurrent(float ImaxA);
 static bool LOGIC_SelectIcesChannel();
 static void LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA);
 static void LOGIC_ErrorHandler(DeviceSubState SubState);
+static bool LOGIC_TryHandleForcedStopAfterFall();
+static Int32U LOGIC_EstimateFallDurationMs();
 Int32U LOGIC_CalcPauseAfterPulse(float UceVoltage);
 
 // Functions
@@ -53,9 +56,7 @@ void LOGIC_HandleMeasurement()
 		switch(CONTROL_SubState)
 		{
 			case SS_Activation:
-				LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, true);
 				LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, true);
-				LL_SetStateRelay(RELAY_LCAU_HV_OUT, true);
 				Timeout = CONTROL_TimeCounter + TIME_ACTIVATION_TIMEOUT;
 				CONTROL_SetDeviceSubState(SS_ActivationProcess);
 				break;
@@ -76,6 +77,7 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_Init:
+				CONTROL_HandleFanLogic(true);
 				if(CONTROL_TimeCounter < CooldownTimeout)
 				{
 					Timeout = CooldownTimeout;
@@ -93,17 +95,13 @@ void LOGIC_HandleMeasurement()
 				PendingFaultReason = DF_NONE;
 				PendingProblemReason = PROBLEM_NONE;
 				SelfTestNextStep = false;
-				//LL_SetStateRelay(RELAY_LCAU_HV_OUT, true);
 				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
 				CONTROL_SetDeviceSubState(SS_InitHVPause);
 				break;
 
 			case SS_InitHVPause:
 				if(CONTROL_TimeCounter > Timeout)
-				{
-					LL_SetStateFan(true); // Доп реле временно сделано на выходе вентилятора
 					CONTROL_SetDeviceSubState(SS_InitSelectCurrentChannel);
-				}
 				break;
 
 			case SS_InitSelectCurrentChannel:
@@ -159,19 +157,31 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_SetPreTrigger:
+				REGLTR_StartProcess();
 				LL_WriteDAC24(MEASURE_ConvertUset(DataTable[REG_PRETRIGGER_VOLTAGE]));
 				Timeout = CONTROL_TimeCounter + DataTable[REG_PRETRIGGER_DURATION];
 				CONTROL_SetDeviceSubState(SS_WaitPreTrigger);
 				break;
 
 			case SS_WaitPreTrigger:
-				if(CONTROL_TimeCounter > Timeout)
+				Sample = REGLTR_GetSample();
+				if(Sample.Ices > DataTable[REG_MAX_CURRENT_ICES] * 0.001f)
+				{
+					DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
+					DataTable[REG_DIAG_CURRENT] = Sample.Ices;
+					REGLTR_StopProcess();
+					REGLTR_MarkFallComplete();
+					CONTROL_SetDeviceSubState(SS_MaxCurrentErr);
+				}
+				else if(CONTROL_TimeCounter > Timeout)
 					CONTROL_SetDeviceSubState(SS_ConfigPulse);
 				break;
 
 			case SS_ConfigPulse:
+				if(CONTROL_MeasureType == MT_ST_TestLoad && SelfTestStepIdx > 0)
+					REGLTR_StartProcess();
+
 				REGLTR_Init();
-				REGLTR_StartProcess();
 				SyncDelayTimeout = CONTROL_TimeCounter + DataTable[REG_PULSE_RISE_DURATION] + DataTable[REG_SYNC_DELAY_AFTER_FLAT];
 				{
 					float TimeoutTime;
@@ -194,6 +204,8 @@ void LOGIC_HandleMeasurement()
 
 				if(RegState == RS_Fall)
 				{
+					if(LOGIC_TryHandleForcedStopAfterFall())
+						break;
 					if(REGLTR_IsFallDone())
 						CONTROL_SetDeviceSubState(SS_FinishProcess);
 				}
@@ -218,7 +230,10 @@ void LOGIC_HandleMeasurement()
 						UceResult = Sample.Uce;
 						if(fabsf(IcesResult - SelfTestExpectedCurrentA) > (SelfTestExpectedCurrentA * DataTable[REG_ST_CURRENT_ERR_THRESH]))
 						{
+							DataTable[REG_DIAG_CURRENT] = IcesResult;
+							DataTable[REG_DIAG_VOLTAGE] = UceResult;
 							CONTROL_SetDeviceSubState(SS_CurrentErr);
+							REGLTR_StartFall();
 							break;
 						}
 						REGLTR_StartFall();
@@ -226,6 +241,8 @@ void LOGIC_HandleMeasurement()
 				}
 				else if(REGLTR_IsFallDone())
 				{
+					if(LOGIC_TryHandleForcedStopAfterFall())
+						break;
 					if(SelfTestStepIdx >= 5)
 						CONTROL_SetDeviceSubState(SS_FinishProcess);
 					else
@@ -244,11 +261,18 @@ void LOGIC_HandleMeasurement()
 			case SS_VoltageErr:
 			case SS_CurrentErr:
 			case SS_MaxCurrentErr:
-				UceResult = Sample.Uce;
-				IcesResult = Sample.Ices;
+				REGLTR_StartFall();
+				if(!REGLTR_IsFallDone())
+					break;
+
+				if(LOGIC_TryHandleForcedStopAfterFall())
+					break;
+
+				UceResult = DataTable[REG_DIAG_VOLTAGE];
+				IcesResult = DataTable[REG_DIAG_CURRENT];
 				LOGIC_ErrorHandler(CONTROL_SubState);
 				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
-				CONTROL_SetDeviceSubState(SS_WaitFinishFan);
+				CONTROL_SetDeviceSubState(SS_WaitFinishHVOut);
 				break;
 
 			case SS_FinishProcess:
@@ -264,7 +288,7 @@ void LOGIC_HandleMeasurement()
 							DataTable[REG_VOLTAGE_RESULT] = RINGBUF_GetUceAvg();
 							DataTable[REG_ICES_RESULT] = RINGBUF_GetIcesAvg();
 						}
-						else
+						else if(PendingProblemReason == PROBLEM_NONE)
 							PendingProblemReason = PROBLEM_NEED_MORE_SAMPLES;
 						break;
 
@@ -277,16 +301,7 @@ void LOGIC_HandleMeasurement()
 						break;
 				}
 				Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
-				CONTROL_SetDeviceSubState(SS_WaitFinishFan);
-				break;
-
-			case SS_WaitFinishFan:
-				if(CONTROL_TimeCounter > Timeout)
-				{
-					LL_SetStateFan(false);
-					Timeout = CONTROL_TimeCounter + TIME_RELAY_PAUSE;
-					CONTROL_SetDeviceSubState(SS_WaitFinishHVOut);
-				}
+				CONTROL_SetDeviceSubState(SS_WaitFinishHVOut);
 				break;
 
 			case SS_WaitFinishHVOut:
@@ -354,10 +369,8 @@ void LOGIC_Deactivate()
 	LL_SetStateRelay(RELAY_RMES5, false);
 
 	LL_SetStateRelay(RELAY_HV_OUT, false);
-	LL_SetStateRelay(RELAY_LCAU_HV_OUT, false);
 	LL_SetStateRelay(RELAY_LCAU_INPUT_CONTACTOR, false);
 
-	LL_SetStateRelay(RELAY_LCAU_DISCHARGE_DISABLE, false);
 	LL_LCAU_SoftStart(true);
 }
 //------------------------------------------
@@ -368,6 +381,43 @@ void LOGIC_StopProcess()
 	LL_SyncOSC(false);
 	LL_SetChannelRelaysOff();
 	DataTable[REG_SELFTEST_STEP] = 0;
+}
+//------------------------------------------
+
+void LOGIC_RequestForcedStop()
+{
+	if(CONTROL_IsPulseSubState())
+	{
+		DataTable[REG_DIAG_CURRENT] = Sample.Ices;
+		CooldownTimeout = CONTROL_TimeCounter + LOGIC_EstimateFallDurationMs() +  LOGIC_CalcPauseAfterPulse(Sample.Uce);
+		PendingProblemReason = PROBLEM_FORCED_STOP;
+		REGLTR_StartFall();
+		return;
+	}
+
+	CONTROL_SwitchToProblem(PROBLEM_FORCED_STOP);
+	LOGIC_Deactivate();
+}
+//------------------------------------------
+
+static Int32U LOGIC_EstimateFallDurationMs()
+{
+	float RiseMs = DataTable[REG_PULSE_RISE_DURATION];
+	float WorkV = (CONTROL_MeasureType == MT_ST_TestLoad)
+				? DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] : DataTable[REG_WORK_VOLTAGE_ICES];
+	float RampMs = (WorkV > 0) ? RiseMs * (Sample.Uce / WorkV) : RiseMs;
+	return (Int32U)ceilf(RampMs) + DataTable[REG_PULSE_FALL_HOLD_DURATION];
+}
+//-----------------------------------------
+
+static bool LOGIC_TryHandleForcedStopAfterFall()
+{
+	if(!REGLTR_IsFallDone() || PendingProblemReason != PROBLEM_FORCED_STOP)
+		return false;
+
+	CONTROL_SwitchToProblem(PROBLEM_FORCED_STOP);
+	LOGIC_Deactivate();
+	return true;
 }
 //------------------------------------------
 
@@ -485,14 +535,11 @@ static void LOGIC_ErrorHandler(DeviceSubState SubState)
 			return;
 	}
 
-	DataTable[REG_DIAG_CURRENT] = Sample.Ices;
-	DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
-
 	LOGIC_StopProcess();
 
 	if(CONTROL_MeasureType == MT_ST_TestLoad)
 		PendingFaultReason = FaultReason;
-	else
+	else if(PendingProblemReason == PROBLEM_NONE)
 		PendingProblemReason = ProblemReason;
 }
 //------------------------------------------
@@ -510,9 +557,22 @@ Int32U LOGIC_CalcPauseAfterPulse(float UceVoltage)
 	float FlatTopDuration = (CONTROL_MeasureType == MT_ST_TestLoad) ?
 			DataTable[REG_ST_PULSE_DURATION] : DataTable[REG_PULSE_DURATION];
 
+	// При превышении максимального тока считаем, что ток был максимальным и постоянным
+	// на всём импульсе (предимпульс, фронт, полка, спад), а напряжение Uce - постоянным
+	bool MaxCurrentExceeded = (PendingProblemReason == PROBLEM_MAX_CURRENT_EXCEEDED);
+	float Current = MaxCurrentExceeded ? (I_ICES_MAX_MAX * 0.001f) : DataTable[REG_DIAG_CURRENT];
+
 	float VoltageCascode = Ubat - UceVoltage;
-	float CurrentCascode = DataTable[REG_DIAG_CURRENT] + UceVoltage / DataTable[REG_R_INTERNAL_LOAD];
+	float CurrentCascode = Current + UceVoltage / DataTable[REG_R_INTERNAL_LOAD];
 	float CurrentIndivTrans = CurrentCascode / DataTable[REG_TRANSISTOR_AMOUNT];
+
+	if(MaxCurrentExceeded)
+	{
+		// Упрощённо время спада равно времени нарастания
+		float RiseFallMs = DataTable[REG_PULSE_RISE_DURATION];
+		float TotalMs = DataTable[REG_PRETRIGGER_DURATION] + 2.0f * RiseFallMs + FlatTopDuration;
+		return (TotalMs * 0.001f) * VoltageCascode * CurrentIndivTrans / DataTable[REG_TRANSIST_POWER_ALLOWED] * 1000.0f;
+	}
 
 	// Энергия на плоском участке
 	float EnergyFlattop = (FlatTopDuration * 0.001f) * VoltageCascode * CurrentIndivTrans;

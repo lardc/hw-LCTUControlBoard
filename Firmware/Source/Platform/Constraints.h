@@ -72,7 +72,7 @@
 // Допустимый ток Ices, мА
 #define I_ICES_MAX_MIN				0.01f
 #define I_ICES_MAX_MAX				300
-#define I_ICES_MAX_DEF				100
+#define I_ICES_MAX_DEF				300
 //
 #define COEF_I_CH0_MIN				0.1f	// I_CHANNEL_1 (100...300 мА), в А
 #define COEF_I_CH1_MIN				0.01f	// I_CHANNEL_2 (10...100 мА)
@@ -84,6 +84,9 @@
 #define COEF_SWITCH_TIME_ICES_MIN	20
 #define PULSE_RISE_TIME_MIN			1
 #define PULSE_RISE_TIME_DEF			1
+#define FALL_HOLD_TIME_MIN			0
+#define FALL_HOLD_TIME_MAX			50
+#define FALL_HOLD_TIME_DEF			1
 #define PULSE_DURATION_MIN			1
 #define PULSE_DURATION_DEF			10
 #define PULSE_DURATION_MAX			100
@@ -99,6 +102,14 @@
 #define R_ST_TESTLOAD_7MOHM_DEF		7e6f	// 7 МОм
 #define R_ST_TESTLOAD_700MOHM_DEF	700e6f	// 700 МОм
 #define ST_CURRENT_ERR_THRESH_DEF	0.1f
+//
+#define FAN_OPERATE_PERIOD_MIN			60			// с
+#define FAN_OPERATE_PERIOD_MAX			2000
+#define FAN_OPERATE_PERIOD_DEF			300
+//
+#define FAN_OPERATE_TIME_MIN			10			// с
+#define FAN_OPERATE_TIME_MAX			2000
+#define FAN_OPERATE_TIME_DEF			60
 //
 #define NO						0
 #define YES						1

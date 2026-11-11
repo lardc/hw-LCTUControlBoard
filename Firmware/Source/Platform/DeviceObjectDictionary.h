@@ -12,9 +12,7 @@
 #define ACT_DBG_SELF_TEST_RELAY			12	// Управление реле самодиагностики по состоянию отладочного регистра REG_DBG
 											// 0 – выключено, 1 – включен ST1, 2 – включен ST2
 #define ACT_DBG_HV_OUT					13	// Управление выходным HV реле по состоянию отладочного регистра REG_DBG
-#define ACT_DBG_LCAU_HV_OUT				14	// Управление выходным реле LCAU по состоянию отладочного регистра REG_DBG
 #define ACT_DBG_LCAU_INPUT_CONTACTOR	15	// Управление входным контактором в LCAU по состоянию отладочного регистра REG_DBG
-#define ACT_DBG_LCAU_DISCHARGE			16	// Управление реле разряда в LCAU по состоянию отладочного регистра REG_DBG
 #define ACT_DBG_LCAU_SOFTSTART			17	// Управление плавным пуском в LCAU по состоянию отладочного регистра REG_DBG
 #define ACT_DBG_SPI_WRITE_TWO_BYTES		18	// Запись двух байтов для отладки SPI
 #define ACT_DBG_PULSE					19	// Запуск импульса в виде трапеции
@@ -102,6 +100,8 @@
 #define REG_I_4_B						39	// Коэффициент преобразования B
 #define REG_I_4_RSH						40	// Сопротивление шунта
 // 41- 59
+#define REG_FAN_OPERATE_PERIOD			58	// Период работы вентилятора, с
+#define REG_FAN_OPERATE_TIME			59	// Длительность работы вентилятора, с
 #define REG_CFG_NODE_ID					60	// Настройка CAN NodeID
 //
 #define REG_U_SET_P2					61	// Коэффициент тонкой подстройки Р2
@@ -130,6 +130,7 @@
 #define REG_VOLTAGE_ERR_THRESH			84	// Допустимая ошибка напряжения для начала измерения, в частях от 0 до 1
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
 #define REG_PULSE_RISE_DURATION			86	// Длительность фронта импульса, мс
+#define REG_PULSE_FALL_HOLD_DURATION	87	// Выдержка на 0 после спада, мс
 
 #define REG_PRETRIGGER_VOLTAGE			88 	// Напряжение ступени предварительного включения, В
 #define REG_PRETRIGGER_DURATION			89	// Длительность ступени предварительного включения, мс
@@ -167,7 +168,8 @@
 #define REG_DBG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
 #define REG_DBG2						152	// Отладочный регистр 2
 #define REG_DBG_SAFETY_MUTE				153	// Отключение контура безопасности
-// 154 - 191
+#define REG_DBG_REGULATOR_MUTE			154	// Отключение регулятора: 1 - Qp и Qi не рассчитываются, PROBLEM_FOLLOWING_ERROR не выставляется
+// 155 - 191
 
 // Регистры только чтение
 #define REG_DEV_STATE					192	// Регистр состояния
