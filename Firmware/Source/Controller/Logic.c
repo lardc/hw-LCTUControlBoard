@@ -34,6 +34,7 @@ static bool LOGIC_SelectIcesChannel();
 static void LOGIC_SetupSelfTestStep(Int16U StepIdx, float* ExpectedCurrentA);
 static void LOGIC_ErrorHandler(DeviceSubState SubState);
 static bool LOGIC_TryHandleForcedStopAfterFall();
+static Int32U LOGIC_EstimateFallDurationMs();
 Int32U LOGIC_CalcPauseAfterPulse(float UceVoltage);
 
 // Functions
@@ -166,8 +167,8 @@ void LOGIC_HandleMeasurement()
 				Sample = REGLTR_GetSample();
 				if(Sample.Ices > DataTable[REG_MAX_CURRENT_ICES] * 0.001f)
 				{
-					IcesResult = Sample.Ices;
-					UceResult = Sample.Uce;
+					DataTable[REG_DIAG_VOLTAGE] = Sample.Uce;
+					DataTable[REG_DIAG_CURRENT] = Sample.Ices;
 					REGLTR_StopProcess();
 					REGLTR_MarkFallComplete();
 					CONTROL_SetDeviceSubState(SS_MaxCurrentErr);
@@ -177,6 +178,9 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_ConfigPulse:
+				if(CONTROL_MeasureType == MT_ST_TestLoad && SelfTestStepIdx > 0)
+					REGLTR_StartProcess();
+
 				REGLTR_Init();
 				SyncDelayTimeout = CONTROL_TimeCounter + DataTable[REG_PULSE_RISE_DURATION] + DataTable[REG_SYNC_DELAY_AFTER_FLAT];
 				{
@@ -384,7 +388,8 @@ void LOGIC_RequestForcedStop()
 {
 	if(CONTROL_IsPulseSubState())
 	{
-		CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse(Sample.Uce);
+		DataTable[REG_DIAG_CURRENT] = Sample.Ices;
+		CooldownTimeout = CONTROL_TimeCounter + LOGIC_EstimateFallDurationMs() +  LOGIC_CalcPauseAfterPulse(Sample.Uce);
 		PendingProblemReason = PROBLEM_FORCED_STOP;
 		REGLTR_StartFall();
 		return;
@@ -394,6 +399,16 @@ void LOGIC_RequestForcedStop()
 	LOGIC_Deactivate();
 }
 //------------------------------------------
+
+static Int32U LOGIC_EstimateFallDurationMs()
+{
+	float RiseMs = DataTable[REG_PULSE_RISE_DURATION];
+	float WorkV = (CONTROL_MeasureType == MT_ST_TestLoad)
+				? DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] : DataTable[REG_WORK_VOLTAGE_ICES];
+	float RampMs = (WorkV > 0) ? RiseMs * (Sample.Uce / WorkV) : RiseMs;
+	return (Int32U)ceilf(RampMs) + DataTable[REG_PULSE_FALL_HOLD_DURATION];
+}
+//-----------------------------------------
 
 static bool LOGIC_TryHandleForcedStopAfterFall()
 {
